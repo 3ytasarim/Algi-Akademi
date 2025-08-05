@@ -85,7 +85,6 @@ export default function Sidebar({
       submenuItems: [
         { icon: Mail, label: "E-posta Ayarları", href: "/integrations/email" },
         { icon: MessageSquare, label: "NetGSM SMS", href: "/integrations/sms" },
-        { icon: CreditCard, label: "Ödeme Sistemleri", href: "/integrations/payment" },
       ]
     },
     {

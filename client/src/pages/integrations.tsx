@@ -10,11 +10,11 @@ import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { 
   Smartphone, 
-  CreditCard, 
   Settings, 
   Save,
   TestTube,
-  Plug
+  Plug,
+  Mail
 } from "lucide-react";
 
 export default function Integrations() {
@@ -28,11 +28,7 @@ export default function Integrations() {
     isActive: true
   });
 
-  const [paymentConfig, setPaymentConfig] = useState({
-    token: "",
-    merchantId: "",
-    isActive: false
-  });
+
 
   // Fetch integrations
   const { data: integrations, isLoading } = useQuery({
@@ -70,12 +66,7 @@ export default function Integrations() {
     }));
   };
 
-  const handlePaymentConfigChange = (field: string, value: string | boolean) => {
-    setPaymentConfig(prev => ({
-      ...prev,
-      [field]: value
-    }));
-  };
+
 
   const saveSmsConfig = () => {
     updateIntegrationMutation.mutate({
@@ -86,14 +77,7 @@ export default function Integrations() {
     });
   };
 
-  const savePaymentConfig = () => {
-    updateIntegrationMutation.mutate({
-      type: 'payment',
-      name: 'Kredi Kartı Entegrasyonu',
-      config: paymentConfig,
-      isActive: paymentConfig.isActive
-    });
-  };
+
 
   const sendTestSms = () => {
     toast({
@@ -197,84 +181,40 @@ export default function Integrations() {
           </CardContent>
         </Card>
 
-        {/* Payment Integration */}
+        {/* E-posta Integration */}
         <Card>
           <CardHeader className="p-6 border-b border-gray-200">
             <div className="flex items-center justify-between">
               <div className="flex items-center space-x-3">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <CreditCard className="text-blue-600" size={24} />
+                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Mail className="text-purple-600" size={24} />
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900">Kredi Kartı Entegrasyonu</h2>
-                  <p className="text-sm text-gray-600">Online ödeme sistemi ayarları</p>
+                  <h2 className="text-xl font-bold text-gray-900">E-posta Entegrasyonu</h2>
+                  <p className="text-sm text-gray-600">SendGrid e-posta bildirimleri</p>
                 </div>
               </div>
               <div className="flex items-center space-x-2">
                 <Switch
-                  checked={paymentConfig.isActive}
-                  onCheckedChange={(checked) => handlePaymentConfigChange('isActive', checked)}
+                  checked={false}
+                  disabled
                 />
-                <span className="text-sm text-gray-600">
-                  {paymentConfig.isActive ? 'Aktif' : 'Pasif'}
-                </span>
+                <span className="text-sm text-gray-600">Pasif</span>
               </div>
             </div>
           </CardHeader>
-          <CardContent className="p-6 space-y-4">
-            <div>
-              <Label htmlFor="paymentToken">Token</Label>
-              <Input
-                id="paymentToken"
-                type="password"
-                value={paymentConfig.token}
-                onChange={(e) => handlePaymentConfigChange('token', e.target.value)}
-                placeholder="API Token"
-                disabled={!paymentConfig.isActive}
-              />
-            </div>
-            
-            <div>
-              <Label htmlFor="merchantId">Merchant ID</Label>
-              <Input
-                id="merchantId"
-                type="text"
-                value={paymentConfig.merchantId}
-                onChange={(e) => handlePaymentConfigChange('merchantId', e.target.value)}
-                placeholder="Merchant ID"
-                disabled={!paymentConfig.isActive}
-              />
-            </div>
-
-            <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200">
+          <CardContent className="p-6">
+            <div className="bg-blue-50 p-4 rounded-lg border border-blue-200">
               <div className="flex items-start space-x-3">
-                <Settings className="text-yellow-600 mt-0.5" size={16} />
-                <div className="text-sm text-yellow-800">
-                  <p className="font-medium mb-1">Güvenlik Uyarısı</p>
+                <Settings className="text-blue-600 mt-0.5" size={16} />
+                <div className="text-sm text-blue-800">
+                  <p className="font-medium mb-1">E-posta Ayarları</p>
                   <p>
-                    API anahtarlarınızı güvenli bir şekilde saklayın ve kimseyle paylaşmayın.
-                    Test modunda işlemler gerçek para transferi yapmaz.
+                    E-posta entegrasyon ayarları için ayrı sayfaya gidin.
+                    SendGrid API anahtarı ve gönderici bilgileri yapılandırılabilir.
                   </p>
                 </div>
               </div>
-            </div>
-
-            <div className="flex space-x-2 pt-4">
-              <Button
-                onClick={savePaymentConfig}
-                className="flex-1 bg-primary text-white"
-                disabled={updateIntegrationMutation.isPending || !paymentConfig.isActive}
-              >
-                <Save className="mr-2" size={16} />
-                Kaydet
-              </Button>
-              <Button
-                variant="outline"
-                disabled={!paymentConfig.isActive}
-              >
-                <TestTube className="mr-2" size={16} />
-                Test Ödemesi
-              </Button>
             </div>
           </CardContent>
         </Card>
@@ -294,11 +234,11 @@ export default function Integrations() {
         <CardContent className="p-6">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div className="p-4 border border-gray-200 rounded-lg text-center">
-              <div className="w-12 h-12 bg-gray-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
-                <Settings className="text-gray-400" size={24} />
+              <div className="w-12 h-12 bg-purple-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
+                <Mail className="text-purple-600" size={24} />
               </div>
-              <h3 className="font-medium text-gray-900 mb-1">E-posta Servisi</h3>
-              <p className="text-sm text-gray-500">Yakında...</p>
+              <h3 className="font-medium text-gray-900 mb-1">SendGrid E-posta</h3>
+              <p className="text-sm text-gray-500">Ayrı sayfada yapılandırılabilir</p>
             </div>
             
             <div className="p-4 border border-gray-200 rounded-lg text-center">
@@ -313,7 +253,7 @@ export default function Integrations() {
               <div className="w-12 h-12 bg-gray-100 rounded-lg mx-auto mb-3 flex items-center justify-center">
                 <Settings className="text-gray-400" size={24} />
               </div>
-              <h3 className="font-medium text-gray-900 mb-1">CRM Entegrasyonu</h3>
+              <h3 className="font-medium text-gray-900 mb-1">Webhook Entegrasyonu</h3>
               <p className="text-sm text-gray-500">Yakında...</p>
             </div>
           </div>

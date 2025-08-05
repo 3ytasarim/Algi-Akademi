@@ -25,12 +25,12 @@ export default function SMSIntegrationPage() {
   const [testMessage, setTestMessage] = useState("Bu bir test mesajıdır - Algı Akademi");
   
   const [smsSettings, setSmsSettings] = useState({
-    username: "",
-    password: "",
-    header: "ALGIACADEMY",
+    usercode: "3129117683", // NetGSM abone numarası (850xxxxxxx, 312xxxxxxx)
+    password: "", // Alt kullanıcı şifresi (API yetkisi olan)
+    msgheader: "ALGIAKADEMI", // Sistemde tanımlı gönderici adı
     isActive: true,
-    language: "TR",
-    encoding: "UTF-8",
+    encoding: "TR", // Türkçe karakter desteği
+    iysfilter: "0", // 0: Bilgilendirme, 11: Ticari bireysel, 12: Ticari tacir
   });
 
   const { toast } = useToast();
