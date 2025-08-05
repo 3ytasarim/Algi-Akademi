@@ -39,6 +39,7 @@ export default function Dashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -83,137 +84,176 @@ export default function Dashboard() {
     );
   }
 
+  const toggleMenu = (menuId: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(menuId) 
+        ? prev.filter(id => id !== menuId)
+        : [...prev, menuId]
+    );
+  };
+
   const menuItems = [
     {
-      title: "Ana Menü",
-      items: [
-        { icon: Gauge, label: "Dashboard", href: "/", active: true },
-        { icon: Globe, label: "Web Site Yönetimi", href: "#", active: false, hasSubmenu: true },
-        { icon: MessageSquare, label: "İletişim", href: "#", active: false },
-        { icon: Settings, label: "Site Ayarları", href: "#", active: false },
+      id: "dashboard",
+      icon: Gauge,
+      label: "Dashboard",
+      href: "/",
+      active: true
+    },
+    {
+      id: "courses",
+      icon: Book,
+      label: "Kurs Yönetimi",
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: Users, label: "Kursiyer Tanımlama", href: "/add-student" },
+        { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
+        { icon: BarChart3, label: "Kursiyer İstatistik", href: "/reports" },
       ]
     },
     {
-      title: "Kurs Yönetimi",
-      items: [
-        { icon: Book, label: "Kurs/Kursiyer İşlemleri", href: "/", active: false, hasSubmenu: true },
-        { icon: Users, label: "Kursiyer Tanımlama", href: "/add-student", active: false },
-        { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results", active: false },
-        { icon: BarChart3, label: "Kursiyer İstatistik", href: "/reports", active: false },
+      id: "reports", 
+      icon: TrendingUp,
+      label: "Raporlar",
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: PieChart, label: "Danışman Satış Raporu", href: "/reports" },
+        { icon: AreaChart, label: "Kurs Satış Raporu", href: "/reports" },
       ]
     },
     {
-      title: "Raporlar",
-      items: [
-        { icon: TrendingUp, label: "Muhasebe", href: "/reports", active: false, hasSubmenu: true },
-        { icon: PieChart, label: "Danışman Satış Raporu", href: "/reports", active: false },
-        { icon: AreaChart, label: "Kurs Satış Raporu", href: "/reports", active: false },
+      id: "system",
+      icon: UserCog,
+      label: "Sistem Yönetimi", 
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: Bus, label: "Danışmanlar", href: "/consultants" },
+        { icon: Plug, label: "Entegrasyonlar", href: "/integrations" },
+        { icon: Settings, label: "Ayarlar", href: "#" },
       ]
     },
     {
-      title: "Sistem",
-      items: [
-        { icon: UserCog, label: "Ayarlar", href: "#", active: false, hasSubmenu: true },
-        { icon: Bus, label: "Danışmanlar", href: "/consultants", active: false },
-        { icon: Plug, label: "Entegrasyon", href: "/integrations", active: false },
-      ]
+      id: "communication",
+      icon: MessageSquare,
+      label: "İletişim",
+      href: "#"
     }
   ];
 
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 dark-bg text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-20`}>
-        <div className="p-6 border-b border-gray-600">
-          <div className="flex items-center mb-4">
-            <Gauge className="text-2xl text-accent mr-3" size={32} />
-            <span className="text-xl font-bold">Yönetim Paneli</span>
+      <div className={`fixed left-0 top-0 h-full w-72 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-20 shadow-2xl`}>
+        {/* Header */}
+        <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
+          <div className="flex items-center mb-5">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
+              <Gauge size={24} className="text-white" />
+            </div>
+            <div>
+              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                Algı Akademi
+              </h1>
+              <p className="text-sm text-gray-400">Yönetim Paneli</p>
+            </div>
           </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-gray-500 rounded-full overflow-hidden">
+          
+          <div className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-xl backdrop-blur-sm">
+            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white/20">
               <img 
                 src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
                 alt="User profile" 
                 className="w-full h-full object-cover" 
               />
             </div>
-            <div>
-              <div className="font-semibold">{user?.firstName || 'SAFİYE'} {user?.lastName || 'HANIM'}</div>
-              <div className="text-sm text-gray-400">{user?.role === 'admin' ? 'Admin' : 'Eğitimci'}</div>
+            <div className="flex-1">
+              <div className="font-semibold text-white">
+                {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
+              </div>
+              <div className="text-xs text-primary font-medium">
+                {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitmen'}
+              </div>
             </div>
+            <Bell size={18} className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
           </div>
         </div>
 
         {/* Search */}
-        <div className="p-4 border-b border-gray-600">
+        <div className="p-4">
           <div className="relative">
             <Input 
               type="text" 
-              placeholder="Ara..." 
-              className="w-full bg-gray-700 text-white rounded-lg py-2 pl-4 pr-10 focus:outline-none focus:ring-2 focus:ring-accent border-0"
+              placeholder="Hızlı arama..." 
+              className="w-full bg-slate-800/50 text-white rounded-xl py-3 pl-12 pr-4 border border-slate-700/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/25 backdrop-blur-sm placeholder:text-gray-400"
             />
-            <Search className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto py-4">
-          {menuItems.map((section, sectionIndex) => (
-            <div key={sectionIndex} className="mb-2">
-              <div className="px-4 py-2 text-sm font-semibold text-gray-400 uppercase tracking-wider">
-                {section.title}
-              </div>
-              <div className="space-y-1">
-                {section.items.map((item, itemIndex) => (
-                  item.href.startsWith('#') ? (
-                    <a
-                      key={itemIndex}
-                      href={item.href}
-                      className={`flex items-center px-4 py-3 transition-colors ${
-                        item.active 
-                          ? 'bg-primary text-white rounded-r-full mr-4' 
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}
+        <nav className="flex-1 overflow-y-auto px-3 pb-4">
+          <div className="space-y-2">
+            {menuItems.map((item) => (
+              <div key={item.id}>
+                {item.hasSubmenu ? (
+                  <div>
+                    <button
+                      onClick={() => toggleMenu(item.id)}
+                      className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
                     >
-                      <item.icon className="mr-3 w-5" size={20} />
-                      <span>{item.label}</span>
-                      {item.hasSubmenu && (
-                        <svg className="ml-auto w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                        </svg>
-                      )}
+                      <div className="flex items-center">
+                        <item.icon className="mr-3 w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                        <span className="font-medium">{item.label}</span>
+                      </div>
+                      <svg 
+                        className={`w-4 h-4 transition-transform duration-200 ${expandedMenus.includes(item.id) ? 'rotate-180' : ''}`}
+                        fill="currentColor" 
+                        viewBox="0 0 20 20"
+                      >
+                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                      </svg>
+                    </button>
+                    
+                    {expandedMenus.includes(item.id) && (
+                      <div className="mt-1 ml-6 space-y-1">
+                        {item.submenuItems?.map((subItem, subIndex) => (
+                          <Link key={subIndex} href={subItem.href}>
+                            <a className="flex items-center px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-slate-800/30 rounded-lg transition-all duration-200 group">
+                              <subItem.icon className="mr-3 w-4 h-4 text-gray-500 group-hover:text-primary transition-colors" />
+                              <span>{subItem.label}</span>
+                            </a>
+                          </Link>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <Link href={item.href || '#'}>
+                    <a className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
+                      item.active 
+                        ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                        : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                    }`}>
+                      <item.icon className={`mr-3 w-5 h-5 transition-colors ${
+                        item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                      }`} />
+                      <span className="font-medium">{item.label}</span>
                     </a>
-                  ) : (
-                    <Link key={itemIndex} href={item.href}>
-                      <a className={`flex items-center px-4 py-3 transition-colors ${
-                        item.active 
-                          ? 'bg-primary text-white rounded-r-full mr-4' 
-                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                      }`}>
-                        <item.icon className="mr-3 w-5" size={20} />
-                        <span>{item.label}</span>
-                        {item.hasSubmenu && (
-                          <svg className="ml-auto w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                          </svg>
-                        )}
-                      </a>
-                    </Link>
-                  )
-                ))}
+                  </Link>
+                )}
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-gray-600">
+        <div className="p-4 border-t border-slate-700/50">
           <Button 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center py-2 px-4 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+            className="w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             <LogOut className="mr-2" size={18} />
-            Çıkış Yap
+            <span className="font-medium">Çıkış Yap</span>
           </Button>
         </div>
       </div>
@@ -227,37 +267,47 @@ export default function Dashboard() {
       )}
 
       {/* Main Content */}
-      <div className="md:ml-64 min-h-screen">
+      <div className="md:ml-72 min-h-screen bg-gradient-to-br from-gray-50 to-white">
         {/* Top Bar */}
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="flex items-center justify-between px-6 py-4">
+        <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 sticky top-0 z-10">
+          <div className="flex items-center justify-between px-8 py-5">
             <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden mr-4 text-gray-600 hover:text-gray-900"
+                className="md:hidden mr-4 text-gray-600 hover:text-gray-900 p-2 rounded-xl hover:bg-gray-100"
                 onClick={toggleSidebar}
               >
-                <Menu size={20} />
+                <Menu size={22} />
               </Button>
-              <h1 className="text-2xl font-bold text-gray-900">Kurs Yönetimi</h1>
+              <div>
+                <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+                  Dashboard
+                </h1>
+                <p className="text-sm text-gray-500 mt-1">Eğitim yönetim sistemi</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="relative p-2 text-gray-600 hover:text-gray-900">
+              <Button variant="ghost" size="sm" className="relative p-3 text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100">
                 <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
+                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
               </Button>
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 bg-gray-300 rounded-full overflow-hidden">
+              <div className="flex items-center space-x-3 bg-gray-50 rounded-2xl px-4 py-2">
+                <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white shadow-md">
                   <img 
-                    src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=32&h=32&fit=crop&crop=face"} 
+                    src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
                   />
                 </div>
-                <span className="font-medium text-gray-900">
-                  {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
-                </span>
+                <div>
+                  <div className="font-semibold text-gray-900">
+                    {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
+                  </div>
+                  <div className="text-xs text-primary font-medium">
+                    {user?.role === 'admin' ? 'Yönetici' : 'Eğitmen'}
+                  </div>
+                </div>
               </div>
             </div>
           </div>
