@@ -107,12 +107,14 @@ export default function Sidebar({
                 </div>
               )}
             </div>
-            <button
-              onClick={toggleSidebarCollapse}
-              className="hidden md:flex text-gray-300 hover:text-white hover:bg-slate-700/60 p-2.5 rounded-xl transition-all duration-200 bg-slate-800/40 border border-slate-600/30"
-            >
-              {sidebarCollapsed ? <ChevronRight size={18} className="text-primary" /> : <ChevronLeft size={18} />}
-            </button>
+            {!sidebarCollapsed && (
+              <button
+                onClick={toggleSidebarCollapse}
+                className="hidden md:flex text-gray-300 hover:text-white hover:bg-slate-700/60 p-2.5 rounded-xl transition-all duration-200 bg-slate-800/40 border border-slate-600/30"
+              >
+                <ChevronLeft size={18} />
+              </button>
+            )}
           </div>
         </div>
 

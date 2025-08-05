@@ -34,6 +34,8 @@ export default function LayoutWrapper({ children, title, subtitle, activeHref }:
           toggleSidebar={toggleSidebar}
           title={title}
           subtitle={subtitle}
+          sidebarCollapsed={sidebarCollapsed}
+          toggleSidebarCollapse={toggleSidebarCollapse}
         />
         
         {/* Page Content */}
