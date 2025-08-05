@@ -7,6 +7,7 @@ import { Switch } from "@/components/ui/switch";
 import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
+import LayoutWrapper from "@/components/LayoutWrapper";
 import { 
   Smartphone, 
   CreditCard, 
@@ -110,12 +111,7 @@ export default function Integrations() {
   };
 
   return (
-    <div className="p-6">
-      {/* Page Header */}
-      <div className="mb-8">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">Entegrasyonlar</h1>
-        <p className="text-gray-600">SMS ve ödeme sistemi entegrasyonlarını yönetin</p>
-      </div>
+    <LayoutWrapper title="Entegrasyonlar" subtitle="SMS ve ödeme sistemi entegrasyonlarını yönetin" activeHref="/integrations">
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         
@@ -323,6 +319,6 @@ export default function Integrations() {
           </div>
         </CardContent>
       </Card>
-    </div>
+    </LayoutWrapper>
   );
 }
