@@ -416,7 +416,7 @@ export default function Dashboard() {
               </div>
               <div className="p-8">
                 <div className="grid grid-cols-1 gap-4">
-                  <Link href="/add-course">
+                  <Link href="/courses">
                     <div className="group p-6 rounded-xl bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
                       <div className="flex items-center justify-between text-white">
                         <div className="flex items-center space-x-4">
