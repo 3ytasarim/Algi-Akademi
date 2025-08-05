@@ -105,14 +105,10 @@ export default function EmailIntegrationPage() {
   };
 
   return (
-    <LayoutWrapper>
+    <LayoutWrapper title="E-posta Entegrasyonu" subtitle="SendGrid e-posta servis ayarlarını yönetin" activeHref="/integrations/email">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">E-posta Entegrasyonu</h1>
-            <p className="text-gray-500 mt-2">SendGrid e-posta servis ayarlarını yönetin</p>
-          </div>
           <div className="flex gap-3">
             <Dialog open={isTestDialogOpen} onOpenChange={setIsTestDialogOpen}>
               <DialogTrigger asChild>

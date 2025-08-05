@@ -76,14 +76,10 @@ export default function PaymentIntegrationPage() {
   };
 
   return (
-    <LayoutWrapper>
+    <LayoutWrapper title="Ödeme Sistemi Entegrasyonu" subtitle="PayTR ve Iyzico ödeme servis ayarlarını yönetin" activeHref="/integrations/payment">
       <div className="space-y-8">
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Ödeme Sistemi Entegrasyonu</h1>
-            <p className="text-gray-500 mt-2">PayTR ve Iyzico ödeme servis ayarlarını yönetin</p>
-          </div>
+        <div className="flex items-center justify-end">
         </div>
 
         {/* Payment Provider Status */}

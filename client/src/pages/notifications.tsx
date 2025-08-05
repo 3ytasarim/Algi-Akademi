@@ -15,55 +15,41 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { 
-  Mail, MessageSquare, Bell, Plus, Send, Settings, Users, 
-  Eye, Edit, Trash2, Clock, CheckCircle, XCircle, Filter,
-  Search, Download, Upload, Target, Smartphone
+  Bell, Plus, Send, Eye, Edit, Trash2, Mail, MessageSquare,
+  CheckCircle, XCircle, Clock, AlertCircle, Users, Target,
+  Calendar, Filter, Download, Settings
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default function NotificationsPage() {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [filterType, setFilterType] = useState("all");
-  const [selectedNotifications, setSelectedNotifications] = useState<string[]>([]);
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
-  const [isTemplateDialogOpen, setIsTemplateDialogOpen] = useState(false);
-  const [isSettingsDialogOpen, setIsSettingsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all");
+  const [filterStatus, setFilterStatus] = useState("all");
 
   const [notificationForm, setNotificationForm] = useState({
-    type: "email",
     title: "",
     message: "",
-    recipients: "",
-    templateId: "",
-    scheduledFor: "",
-  });
-
-  const [templateForm, setTemplateForm] = useState({
-    name: "",
     type: "email",
-    subject: "",
-    content: "",
-    variables: "",
+    targetAudience: "all",
+    scheduleType: "immediate",
+    scheduleDate: "",
+    scheduleTime: "",
+    recipients: "",
   });
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
 
   // Fetch notifications
-  const { data: notifications, isLoading: notificationsLoading } = useQuery({
+  const { data: notifications, isLoading } = useQuery({
     queryKey: ["/api/notifications"],
   });
 
   // Fetch notification templates
-  const { data: templates, isLoading: templatesLoading } = useQuery({
+  const { data: templates } = useQuery({
     queryKey: ["/api/notification-templates"],
-  });
-
-  // Fetch notification settings
-  const { data: settings, isLoading: settingsLoading } = useQuery({
-    queryKey: ["/api/notification-settings"],
   });
 
   // Create notification mutation
@@ -77,278 +63,120 @@ export default function NotificationsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
       setIsCreateDialogOpen(false);
-      setNotificationForm({
-        type: "email",
-        title: "",
-        message: "",
-        recipients: "",
-        templateId: "",
-        scheduledFor: "",
-      });
+      resetForm();
       toast({
         title: "Başarılı",
-        description: "Bildirim başarıyla gönderildi.",
+        description: "Bildirim başarıyla oluşturuldu.",
       });
     },
     onError: (error: any) => {
       toast({
         title: "Hata",
-        description: "Bildirim gönderilirken bir hata oluştu.",
+        description: "Bildirim oluşturulurken bir hata oluştu.",
         variant: "destructive",
       });
     },
   });
 
-  // Create template mutation
-  const createTemplateMutation = useMutation({
-    mutationFn: async (data: any) => {
-      await apiRequest(`/api/notification-templates`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notification-templates"] });
-      setIsTemplateDialogOpen(false);
-      setTemplateForm({
-        name: "",
-        type: "email",
-        subject: "",
-        content: "",
-        variables: "",
-      });
-      toast({
-        title: "Başarılı",
-        description: "Şablon başarıyla oluşturuldu.",
-      });
-    },
-  });
-
-  // Update settings mutation
-  const updateSettingsMutation = useMutation({
-    mutationFn: async (data: any) => {
-      await apiRequest(`/api/notification-settings`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/notification-settings"] });
-      toast({
-        title: "Başarılı",
-        description: "Ayarlar başarıyla güncellendi.",
-      });
-    },
-  });
+  const resetForm = () => {
+    setNotificationForm({
+      title: "",
+      message: "",
+      type: "email",
+      targetAudience: "all",
+      scheduleType: "immediate",
+      scheduleDate: "",
+      scheduleTime: "",
+      recipients: "",
+    });
+  };
 
   const handleCreateNotification = (e: React.FormEvent) => {
     e.preventDefault();
-    createNotificationMutation.mutate(notificationForm);
-  };
+    
+    let scheduledAt = null;
+    if (notificationForm.scheduleType === "scheduled" && notificationForm.scheduleDate && notificationForm.scheduleTime) {
+      scheduledAt = new Date(`${notificationForm.scheduleDate}T${notificationForm.scheduleTime}`);
+    }
 
-  const handleCreateTemplate = (e: React.FormEvent) => {
-    e.preventDefault();
-    const variables = templateForm.variables ? templateForm.variables.split(',').map(v => v.trim()) : [];
-    createTemplateMutation.mutate({
-      ...templateForm,
-      variables
-    });
+    const notificationData = {
+      ...notificationForm,
+      scheduledAt,
+      status: notificationForm.scheduleType === "immediate" ? "sent" : "scheduled",
+    };
+    
+    createNotificationMutation.mutate(notificationData);
   };
 
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'sent':
-        return <Badge className="bg-green-100 text-green-800"><CheckCircle size={12} className="mr-1" /> Gönderildi</Badge>;
+        return <Badge className="bg-green-100 text-green-800">Gönderildi</Badge>;
+      case 'scheduled':
+        return <Badge className="bg-blue-100 text-blue-800">Zamanlandı</Badge>;
       case 'failed':
-        return <Badge className="bg-red-100 text-red-800"><XCircle size={12} className="mr-1" /> Başarısız</Badge>;
+        return <Badge className="bg-red-100 text-red-800">Başarısız</Badge>;
+      case 'draft':
+        return <Badge className="bg-yellow-100 text-yellow-800">Taslak</Badge>;
       default:
-        return <Badge className="bg-yellow-100 text-yellow-800"><Clock size={12} className="mr-1" /> Beklemede</Badge>;
+        return <Badge className="bg-gray-100 text-gray-800">Bilinmeyen</Badge>;
     }
   };
 
   const getTypeBadge = (type: string) => {
     switch (type) {
       case 'email':
-        return <Badge className="bg-blue-100 text-blue-800"><Mail size={12} className="mr-1" /> E-posta</Badge>;
+        return <Badge variant="outline" className="text-blue-600"><Mail size={12} className="mr-1" />E-posta</Badge>;
       case 'sms':
-        return <Badge className="bg-purple-100 text-purple-800"><Smartphone size={12} className="mr-1" /> SMS</Badge>;
+        return <Badge variant="outline" className="text-green-600"><MessageSquare size={12} className="mr-1" />SMS</Badge>;
+      case 'both':
+        return <Badge variant="outline" className="text-purple-600">E-posta + SMS</Badge>;
       default:
-        return <Badge className="bg-gray-100 text-gray-800"><Bell size={12} className="mr-1" /> Sistem</Badge>;
+        return <Badge variant="outline">-</Badge>;
     }
   };
 
   const filteredNotifications = notifications?.filter((notification: any) => {
-    const matchesSearch = notification.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         notification.message.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesStatus = filterStatus === "all" || notification.status === filterStatus;
+    const matchesSearch = notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         notification.message?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || notification.type === filterType;
-    return matchesSearch && matchesStatus && matchesType;
+    const matchesStatus = filterStatus === "all" || notification.status === filterStatus;
+    return matchesSearch && matchesType && matchesStatus;
   });
 
   return (
-    <LayoutWrapper>
+    <LayoutWrapper title="Bildirim Yönetimi" subtitle="E-posta ve SMS bildirimleri yönetin" activeHref="/notifications">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Bildirim Sistemi</h1>
-            <p className="text-gray-500 mt-2">E-posta ve SMS bildirimlerini yönetin</p>
-          </div>
-          <div className="flex gap-3">
-            <Dialog open={isSettingsDialogOpen} onOpenChange={setIsSettingsDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Settings size={16} />
-                  Ayarlar
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-2xl">
-                <DialogHeader>
-                  <DialogTitle>Bildirim Ayarları</DialogTitle>
-                </DialogHeader>
-                <div className="space-y-6">
-                  <div className="grid grid-cols-2 gap-6">
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">E-posta Ayarları</h3>
-                      <div className="flex items-center justify-between">
-                        <Label>E-posta bildirimleri</Label>
-                        <Switch defaultChecked={settings?.emailEnabled} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label>Pazarlama e-postaları</Label>
-                        <Switch defaultChecked={settings?.marketingEmails} />
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <h3 className="font-semibold">SMS Ayarları</h3>
-                      <div className="flex items-center justify-between">
-                        <Label>SMS bildirimleri</Label>
-                        <Switch defaultChecked={settings?.smsEnabled} />
-                      </div>
-                      <div className="flex items-center justify-between">
-                        <Label>Sınav hatırlatmaları</Label>
-                        <Switch defaultChecked={settings?.examNotifications} />
-                      </div>
-                    </div>
-                  </div>
-                  <div className="space-y-4">
-                    <h3 className="font-semibold">Sistem Ayarları</h3>
-                    <div className="flex items-center justify-between">
-                      <Label>Sistem güncellemeleri</Label>
-                      <Switch defaultChecked={settings?.systemUpdates} />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Kurs hatırlatmaları</Label>
-                      <Switch defaultChecked={settings?.courseReminders} />
-                    </div>
-                  </div>
-                  <Button 
-                    onClick={() => updateSettingsMutation.mutate(settings)}
-                    className="w-full"
-                    disabled={updateSettingsMutation.isPending}
-                  >
-                    Ayarları Kaydet
-                  </Button>
-                </div>
-              </DialogContent>
-            </Dialog>
-
-            <Dialog open={isTemplateDialogOpen} onOpenChange={setIsTemplateDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Plus size={16} />
-                  Şablon Oluştur
-                </Button>
-              </DialogTrigger>
-              <DialogContent className="max-w-3xl">
-                <DialogHeader>
-                  <DialogTitle>Bildirim Şablonu Oluştur</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleCreateTemplate} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Şablon Adı</Label>
-                      <Input
-                        value={templateForm.name}
-                        onChange={(e) => setTemplateForm(prev => ({ ...prev, name: e.target.value }))}
-                        placeholder="Şablon adı"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Tip</Label>
-                      <Select 
-                        value={templateForm.type}
-                        onValueChange={(value) => setTemplateForm(prev => ({ ...prev, type: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="email">E-posta</SelectItem>
-                          <SelectItem value="sms">SMS</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </div>
-                  
-                  {templateForm.type === 'email' && (
-                    <div className="space-y-2">
-                      <Label>Konu</Label>
-                      <Input
-                        value={templateForm.subject}
-                        onChange={(e) => setTemplateForm(prev => ({ ...prev, subject: e.target.value }))}
-                        placeholder="E-posta konusu"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="space-y-2">
-                    <Label>İçerik</Label>
-                    <Textarea
-                      value={templateForm.content}
-                      onChange={(e) => setTemplateForm(prev => ({ ...prev, content: e.target.value }))}
-                      placeholder="Şablon içeriği ({{değişken}} formatında değişkenler kullanabilirsiniz)"
-                      rows={6}
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Değişkenler</Label>
-                    <Input
-                      value={templateForm.variables}
-                      onChange={(e) => setTemplateForm(prev => ({ ...prev, variables: e.target.value }))}
-                      placeholder="userName, courseName, examDate (virgülle ayırın)"
-                    />
-                  </div>
-                  
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={createTemplateMutation.isPending}
-                  >
-                    Şablon Oluştur
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
-
-            <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+            <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
+              setIsCreateDialogOpen(open);
+              if (!open) resetForm();
+            }}>
               <DialogTrigger asChild>
                 <Button className="flex items-center gap-2">
-                  <Send size={16} />
-                  Bildirim Gönder
+                  <Plus size={16} />
+                  Yeni Bildirim
                 </Button>
               </DialogTrigger>
-              <DialogContent className="max-w-3xl">
+              <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
                 <DialogHeader>
-                  <DialogTitle>Yeni Bildirim Gönder</DialogTitle>
+                  <DialogTitle>Yeni Bildirim Oluştur</DialogTitle>
                 </DialogHeader>
                 <form onSubmit={handleCreateNotification} className="space-y-6">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label>Bildirim Tipi</Label>
+                      <Label>Başlık *</Label>
+                      <Input
+                        value={notificationForm.title}
+                        onChange={(e) => setNotificationForm(prev => ({ ...prev, title: e.target.value }))}
+                        placeholder="Bildirim başlığı"
+                        required
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Bildirim Türü *</Label>
                       <Select 
                         value={notificationForm.type}
                         onValueChange={(value) => setNotificationForm(prev => ({ ...prev, type: value }))}
@@ -357,44 +185,16 @@ export default function NotificationsPage() {
                           <SelectValue />
                         </SelectTrigger>
                         <SelectContent>
-                          <SelectItem value="email">E-posta</SelectItem>
-                          <SelectItem value="sms">SMS</SelectItem>
-                          <SelectItem value="system">Sistem Bildirimi</SelectItem>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Şablon (Opsiyonel)</Label>
-                      <Select 
-                        value={notificationForm.templateId}
-                        onValueChange={(value) => setNotificationForm(prev => ({ ...prev, templateId: value }))}
-                      >
-                        <SelectTrigger>
-                          <SelectValue placeholder="Şablon seçin" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          {templates?.filter((t: any) => t.type === notificationForm.type).map((template: any) => (
-                            <SelectItem key={template.id} value={template.id}>
-                              {template.name}
-                            </SelectItem>
-                          ))}
+                          <SelectItem value="email">Sadece E-posta</SelectItem>
+                          <SelectItem value="sms">Sadece SMS</SelectItem>
+                          <SelectItem value="both">E-posta + SMS</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
                   </div>
-                  
+
                   <div className="space-y-2">
-                    <Label>Başlık</Label>
-                    <Input
-                      value={notificationForm.title}
-                      onChange={(e) => setNotificationForm(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Bildirim başlığı"
-                      required
-                    />
-                  </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Mesaj</Label>
+                    <Label>Mesaj *</Label>
                     <Textarea
                       value={notificationForm.message}
                       onChange={(e) => setNotificationForm(prev => ({ ...prev, message: e.target.value }))}
@@ -402,24 +202,89 @@ export default function NotificationsPage() {
                       rows={4}
                       required
                     />
+                    <p className="text-xs text-gray-500">
+                      SMS için max 160 karakter önerilir. Şu an: {notificationForm.message.length} karakter
+                    </p>
                   </div>
-                  
-                  <div className="space-y-2">
-                    <Label>Alıcılar</Label>
-                    <Input
-                      value={notificationForm.recipients}
-                      onChange={(e) => setNotificationForm(prev => ({ ...prev, recipients: e.target.value }))}
-                      placeholder="E-posta adresleri veya telefon numaraları (virgülle ayırın)"
-                      required
-                    />
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <Label>Hedef Kitle</Label>
+                      <Select 
+                        value={notificationForm.targetAudience}
+                        onValueChange={(value) => setNotificationForm(prev => ({ ...prev, targetAudience: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="all">Tüm Kullanıcılar</SelectItem>
+                          <SelectItem value="students">Sadece Öğrenciler</SelectItem>
+                          <SelectItem value="instructors">Sadece Eğitmenler</SelectItem>
+                          <SelectItem value="custom">Belirli Kişiler</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div className="space-y-2">
+                      <Label>Gönderim Zamanı</Label>
+                      <Select 
+                        value={notificationForm.scheduleType}
+                        onValueChange={(value) => setNotificationForm(prev => ({ ...prev, scheduleType: value }))}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="immediate">Hemen Gönder</SelectItem>
+                          <SelectItem value="scheduled">Zamanla</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </div>
-                  
+
+                  {notificationForm.scheduleType === "scheduled" && (
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label>Tarih</Label>
+                        <Input
+                          type="date"
+                          value={notificationForm.scheduleDate}
+                          onChange={(e) => setNotificationForm(prev => ({ ...prev, scheduleDate: e.target.value }))}
+                          min={new Date().toISOString().split('T')[0]}
+                          required={notificationForm.scheduleType === "scheduled"}
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label>Saat</Label>
+                        <Input
+                          type="time"
+                          value={notificationForm.scheduleTime}
+                          onChange={(e) => setNotificationForm(prev => ({ ...prev, scheduleTime: e.target.value }))}
+                          required={notificationForm.scheduleType === "scheduled"}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {notificationForm.targetAudience === "custom" && (
+                    <div className="space-y-2">
+                      <Label>Alıcılar</Label>
+                      <Textarea
+                        value={notificationForm.recipients}
+                        onChange={(e) => setNotificationForm(prev => ({ ...prev, recipients: e.target.value }))}
+                        placeholder="E-posta adreslerini veya telefon numaralarını virgülle ayırarak girin"
+                        rows={3}
+                      />
+                    </div>
+                  )}
+
                   <Button 
                     type="submit" 
                     className="w-full"
                     disabled={createNotificationMutation.isPending}
                   >
-                    Bildirim Gönder
+                    {createNotificationMutation.isPending ? "Oluşturuluyor..." : 
+                     notificationForm.scheduleType === "immediate" ? "Hemen Gönder" : "Zamanla"}
                   </Button>
                 </form>
               </DialogContent>
@@ -459,12 +324,12 @@ export default function NotificationsPage() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-500">Beklemede</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    {notifications?.filter((n: any) => n.status === 'pending').length || 0}
+                  <p className="text-sm font-medium text-gray-500">Zamanlanmış</p>
+                  <p className="text-2xl font-bold text-blue-600">
+                    {notifications?.filter((n: any) => n.status === 'scheduled').length || 0}
                   </p>
                 </div>
-                <Clock className="h-8 w-8 text-yellow-500" />
+                <Clock className="h-8 w-8 text-blue-500" />
               </div>
             </CardContent>
           </Card>
@@ -484,32 +349,20 @@ export default function NotificationsPage() {
           </Card>
         </div>
 
-        {/* Notifications Table */}
+        {/* Filters and Notifications List */}
         <Card>
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Bildirim Geçmişi</CardTitle>
               <div className="flex items-center gap-4">
                 <div className="relative">
-                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   <Input
                     placeholder="Bildirim ara..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="pl-10 w-64"
+                    className="w-64"
                   />
                 </div>
-                <Select value={filterStatus} onValueChange={setFilterStatus}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">Tümü</SelectItem>
-                    <SelectItem value="sent">Gönderildi</SelectItem>
-                    <SelectItem value="pending">Beklemede</SelectItem>
-                    <SelectItem value="failed">Başarısız</SelectItem>
-                  </SelectContent>
-                </Select>
                 <Select value={filterType} onValueChange={setFilterType}>
                   <SelectTrigger className="w-32">
                     <SelectValue />
@@ -518,7 +371,18 @@ export default function NotificationsPage() {
                     <SelectItem value="all">Tümü</SelectItem>
                     <SelectItem value="email">E-posta</SelectItem>
                     <SelectItem value="sms">SMS</SelectItem>
-                    <SelectItem value="system">Sistem</SelectItem>
+                    <SelectItem value="both">Both</SelectItem>
+                  </SelectContent>
+                </Select>
+                <Select value={filterStatus} onValueChange={setFilterStatus}>
+                  <SelectTrigger className="w-32">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="all">Tümü</SelectItem>
+                    <SelectItem value="sent">Gönderildi</SelectItem>
+                    <SelectItem value="scheduled">Zamanlandı</SelectItem>
+                    <SelectItem value="failed">Başarısız</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -529,22 +393,23 @@ export default function NotificationsPage() {
               <TableHeader>
                 <TableRow>
                   <TableHead>Başlık</TableHead>
-                  <TableHead>Tip</TableHead>
+                  <TableHead>Tür</TableHead>
                   <TableHead>Durum</TableHead>
+                  <TableHead>Hedef</TableHead>
                   <TableHead>Gönderim Tarihi</TableHead>
                   <TableHead>İşlemler</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {notificationsLoading ? (
+                {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       <div className="animate-pulse">Yükleniyor...</div>
                     </TableCell>
                   </TableRow>
                 ) : filteredNotifications?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={5} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       <div className="text-gray-500">Bildirim bulunamadı</div>
                     </TableCell>
                   </TableRow>
@@ -562,9 +427,18 @@ export default function NotificationsPage() {
                       <TableCell>{getTypeBadge(notification.type)}</TableCell>
                       <TableCell>{getStatusBadge(notification.status)}</TableCell>
                       <TableCell>
+                        <Badge variant="outline">
+                          {notification.targetAudience === 'all' ? 'Tümü' :
+                           notification.targetAudience === 'students' ? 'Öğrenciler' :
+                           notification.targetAudience === 'instructors' ? 'Eğitmenler' : 'Özel'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
                         {notification.sentAt ? 
                           format(new Date(notification.sentAt), "dd MMM yyyy HH:mm", { locale: tr }) :
-                          format(new Date(notification.createdAt), "dd MMM yyyy HH:mm", { locale: tr })
+                          notification.scheduledAt ?
+                          format(new Date(notification.scheduledAt), "dd MMM yyyy HH:mm", { locale: tr }) :
+                          '-'
                         }
                       </TableCell>
                       <TableCell>
@@ -575,6 +449,13 @@ export default function NotificationsPage() {
                           <Button size="sm" variant="ghost">
                             <Edit size={14} />
                           </Button>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-600 hover:text-red-700"
+                          >
+                            <Trash2 size={14} />
+                          </Button>
                         </div>
                       </TableCell>
                     </TableRow>
@@ -582,6 +463,43 @@ export default function NotificationsPage() {
                 )}
               </TableBody>
             </Table>
+          </CardContent>
+        </Card>
+
+        {/* Notification Templates */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Bildirim Şablonları</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium mb-2">Kurs Kayıt Onayı</h3>
+                <p className="text-sm text-gray-500 mb-3">Öğrenci kurs kaydı tamamlandığında</p>
+                <Button size="sm" variant="outline">
+                  <Edit size={14} className="mr-2" />
+                  Düzenle
+                </Button>
+              </div>
+              
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium mb-2">Sınav Hatırlatması</h3>
+                <p className="text-sm text-gray-500 mb-3">Sınav öncesi gönderilir</p>
+                <Button size="sm" variant="outline">
+                  <Edit size={14} className="mr-2" />
+                  Düzenle
+                </Button>
+              </div>
+              
+              <div className="p-4 border rounded-lg">
+                <h3 className="font-medium mb-2">Ödeme Hatırlatması</h3>
+                <p className="text-sm text-gray-500 mb-3">Vadesi yaklaşan ödemeler için</p>
+                <Button size="sm" variant="outline">
+                  <Edit size={14} className="mr-2" />
+                  Düzenle
+                </Button>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

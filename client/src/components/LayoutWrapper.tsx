@@ -4,7 +4,7 @@ import TopBar from "./TopBar";
 
 interface LayoutWrapperProps {
   children: React.ReactNode;
-  title: string;
+  title?: string;
   subtitle?: string;
   activeHref?: string;
 }

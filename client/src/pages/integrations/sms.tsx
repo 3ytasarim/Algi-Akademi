@@ -101,14 +101,10 @@ export default function SMSIntegrationPage() {
   };
 
   return (
-    <LayoutWrapper>
+    <LayoutWrapper title="NetGSM SMS Entegrasyonu" subtitle="NetGSM SMS servis ayarlarını yönetin" activeHref="/integrations/sms">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">NetGSM SMS Entegrasyonu</h1>
-            <p className="text-gray-500 mt-2">NetGSM SMS servis ayarlarını yönetin</p>
-          </div>
           <div className="flex gap-3">
             <Dialog open={isTestDialogOpen} onOpenChange={setIsTestDialogOpen}>
               <DialogTrigger asChild>

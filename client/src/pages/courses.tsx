@@ -205,14 +205,11 @@ export default function CoursesPage() {
   const categories = [...new Set(courses?.map((c: any) => c.category).filter(Boolean))];
 
   return (
-    <LayoutWrapper>
+    <LayoutWrapper title="Kurs Yönetimi" subtitle="Kursları yönetin ve düzenleyin" activeHref="/courses">
       <div className="space-y-8">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Kurs Yönetimi</h1>
-            <p className="text-gray-500 mt-2">Kursları yönetin ve düzenleyin</p>
-          </div>
+          <div></div>
           <Dialog open={isCreateDialogOpen} onOpenChange={(open) => {
             setIsCreateDialogOpen(open);
             if (!open) {
