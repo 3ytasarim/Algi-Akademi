@@ -157,7 +157,7 @@ export default function CoursesPage() {
   };
 
   const handleDeleteCourse = (id: string) => {
-    if (confirm("Bu kursu silmek istediğinizden emin misiniz?")) {
+    if (window.confirm("Bu kursu silmek istediğinizden emin misiniz?")) {
       deleteCourseMutation.mutate(id);
     }
   };
