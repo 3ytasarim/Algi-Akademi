@@ -10,9 +10,10 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { validateTCKimlikNo, formatTCKimlikNo } from "@/utils/tcValidation";
 import { 
   User, UserPlus, Search, Calendar, CreditCard, Mail, Phone, 
-  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload, Users
+  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload, Users, CheckCircle, XCircle
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -30,6 +31,10 @@ export default function StudentList() {
     adres: "",
     profileImage: null as File | null,
   });
+  const [tcValidation, setTcValidation] = useState<{
+    isValid: boolean | null;
+    message: string;
+  }>({ isValid: null, message: "" });
   const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const { toast } = useToast();
@@ -68,6 +73,7 @@ export default function StudentList() {
         profileImage: null,
       });
       setPreviewImage(null);
+      setTcValidation({ isValid: null, message: "" });
       toast({
         title: "Başarılı",
         description: "Kursiyer başarıyla tanımlandı.",
@@ -84,6 +90,24 @@ export default function StudentList() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    
+    // T.C. Kimlik No özel kontrolü
+    if (field === 'tcKimlikNo') {
+      const cleanValue = value.replace(/\D/g, ''); // Sadece rakamları al
+      if (cleanValue.length === 0) {
+        setTcValidation({ isValid: null, message: "" });
+      } else if (cleanValue.length < 11) {
+        setTcValidation({ isValid: false, message: "T.C. Kimlik No 11 haneli olmalıdır" });
+      } else if (cleanValue.length === 11) {
+        const isValid = validateTCKimlikNo(cleanValue);
+        setTcValidation({
+          isValid,
+          message: isValid ? "Geçerli T.C. Kimlik No" : "Geçersiz T.C. Kimlik No"
+        });
+      } else {
+        setTcValidation({ isValid: false, message: "T.C. Kimlik No 11 haneli olmalıdır" });
+      }
+    }
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -231,6 +255,57 @@ export default function StudentList() {
                 />
               </div>
 
+              {/* T.C. Kimlik No */}
+              <div className="space-y-2">
+                <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium flex items-center gap-2">
+                  <CreditCard size={16} />
+                  T.C. Kimlik No
+                </Label>
+                <div className="relative">
+                  <Input
+                    id="tcKimlikNo"
+                    type="text"
+                    placeholder="12345678901"
+                    value={formData.tcKimlikNo}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, '').slice(0, 11); // Sadece rakam, max 11 hane
+                      handleInputChange('tcKimlikNo', value);
+                    }}
+                    className={`h-11 rounded-xl border-2 pr-12 transition-colors ${
+                      tcValidation.isValid === null 
+                        ? 'border-slate-200 focus:border-blue-400' 
+                        : tcValidation.isValid 
+                          ? 'border-green-400 focus:border-green-500' 
+                          : 'border-red-400 focus:border-red-500'
+                    }`}
+                    maxLength={11}
+                    required
+                  />
+                  {/* Validation Icon */}
+                  <div className="absolute right-4 top-1/2 transform -translate-y-1/2">
+                    {tcValidation.isValid === true && (
+                      <CheckCircle size={20} className="text-green-500" />
+                    )}
+                    {tcValidation.isValid === false && (
+                      <XCircle size={20} className="text-red-500" />
+                    )}
+                  </div>
+                </div>
+                {/* Validation Message */}
+                {tcValidation.message && (
+                  <p className={`text-xs flex items-center gap-1 ${
+                    tcValidation.isValid ? 'text-green-600' : 'text-red-600'
+                  }`}>
+                    {tcValidation.isValid ? (
+                      <CheckCircle size={12} />
+                    ) : (
+                      <XCircle size={12} />
+                    )}
+                    {tcValidation.message}
+                  </p>
+                )}
+              </div>
+
               {/* Doğum Tarihi */}
               <div className="space-y-2">
                 <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
@@ -258,7 +333,7 @@ export default function StudentList() {
               <Button 
                 type="submit" 
                 className="w-full h-12 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
-                disabled={createStudentMutation.isPending}
+                disabled={createStudentMutation.isPending || tcValidation.isValid === false}
               >
                 {createStudentMutation.isPending ? "Kaydediliyor..." : "Kursiyer Kaydet"}
               </Button>
