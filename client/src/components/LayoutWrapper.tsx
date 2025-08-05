@@ -28,7 +28,7 @@ export default function LayoutWrapper({ children, title, subtitle, activeHref }:
 
       {/* Main Content */}
       <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-white transition-all duration-300 ${
-        sidebarCollapsed ? 'md:ml-16' : 'md:ml-72'
+        sidebarCollapsed ? 'md:ml-20' : 'md:ml-72'
       }`}>
         <TopBar 
           toggleSidebar={toggleSidebar}

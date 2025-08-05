@@ -316,7 +316,7 @@ export default function Dashboard() {
 
       {/* Main Content */}
       <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-white transition-all duration-300 ${
-        sidebarCollapsed ? 'md:ml-16' : 'md:ml-72'
+        sidebarCollapsed ? 'md:ml-20' : 'md:ml-72'
       }`}>
         {/* Top Bar */}
         <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 sticky top-0 z-10">

@@ -89,7 +89,7 @@ export default function Sidebar({
     <>
       {/* Sidebar */}
       <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform transition-all duration-300 z-20 shadow-2xl ${
-        sidebarCollapsed ? 'w-16' : 'w-72'
+        sidebarCollapsed ? 'w-20' : 'w-72'
       } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
@@ -109,9 +109,9 @@ export default function Sidebar({
             </div>
             <button
               onClick={toggleSidebarCollapse}
-              className="hidden md:flex text-gray-400 hover:text-white hover:bg-slate-800/50 p-2 rounded-lg transition-all duration-200"
+              className="hidden md:flex text-gray-300 hover:text-white hover:bg-slate-700/60 p-2.5 rounded-xl transition-all duration-200 bg-slate-800/40 border border-slate-600/30"
             >
-              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+              {sidebarCollapsed ? <ChevronRight size={18} className="text-primary" /> : <ChevronLeft size={18} />}
             </button>
           </div>
         </div>
@@ -136,14 +136,14 @@ export default function Sidebar({
             {menuItems.map((item) => (
               <div key={item.id}>
                 {item.hasSubmenu ? (
-                  <div>
+                  <div className="relative group">
                     <button
                       onClick={() => toggleMenu(item.id)}
                       className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
                     >
                       <div className="flex items-center">
-                        <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
-                          <item.icon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                        <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} text-primary group-hover:text-accent transition-colors`} />
                         </div>
                         {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                       </div>
@@ -157,6 +157,11 @@ export default function Sidebar({
                         </svg>
                       )}
                     </button>
+                    {sidebarCollapsed && (
+                      <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                        {item.label}
+                      </div>
+                    )}
                     
                     {expandedMenus.includes(item.id) && !sidebarCollapsed && (
                       <div className="mt-1 ml-6 space-y-1">
@@ -167,8 +172,8 @@ export default function Sidebar({
                                 ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
                                 : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
                             }`}>
-                              <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
-                                <subItem.icon className={`w-4 h-4 transition-colors ${
+                              <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                                <subItem.icon className={`${sidebarCollapsed ? 'w-5 h-5' : 'w-4 h-4'} transition-colors ${
                                   subItem.href === activeHref ? 'text-white' : 'text-gray-500 group-hover:text-primary'
                                 }`} />
                               </div>
@@ -180,20 +185,27 @@ export default function Sidebar({
                     )}
                   </div>
                 ) : (
-                  <Link href={item.href || '#'}>
-                    <a className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
-                      item.active 
-                        ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
-                    }`}>
-                      <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
-                        <item.icon className={`w-5 h-5 transition-colors ${
-                          item.active ? 'text-white' : 'text-primary group-hover:text-accent'
-                        }`} />
+                  <div className="relative group">
+                    <Link href={item.href || '#'}>
+                      <a className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
+                        item.active 
+                          ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                          : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                      }`}>
+                        <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} transition-colors ${
+                            item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                          }`} />
+                        </div>
+                        {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+                      </a>
+                    </Link>
+                    {sidebarCollapsed && (
+                      <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                        {item.label}
                       </div>
-                      {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
-                    </a>
-                  </Link>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -202,17 +214,24 @@ export default function Sidebar({
 
         {/* Logout Button */}
         <div className="p-4 border-t border-slate-700/50">
-          <button 
-            onClick={handleLogout}
-            className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
-              sidebarCollapsed ? 'px-2' : ''
-            }`}
-          >
-            <div className="w-6 h-6 flex items-center justify-center mr-0 flex-shrink-0">
-              <LogOut className="w-5 h-5" />
-            </div>
-            {!sidebarCollapsed && <span className="font-medium ml-2">Çıkış Yap</span>}
-          </button>
+          <div className="relative group">
+            <button 
+              onClick={handleLogout}
+              className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
+                sidebarCollapsed ? 'px-2' : ''
+              }`}
+            >
+              <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-0 flex-shrink-0`}>
+                <LogOut className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
+              </div>
+              {!sidebarCollapsed && <span className="font-medium ml-2">Çıkış Yap</span>}
+            </button>
+            {sidebarCollapsed && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                Çıkış Yap
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
