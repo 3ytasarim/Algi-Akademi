@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { Link } from "wouter";
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { Progress } from "@/components/ui/progress";
+import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
   Award, 
@@ -12,23 +13,19 @@ import {
   User,
   LogOut,
   Bell,
-  Menu,
-  X,
-  Home,
-  GraduationCap,
-  ClipboardList,
-  BarChart3,
   Settings,
+  Clock,
+  Play,
+  CheckCircle,
+  Star,
   FileText,
-  Users,
-  MessageSquare
+  BarChart3
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 export default function StudentDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -51,299 +48,276 @@ export default function StudentDashboard() {
     retry: false,
   });
 
-  const { data: userCourses, isLoading: coursesLoading } = useQuery({
-    queryKey: ["/api/user-courses"],
+  // Fetch courses
+  const { data: courses, isLoading: coursesLoading } = useQuery({
+    queryKey: ["/api/courses"],
+    retry: false,
   });
+
+  if (isLoading || !isAuthenticated) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+        <div className="glass-effect p-8 rounded-3xl">
+          <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
+          <p className="text-slate-600 font-medium mt-4">Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Filter user's assigned courses based on categories
+  const userCourses = courses?.filter((course: any) => 
+    user?.assignedCategories?.includes(course.category)
+  ) || [];
 
   const handleLogout = () => {
     window.location.href = "/api/logout";
   };
 
-  if (isLoading || !isAuthenticated) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-      </div>
-    );
-  }
-
-  const studentEnrollments = enrollments?.filter((enrollment: any) => 
-    enrollment.studentId === user?.id
-  ) || [];
-
-  const sidebarItems = [
-    { icon: Home, label: "Ana Sayfa", href: "/student-dashboard", active: true },
-    { icon: BookOpen, label: "Kurslarım", href: "/student-dashboard", active: false },
-    { icon: GraduationCap, label: "Sınavlarım", href: "/student-dashboard", active: false },
-    { icon: ClipboardList, label: "Ödevlerim", href: "/student-dashboard", active: false },
-    { icon: BarChart3, label: "İlerleme Raporu", href: "/student-dashboard", active: false },
-    { icon: FileText, label: "Sertifikalarım", href: "/student-dashboard", active: false },
-    { icon: MessageSquare, label: "Mesajlar", href: "/student-dashboard", active: false },
-    { icon: Settings, label: "Ayarlar", href: "/student-dashboard", active: false },
-  ];
-
   return (
-    <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
-      <div className={`fixed inset-y-0 left-0 z-50 w-64 bg-gray-900 transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0`}>
-        <div className="flex items-center justify-between h-16 px-4 bg-gray-800">
-          <div className="flex items-center space-x-3">
-            <BookOpen className="text-primary" size={24} />
-            <span className="text-white font-bold">Öğrenci Paneli</span>
-          </div>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="lg:hidden text-white hover:bg-gray-700"
-            onClick={() => setSidebarOpen(false)}
-          >
-            <X size={20} />
-          </Button>
-        </div>
-
-        <nav className="mt-8 px-4">
-          <div className="space-y-2">
-            {sidebarItems.map((item, index) => (
-              <Link key={index} href={item.href}>
-                <a className={`flex items-center px-4 py-3 text-sm rounded-lg transition-colors ${
-                  item.active 
-                    ? 'bg-primary text-white' 
-                    : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                }`}>
-                  <item.icon className="mr-3" size={20} />
-                  {item.label}
-                </a>
-              </Link>
-            ))}
-          </div>
-        </nav>
-
-        {/* User Profile at Bottom */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-700">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-gray-600 rounded-full overflow-hidden">
-              <img 
-                src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
-                alt="Profile" 
-                className="w-full h-full object-cover" 
-              />
-            </div>
-            <div>
-              <p className="text-white text-sm font-medium">
-                {user?.firstName || 'Öğrenci'} {user?.lastName || ''}
-              </p>
-              <p className="text-gray-400 text-xs">{user?.email}</p>
-            </div>
-          </div>
-          <Button 
-            onClick={() => window.location.href = "/api/logout"}
-            variant="outline"
-            size="sm"
-            className="w-full text-red-400 border-red-400 hover:bg-red-400 hover:text-white"
-          >
-            <LogOut className="mr-2" size={16} />
-            Çıkış
-          </Button>
-        </div>
-      </div>
-
-      {/* Main Content */}
-      <div className="flex-1 lg:ml-0">
-        {/* Top Navigation */}
-        <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
-          <div className="flex items-center justify-between px-6 py-4">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      {/* Header */}
+      <header className="glass-effect border-b border-white/20 sticky top-0 z-50 backdrop-blur-xl">
+        <div className="container mx-auto px-6 py-4">
+          <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
+              <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg">
+                <BookOpen className="text-primary" size={24} />
+              </div>
+              <div>
+                <h1 className="text-2xl font-black text-slate-900">Öğrenci Paneli</h1>
+                <p className="text-slate-600 font-medium">
+                  Hoş geldin, {user?.firstName} {user?.lastName}
+                </p>
+              </div>
+            </div>
+            
+            <div className="flex items-center space-x-3">
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden"
-                onClick={() => setSidebarOpen(true)}
+                className="relative p-3 text-slate-600 hover:text-slate-900 hover:bg-white/50"
               >
-                <Menu size={20} />
-              </Button>
-              <div>
-                <h1 className="text-xl font-bold text-gray-900">Öğrenci Paneli</h1>
-                <p className="text-sm text-gray-600">Eğitim ve kurs takip sistemi</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="relative p-2 text-gray-600 hover:text-gray-900">
                 <Bell size={20} />
                 <span className="absolute -top-1 -right-1 w-3 h-3 bg-red-500 rounded-full"></span>
               </Button>
+              
+              <Button
+                variant="ghost"
+                size="sm"
+                className="p-3 text-slate-600 hover:text-slate-900 hover:bg-white/50"
+              >
+                <Settings size={20} />
+              </Button>
+              
+              <Button
+                onClick={handleLogout}
+                variant="outline"
+                size="sm"
+                className="glass-effect text-red-600 border-red-200 hover:bg-red-50 font-medium"
+              >
+                <LogOut className="mr-2" size={16} />
+                Çıkış
+              </Button>
             </div>
           </div>
-        </header>
+        </div>
+      </header>
 
-        {/* Main Content */}
-        <main className="p-6">
+      <div className="container mx-auto px-6 py-8">
+        {/* Welcome Card */}
+        <Card className="glass-effect border-white/20 mb-8">
+          <CardContent className="p-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h2 className="text-3xl font-black text-slate-900 mb-2">
+                  Merhaba, {user?.firstName}! 👋
+                </h2>
+                <p className="text-slate-600 text-lg">
+                  Bugün öğrenmeye hazır mısın? Kurslarına devam et ve hedeflerine ulaş.
+                </p>
+              </div>
+              <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-lg rounded-3xl flex items-center justify-center shadow-lg">
+                <Star className="text-primary" size={32} />
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="bg-teal-500 text-white">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <Card className="glass-effect border-white/20 bg-gradient-to-br from-blue-500/10 to-blue-600/5">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold">{studentEnrollments.length}</h3>
-                  <p className="text-teal-100">Kurs Kategorileri</p>
+                  <h3 className="text-3xl font-black text-slate-900">{userCourses.length}</h3>
+                  <p className="text-slate-600 font-medium">Kayıtlı Kurslarım</p>
                 </div>
-                <BookOpen size={32} className="text-teal-200" />
+                <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center">
+                  <BookOpen size={24} className="text-blue-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-green-500 text-white">
+          <Card className="glass-effect border-white/20 bg-gradient-to-br from-green-500/10 to-green-600/5">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold">
-                    {studentEnrollments.filter((e: any) => e.status === 'active').length}
+                  <h3 className="text-3xl font-black text-slate-900">
+                    {user?.assignedCategories?.length || 0}
                   </h3>
-                  <p className="text-green-100">Kurslar</p>
+                  <p className="text-slate-600 font-medium">Kategori</p>
                 </div>
-                <Award size={32} className="text-green-200" />
+                <div className="w-12 h-12 bg-green-500/20 rounded-2xl flex items-center justify-center">
+                  <Award size={24} className="text-green-600" />
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-orange-500 text-white">
+          <Card className="glass-effect border-white/20 bg-gradient-to-br from-purple-500/10 to-purple-600/5">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold">0</h3>
-                  <p className="text-orange-100">Ön Kayıtlar</p>
-                  <p className="text-xs text-orange-200">6 başvuru</p>
+                  <h3 className="text-3xl font-black text-slate-900">%85</h3>
+                  <p className="text-slate-600 font-medium">Ortalama İlerleme</p>
                 </div>
-                <Calendar size={32} className="text-orange-200" />
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card className="bg-red-500 text-white">
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold">317</h3>
-                  <p className="text-red-100">Kursiyer</p>
+                <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center">
+                  <TrendingUp size={24} className="text-purple-600" />
                 </div>
-                <User size={32} className="text-red-200" />
               </div>
             </CardContent>
           </Card>
         </div>
 
-        {/* Available Courses Section */}
-        <Card className="mb-8">
-          <CardHeader className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Kurslarım</h2>
-            <p className="text-sm text-gray-600">Size atanan kategori kursları</p>
-          </CardHeader>
-          <CardContent className="p-6">
-            {coursesLoading ? (
-              <div className="flex justify-center py-8">
-                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
-              </div>
-            ) : userCourses && userCourses.length > 0 ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {userCourses.map((course: any) => (
-                  <div key={course.id} className="border border-gray-200 rounded-lg overflow-hidden hover:shadow-md transition-shadow">
-                    <div className="p-4">
-                      <div className="w-full h-32 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center mb-4">
-                        <BookOpen className="text-white" size={32} />
-                      </div>
-                      <h3 className="font-semibold text-gray-900 mb-2">{course.title}</h3>
-                      <p className="text-sm text-gray-600 mb-3">{course.description}</p>
-                      <div className="flex items-center justify-between">
-                        <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          {/* My Courses */}
+          <Card className="glass-effect border-white/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-2xl font-black text-slate-900 flex items-center">
+                <BookOpen className="mr-3 text-primary" size={24} />
+                Kurslarım
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {userCourses.length > 0 ? (
+                userCourses.map((course: any) => (
+                  <div key={course.id} className="glass-effect p-6 rounded-2xl border border-white/20 hover:shadow-lg transition-all duration-300">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="flex-1">
+                        <h3 className="text-lg font-bold text-slate-900 mb-2">{course.title}</h3>
+                        <p className="text-slate-600 text-sm mb-3">{course.description}</p>
+                        <Badge variant="secondary" className="bg-primary/10 text-primary hover:bg-primary/20">
                           {course.category}
-                        </span>
-                        <span className="text-sm font-medium text-green-600">
-                          {course.price ? `₺${course.price}` : 'Ücretsiz'}
-                        </span>
+                        </Badge>
                       </div>
-                      <Button className="w-full mt-4" size="sm">
-                        Kursa Katıl
-                      </Button>
+                      <div className="text-right">
+                        <p className="text-2xl font-black text-slate-900">{course.price}₺</p>
+                        <p className="text-slate-500 text-sm">{course.duration} saat</p>
+                      </div>
                     </div>
+                    <div className="mb-3">
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="text-slate-600">İlerleme</span>
+                        <span className="text-slate-900 font-bold">65%</span>
+                      </div>
+                      <Progress value={65} className="h-2" />
+                    </div>
+                    <Button className="w-full glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white font-medium">
+                      <Play className="mr-2" size={16} />
+                      Kursa Devam Et
+                    </Button>
                   </div>
-                ))}
-              </div>
-            ) : (
-              <div className="text-center py-12 text-gray-500">
-                <BookOpen size={48} className="mx-auto mb-4 text-gray-400" />
-                <h3 className="text-lg font-medium mb-2">Henüz atanmış kurs yok</h3>
-                <p className="text-sm">Kategori ataması yapıldıktan sonra kurslarınız burada görünecek</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
+                ))
+              ) : (
+                <div className="text-center py-12">
+                  <BookOpen className="mx-auto text-slate-400 mb-4" size={48} />
+                  <h3 className="text-lg font-bold text-slate-900 mb-2">Henüz Kurs Kaydın Yok</h3>
+                  <p className="text-slate-600">
+                    Kategorilerine göre kurslar otomatik olarak atanacak.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
 
-        {/* Enrolled Courses Section */}
-        <Card className="mb-8">
-          <CardHeader className="p-6 border-b border-gray-200">
-            <h2 className="text-xl font-bold text-gray-900">Kayıtlı Olduğum Kurslar</h2>
-            <p className="text-sm text-gray-600">Devam ettiğiniz kurslar</p>
-          </CardHeader>
-          <CardContent className="p-6">
-            {enrollmentsLoading ? (
-              <div className="animate-pulse space-y-4">
-                {[1, 2, 3].map(i => (
-                  <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 bg-gray-300 rounded-lg"></div>
-                      <div>
-                        <div className="h-4 bg-gray-300 rounded mb-2 w-32"></div>
-                        <div className="h-3 bg-gray-200 rounded mb-1 w-24"></div>
-                        <div className="h-3 bg-gray-200 rounded w-20"></div>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            ) : studentEnrollments.length > 0 ? (
+          {/* Recent Activity */}
+          <Card className="glass-effect border-white/20">
+            <CardHeader className="pb-3">
+              <CardTitle className="text-2xl font-black text-slate-900 flex items-center">
+                <Clock className="mr-3 text-primary" size={24} />
+                Son Aktiviteler
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div className="space-y-4">
-                {studentEnrollments.map((enrollment: any) => (
-                  <div key={enrollment.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                    <div className="flex items-center space-x-4">
-                      <div className="w-16 h-16 gradient-primary rounded-lg flex items-center justify-center">
-                        <BookOpen className="text-white" size={24} />
-                      </div>
-                      <div>
-                        <h3 className="font-semibold text-gray-900">{enrollment.course?.title}</h3>
-                        <p className="text-sm text-gray-600">
-                          İlerleme: {enrollment.progress || 0}%
-                        </p>
-                        <div className="w-32 bg-gray-200 rounded-full h-2 mt-1">
-                          <div
-                            className="bg-green-500 h-2 rounded-full"
-                            style={{ width: `${enrollment.progress || 0}%` }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
-                        enrollment.status === 'active' 
-                          ? 'bg-green-100 text-green-800' 
-                          : enrollment.status === 'completed'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-yellow-100 text-yellow-800'
-                      }`}>
-                        {enrollment.status === 'active' ? 'Devam Ediyor' : 
-                         enrollment.status === 'completed' ? 'Tamamlandı' : 'Beklemede'}
-                      </span>
-                    </div>
+                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                    <CheckCircle size={20} className="text-green-600" />
                   </div>
-                ))}
+                  <div className="flex-1">
+                    <p className="text-slate-900 font-bold">Ders tamamlandı</p>
+                    <p className="text-slate-600 text-sm">Web Tasarım - HTML Temelleri</p>
+                    <p className="text-slate-500 text-xs">2 saat önce</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20">
+                  <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
+                    <FileText size={20} className="text-blue-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-slate-900 font-bold">Yeni ödev atandı</p>
+                    <p className="text-slate-600 text-sm">React Bileşenleri Projesi</p>
+                    <p className="text-slate-500 text-xs">1 gün önce</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20">
+                  <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
+                    <BarChart3 size={20} className="text-purple-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-slate-900 font-bold">İlerleme raporu hazırlandı</p>
+                    <p className="text-slate-600 text-sm">Aylık performans özeti</p>
+                    <p className="text-slate-500 text-xs">3 gün önce</p>
+                  </div>
+                </div>
               </div>
-            ) : (
-              <div className="text-center py-8 text-gray-500">
-                <BookOpen size={48} className="mx-auto mb-4 text-gray-400" />
-                <p>Henüz kayıtlı olduğunuz kurs bulunmuyor</p>
-              </div>
-            )}
+            </CardContent>
+          </Card>
+        </div>
+
+        {/* Quick Actions */}
+        <Card className="glass-effect border-white/20 mt-8">
+          <CardHeader className="pb-3">
+            <CardTitle className="text-2xl font-black text-slate-900">Hızlı İşlemler</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Button variant="outline" className="h-20 glass-effect border-white/20 hover:bg-primary/5 flex-col">
+                <Calendar className="mb-2 text-primary" size={24} />
+                <span className="text-slate-900 font-medium">Takvim</span>
+              </Button>
+              
+              <Button variant="outline" className="h-20 glass-effect border-white/20 hover:bg-primary/5 flex-col">
+                <FileText className="mb-2 text-primary" size={24} />
+                <span className="text-slate-900 font-medium">Ödevler</span>
+              </Button>
+              
+              <Button variant="outline" className="h-20 glass-effect border-white/20 hover:bg-primary/5 flex-col">
+                <Award className="mb-2 text-primary" size={24} />
+                <span className="text-slate-900 font-medium">Sınavlar</span>
+              </Button>
+              
+              <Button variant="outline" className="h-20 glass-effect border-white/20 hover:bg-primary/5 flex-col">
+                <BarChart3 className="mb-2 text-primary" size={24} />
+                <span className="text-slate-900 font-medium">Raporlar</span>
+              </Button>
+            </div>
           </CardContent>
         </Card>
-        </main>
       </div>
     </div>
   );
