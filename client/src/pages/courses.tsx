@@ -240,7 +240,7 @@ export default function CoursesPage() {
                     <Input
                       value={courseForm.title}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Adli Sekreterlik"
+                      placeholder="Kurs ismini giriniz"
                       required
                     />
                   </div>
@@ -250,7 +250,7 @@ export default function CoursesPage() {
                     <Textarea
                       value={courseForm.description}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
-                      placeholder="Adli sekreterlik temel eğitimi ve UYAP sistemi kullanımı"
+                      placeholder="Kurs ile ilgili kısa açıklama yazın"
                       rows={3}
                     />
                   </div>
@@ -282,7 +282,7 @@ export default function CoursesPage() {
                           <Input
                             value={section.name}
                             onChange={(e) => updateSection(index, 'name', e.target.value)}
-                            placeholder={index === 0 ? "Uyap Nedir?" : index === 1 ? "Sisteme Giriş" : "Bölüm adı..."}
+                            placeholder="Eğitim bölümünün ismini giriniz"
                           />
                         </div>
                         <div className="flex items-center gap-2">
