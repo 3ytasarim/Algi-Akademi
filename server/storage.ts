@@ -103,13 +103,19 @@ export class DatabaseStorage implements IStorage {
   }
 
   async upsertUser(userData: UpsertUser): Promise<User> {
+    // Set default role if not provided
+    const userDataWithDefaults = {
+      ...userData,
+      role: userData.role || 'student',
+    };
+
     const [user] = await db
       .insert(users)
-      .values(userData)
+      .values(userDataWithDefaults)
       .onConflictDoUpdate({
         target: users.id,
         set: {
-          ...userData,
+          ...userDataWithDefaults,
           updatedAt: new Date(),
         },
       })

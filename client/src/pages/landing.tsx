@@ -9,7 +9,11 @@ export default function Landing() {
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleLogin = () => {
+  const handleLogin = async () => {
+    // Store selected role in localStorage for now
+    if (selectedRole) {
+      localStorage.setItem('pendingRole', selectedRole);
+    }
     window.location.href = "/api/login";
   };
 
