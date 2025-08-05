@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -157,9 +158,7 @@ export default function CoursesPage() {
   };
 
   const handleDeleteCourse = (id: string) => {
-    if (window.confirm("Bu kursu silmek istediğinizden emin misiniz?")) {
-      deleteCourseMutation.mutate(id);
-    }
+    deleteCourseMutation.mutate(id);
   };
 
   const getStatusBadge = (status: string) => {
@@ -481,14 +480,34 @@ export default function CoursesPage() {
                           >
                             <Edit size={14} />
                           </Button>
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            onClick={() => handleDeleteCourse(course.id)}
-                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 size={14} />
-                          </Button>
+                          <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
+                              >
+                                <Trash2 size={14} />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Kursu Sil</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  "{course.title}" kursunu silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Hayır</AlertDialogCancel>
+                                <AlertDialogAction 
+                                  onClick={() => handleDeleteCourse(course.id)}
+                                  className="bg-red-600 hover:bg-red-700"
+                                >
+                                  Evet, Sil
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
                         </div>
                       </TableCell>
                     </TableRow>
