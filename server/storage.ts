@@ -88,6 +88,7 @@ export interface IStorage {
 
   // Category-based course operations
   getCoursesByUserCategories(userId: string): Promise<Course[]>;
+  getUsersByRole(role: string): Promise<User[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -191,6 +192,14 @@ export class DatabaseStorage implements IStorage {
         )
       )
       .orderBy(desc(courses.createdAt));
+  }
+
+  async getUsersByRole(role: string): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.role, role))
+      .orderBy(desc(users.createdAt));
   }
 
   async getEnrollmentsByCourse(courseId: string): Promise<(Enrollment & { student: User })[]> {

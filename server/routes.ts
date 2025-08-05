@@ -242,6 +242,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Students endpoint
+  app.get("/api/students", isAuthenticated, async (req, res) => {
+    try {
+      const students = await storage.getUsersByRole('student');
+      res.json(students);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      res.status(500).json({ message: "Failed to fetch students" });
+    }
+  });
+
+  app.post("/api/students", isAuthenticated, async (req, res) => {
+    try {
+      const studentData = req.body;
+      const student = await storage.upsertUser(studentData);
+      res.status(201).json(student);
+    } catch (error) {
+      console.error("Error creating student:", error);
+      res.status(500).json({ message: "Failed to create student" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }
