@@ -68,7 +68,8 @@ export default function CoursesPage() {
   // Create course mutation
   const createCourseMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest("/api/courses", "POST", data);
+      const response = await apiRequest("/api/courses", "POST", data);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -91,7 +92,8 @@ export default function CoursesPage() {
   // Update course mutation
   const updateCourseMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      return await apiRequest(`/api/courses/${id}`, "PUT", data);
+      const response = await apiRequest(`/api/courses/${id}`, "PUT", data);
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -107,7 +109,8 @@ export default function CoursesPage() {
   // Delete course mutation
   const deleteCourseMutation = useMutation({
     mutationFn: async (id: string) => {
-      return await apiRequest(`/api/courses/${id}`, "DELETE");
+      const response = await apiRequest(`/api/courses/${id}`, "DELETE");
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -116,9 +119,12 @@ export default function CoursesPage() {
         description: "Kurs başarıyla silindi.",
       });
       // Refresh the page to ensure clean state
-      window.location.reload();
+      setTimeout(() => {
+        window.location.reload();
+      }, 1000);
     },
     onError: (error: any) => {
+      console.error("Delete error:", error);
       toast({
         title: "Hata",
         description: "Kurs silinirken bir hata oluştu.",
