@@ -78,10 +78,10 @@ export default function StudentDashboard() {
           method: 'POST',
           credentials: 'include',
         });
-        window.location.reload();
+        window.location.href = window.location.origin;
       } catch (error) {
         console.error('Logout error:', error);
-        window.location.reload();
+        window.location.href = window.location.origin;
       }
     } else {
       // Regular Replit logout

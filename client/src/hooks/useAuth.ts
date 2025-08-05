@@ -2,24 +2,32 @@ import { useQuery } from "@tanstack/react-query";
 import type { User } from "@shared/schema";
 
 export function useAuth() {
-  // Check manual student auth first
-  const { data: manualUser, isLoading: manualLoading, isError: manualError } = useQuery<User>({
+  // First, try manual student auth
+  const { data: manualUser, isLoading: manualLoading, error: manualError } = useQuery<User>({
     queryKey: ["/api/auth/manual-student"],
     retry: false,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
-  // Only try Replit auth if manual auth is not loading and failed
+  // Only try Replit auth if manual auth completely failed (not just loading)
+  const shouldTryReplit = !manualLoading && !!manualError && !manualUser;
+  
   const { data: replitUser, isLoading: replitLoading } = useQuery<User>({
     queryKey: ["/api/auth/user"],
     retry: false,
-    enabled: !manualLoading && manualError,
-    staleTime: 5 * 60 * 1000, // 5 minutes
+    enabled: shouldTryReplit,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    staleTime: Infinity,
+    gcTime: Infinity,
   });
 
-  // Determine which user to use
+  // Determine the final user and loading state
   const user = manualUser || replitUser;
-  const isLoading = manualLoading || (!manualError && replitLoading);
+  const isLoading = manualLoading || (shouldTryReplit && replitLoading);
 
   return {
     user,

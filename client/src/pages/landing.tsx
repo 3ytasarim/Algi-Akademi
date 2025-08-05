@@ -43,7 +43,8 @@ export default function Landing() {
             title: "Giriş Başarılı",
             description: "Hoş geldiniz!",
           });
-          window.location.reload();
+          // Force a page refresh to clear all cached queries
+          window.location.href = window.location.origin;
         } else {
           toast({
             title: "Giriş Hatası",
