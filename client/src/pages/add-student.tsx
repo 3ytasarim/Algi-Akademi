@@ -75,7 +75,8 @@ export default function AddStudent() {
       };
       
       console.log('Sending student data:', userData);
-      return await apiRequest('/api/students', 'POST', userData);
+      const response = await apiRequest('POST', '/api/students', userData);
+      return await response.json();
     },
     onSuccess: () => {
       toast({
