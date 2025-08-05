@@ -106,7 +106,7 @@ export default function Dashboard() {
       label: "Kurs Yönetimi",
       hasSubmenu: true,
       submenuItems: [
-        { icon: Users, label: "Kursiyer Tanımlama", href: "/add-student" },
+        { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
         { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
         { icon: BarChart3, label: "Kursiyer İstatistik", href: "/reports" },
       ]

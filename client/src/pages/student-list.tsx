@@ -1,0 +1,365 @@
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
+import { 
+  User, UserPlus, Search, Calendar, CreditCard, Mail, Phone, 
+  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2 
+} from "lucide-react";
+import { format } from "date-fns";
+import { tr } from "date-fns/locale";
+
+export default function StudentList() {
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [formData, setFormData] = useState({
+    tcKimlikNo: "",
+    email: "",
+    adı: "",
+    soyadı: "",
+    doğumTarihi: "",
+  });
+
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
+
+  // Fetch students
+  const { data: students = [], isLoading } = useQuery({
+    queryKey: ["/api/students"],
+  });
+
+  const createStudentMutation = useMutation({
+    mutationFn: async (data: typeof formData) => {
+      const studentData = {
+        tcKimlikNo: data.tcKimlikNo,
+        email: data.email,
+        firstName: data.adı,
+        lastName: data.soyadı,
+        adı: data.adı,
+        soyadı: data.soyadı,
+        doğumTarihi: data.doğumTarihi,
+        password: "112233",
+        role: "student",
+        isManualStudent: true,
+      };
+      return apiRequest("/api/students", "POST", studentData);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Başarılı",
+        description: "Yeni kursiyer başarıyla tanımlandı. Giriş şifresi: 112233",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      setIsDialogOpen(false);
+      setFormData({
+        tcKimlikNo: "",
+        email: "",
+        adı: "",
+        soyadı: "",
+        doğumTarihi: "",
+      });
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
+        description: "Kursiyer tanımlanırken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleInputChange = (field: string, value: string) => {
+    setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    createStudentMutation.mutate(formData);
+  };
+
+  // Filter students based on search term
+  const filteredStudents = students.filter((student: any) =>
+    student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    student.tcKimlikNo?.includes(searchTerm)
+  );
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+      <div className="container mx-auto px-4 py-8">
+        {/* Header */}
+        <div className="flex items-center justify-between mb-8">
+          <div>
+            <h1 className="text-3xl font-bold text-slate-900">Kursiyer Yönetimi</h1>
+            <p className="text-slate-600 mt-1">Tüm kursiyerleri görüntüleyin ve yönetin</p>
+          </div>
+          
+          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+              <Button className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
+                <UserPlus className="mr-2" size={18} />
+                Kursiyer Tanımla
+              </Button>
+            </DialogTrigger>
+            
+            <DialogContent className="max-w-md mx-auto">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
+                  <UserPlus size={20} />
+                  Yeni Kursiyer Tanımla
+                </DialogTitle>
+              </DialogHeader>
+              
+              <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                {/* TC Kimlik No */}
+                <div className="space-y-2">
+                  <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium flex items-center gap-2">
+                    <CreditCard size={16} />
+                    T.C. Kimlik No
+                  </Label>
+                  <Input
+                    id="tcKimlikNo"
+                    type="text"
+                    placeholder="T.C. Kimlik Numarası"
+                    value={formData.tcKimlikNo}
+                    onChange={(e) => handleInputChange('tcKimlikNo', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Ad */}
+                <div className="space-y-2">
+                  <Label htmlFor="adı" className="text-slate-700 font-medium flex items-center gap-2">
+                    <User size={16} />
+                    Adı
+                  </Label>
+                  <Input
+                    id="adı"
+                    type="text"
+                    placeholder="Adı"
+                    value={formData.adı}
+                    onChange={(e) => handleInputChange('adı', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Soyadı */}
+                <div className="space-y-2">
+                  <Label htmlFor="soyadı" className="text-slate-700 font-medium flex items-center gap-2">
+                    <User size={16} />
+                    Soyadı
+                  </Label>
+                  <Input
+                    id="soyadı"
+                    type="text"
+                    placeholder="Soyadı"
+                    value={formData.soyadı}
+                    onChange={(e) => handleInputChange('soyadı', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Email */}
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Mail size={16} />
+                    E-posta Adresi
+                  </Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="ornek@email.com"
+                    value={formData.email}
+                    onChange={(e) => handleInputChange('email', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Doğum Tarihi */}
+                <div className="space-y-2">
+                  <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Calendar size={16} />
+                    Doğum Tarihi
+                  </Label>
+                  <Input
+                    id="doğumTarihi"
+                    type="date"
+                    value={formData.doğumTarihi}
+                    onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Info */}
+                <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
+                  <p className="text-sm text-blue-700">
+                    Varsayılan şifre: <span className="font-mono font-bold">112233</span>
+                  </p>
+                </div>
+
+                {/* Submit Button */}
+                <Button
+                  type="submit"
+                  disabled={createStudentMutation.isPending}
+                  className="w-full h-11 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold"
+                >
+                  {createStudentMutation.isPending ? (
+                    <>
+                      <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                      Kaydediliyor...
+                    </>
+                  ) : (
+                    <>
+                      <UserPlus className="mr-2" size={16} />
+                      Kursiyer Ekle
+                    </>
+                  )}
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
+        </div>
+
+        {/* Search and Filters */}
+        <Card className="glass-effect border-0 shadow-xl mb-6">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-4">
+              <div className="relative flex-1">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                <Input
+                  placeholder="Kursiyer ara (ad, soyad, e-posta, TC No)..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                />
+              </div>
+              <Badge variant="secondary" className="px-3 py-2 text-sm">
+                {filteredStudents.length} Kursiyer
+              </Badge>
+            </div>
+          </CardContent>
+        </Card>
+
+        {/* Students Table */}
+        <Card className="glass-effect border-0 shadow-xl">
+          <CardHeader>
+            <CardTitle className="text-xl text-slate-900 flex items-center gap-2">
+              <GraduationCap size={20} />
+              Kursiyer Listesi
+            </CardTitle>
+          </CardHeader>
+          
+          <CardContent>
+            {isLoading ? (
+              <div className="flex items-center justify-center py-12">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+                <span className="ml-3 text-slate-600">Kursiyerler yükleniyor...</span>
+              </div>
+            ) : filteredStudents.length === 0 ? (
+              <div className="text-center py-12">
+                <GraduationCap size={48} className="mx-auto text-slate-300 mb-4" />
+                <p className="text-slate-500 text-lg">
+                  {searchTerm ? "Arama kriterlerine uygun kursiyer bulunamadı" : "Henüz kursiyer tanımlanmamış"}
+                </p>
+                {!searchTerm && (
+                  <p className="text-slate-400 text-sm mt-2">
+                    Yeni kursiyer eklemek için "Kursiyer Tanımla" butonunu kullanın
+                  </p>
+                )}
+              </div>
+            ) : (
+              <div className="overflow-x-auto">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Kursiyer</TableHead>
+                      <TableHead>T.C. Kimlik No</TableHead>
+                      <TableHead>E-posta</TableHead>
+                      <TableHead>Doğum Tarihi</TableHead>
+                      <TableHead>Kayıt Tarihi</TableHead>
+                      <TableHead>Durum</TableHead>
+                      <TableHead>İşlemler</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredStudents.map((student: any) => (
+                      <TableRow key={student.id}>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-semibold text-sm">
+                              {student.firstName?.[0]?.toUpperCase() || student.adı?.[0]?.toUpperCase() || 'K'}
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900">
+                                {student.firstName || student.adı} {student.lastName || student.soyadı}
+                              </p>
+                              <p className="text-sm text-slate-500">
+                                {student.isManualStudent ? 'Manuel Kayıt' : 'Sistem Kaydı'}
+                              </p>
+                            </div>
+                          </div>
+                        </TableCell>
+                        <TableCell>
+                          <span className="font-mono text-sm">
+                            {student.tcKimlikNo || '-'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">{student.email}</span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">
+                            {student.doğumTarihi ? format(new Date(student.doğumTarihi), 'dd.MM.yyyy', { locale: tr }) : '-'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <span className="text-sm">
+                            {student.createdAt ? format(new Date(student.createdAt), 'dd.MM.yyyy', { locale: tr }) : '-'}
+                          </span>
+                        </TableCell>
+                        <TableCell>
+                          <Badge 
+                            variant={student.role === 'student' ? 'default' : 'secondary'}
+                            className="text-xs"
+                          >
+                            {student.role === 'student' ? 'Aktif' : student.role}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-2">
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <Eye size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0">
+                              <Edit size={14} />
+                            </Button>
+                            <Button size="sm" variant="ghost" className="h-8 w-8 p-0 text-red-500 hover:text-red-700">
+                              <Trash2 size={14} />
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+    </div>
+  );
+}

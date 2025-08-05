@@ -11,6 +11,7 @@ import Dashboard from "@/pages/dashboard";
 import StudentDashboard from "@/pages/student-dashboard";
 import Reports from "@/pages/reports";
 import AddStudent from "@/pages/add-student";
+import StudentList from "@/pages/student-list";
 import ExamResults from "@/pages/exam-results";
 import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
@@ -38,6 +39,7 @@ function Router() {
               <Route path="/student-dashboard" component={StudentDashboard} />
               <Route path="/reports" component={Reports} />
               <Route path="/add-student" component={AddStudent} />
+              <Route path="/student-list" component={StudentList} />
               <Route path="/exam-results" component={ExamResults} />
               <Route path="/consultants" component={Consultants} />
               <Route path="/integrations" component={Integrations} />
