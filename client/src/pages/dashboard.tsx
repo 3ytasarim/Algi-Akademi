@@ -240,7 +240,9 @@ export default function Dashboard() {
                       className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
                     >
                       <div className="flex items-center">
-                        <item.icon className="mr-3 w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                        <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                          <item.icon className="w-5 h-5 text-primary group-hover:text-accent transition-colors" />
+                        </div>
                         {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                       </div>
                       {!sidebarCollapsed && (
@@ -259,7 +261,9 @@ export default function Dashboard() {
                         {item.submenuItems?.map((subItem, subIndex) => (
                           <Link key={subIndex} href={subItem.href}>
                             <a className="flex items-center px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-slate-800/30 rounded-lg transition-all duration-200 group">
-                              <subItem.icon className="mr-3 w-4 h-4 text-gray-500 group-hover:text-primary transition-colors" />
+                              <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                              <subItem.icon className="w-4 h-4 text-gray-500 group-hover:text-primary transition-colors" />
+                            </div>
                               <span>{subItem.label}</span>
                             </a>
                           </Link>
@@ -274,9 +278,11 @@ export default function Dashboard() {
                         ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
                         : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
                     }`}>
-                      <item.icon className={`mr-3 w-5 h-5 transition-colors ${
-                        item.active ? 'text-white' : 'text-primary group-hover:text-accent'
-                      }`} />
+                      <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                        <item.icon className={`w-5 h-5 transition-colors ${
+                          item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                        }`} />
+                      </div>
                       {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                     </a>
                   </Link>
