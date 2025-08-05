@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import { 
   Plus, Search, Edit, Trash2, BookOpen, Clock, Users, 
-  DollarSign, Calendar, Filter, Download, Upload
+  Calendar, Filter, Download, Upload
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -371,7 +371,7 @@ export default function CoursesPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <Card>
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
@@ -398,33 +398,7 @@ export default function CoursesPage() {
             </CardContent>
           </Card>
           
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Toplam Öğrenci</p>
-                  <p className="text-2xl font-bold text-purple-600">
-                    {courses?.reduce((sum: number, c: any) => sum + (c.maxStudents || 0), 0) || 0}
-                  </p>
-                </div>
-                <Users className="h-8 w-8 text-purple-500" />
-              </div>
-            </CardContent>
-          </Card>
-          
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-gray-500">Toplam Gelir</p>
-                  <p className="text-2xl font-bold text-yellow-600">
-                    ₺{courses?.reduce((sum: number, c: any) => sum + (c.price || 0), 0).toLocaleString() || 0}
-                  </p>
-                </div>
-                <DollarSign className="h-8 w-8 text-yellow-500" />
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* Filters and Search */}
