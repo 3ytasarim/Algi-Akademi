@@ -1,9 +1,13 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { GraduationCap, Shield, ArrowRight } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock } from "lucide-react";
 
 export default function Landing() {
-  const [selectedRole, setSelectedRole] = useState<'student' | 'admin'>('student');
+  const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false);
 
   const handleLogin = () => {
     window.location.href = "/api/login";
@@ -43,29 +47,122 @@ export default function Landing() {
             </h2>
           </div>
 
-          {/* Role Selection Button */}
-          <div className="mb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-600">
-            <Button
-              variant="outline"
-              className="w-full py-4 px-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
-              onClick={() => setSelectedRole(selectedRole === 'student' ? 'admin' : 'student')}
-            >
-              <GraduationCap className="mr-3" size={20} />
-              {selectedRole === 'student' ? 'Eğitimci' : 'Admin'}
-            </Button>
-          </div>
+          {/* Step 1: Role Selection */}
+          {!selectedRole && (
+            <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-600">
+              <Button
+                variant="outline"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                onClick={() => setSelectedRole('student')}
+              >
+                <GraduationCap className="mr-3" size={20} />
+                Kursiyer
+              </Button>
+              
+              <Button
+                variant="outline"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                onClick={() => setSelectedRole('admin')}
+              >
+                <UserCog className="mr-3" size={20} />
+                Admin
+              </Button>
+            </div>
+          )}
 
-          {/* Main Login Button */}
-          <div className="mb-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-700">
-            <Button
-              onClick={handleLogin}
-              className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
-            >
-              <Shield className="mr-3" size={20} />
-              {selectedRole === 'admin' ? 'Eğitimci Girişi' : 'Eğitimci Girişi'}
-              <ArrowRight className="ml-3" size={20} />
-            </Button>
-          </div>
+          {/* Step 2: Login Form */}
+          {selectedRole && (
+            <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
+              {/* Selected Role Display */}
+              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+                <div className="flex items-center">
+                  {selectedRole === 'student' ? (
+                    <GraduationCap className="text-blue-600 mr-3" size={20} />
+                  ) : (
+                    <UserCog className="text-purple-600 mr-3" size={20} />
+                  )}
+                  <span className="font-semibold text-slate-700">
+                    {selectedRole === 'student' ? 'Kursiyer Girişi' : 'Admin Girişi'}
+                  </span>
+                </div>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-slate-500 hover:text-slate-700"
+                  onClick={() => setSelectedRole(null)}
+                >
+                  Değiştir
+                </Button>
+              </div>
+
+              {/* Email Field */}
+              <div className="space-y-2">
+                <Label htmlFor="email" className="text-slate-700 font-medium">
+                  E-posta Adresi
+                </Label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                  <Input
+                    id="email"
+                    type="email"
+                    placeholder="ornek@akademi.com"
+                    className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                  />
+                </div>
+              </div>
+
+              {/* Password Field */}
+              <div className="space-y-2">
+                <Label htmlFor="password" className="text-slate-700 font-medium">
+                  Şifre
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                  <Input
+                    id="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="••••••••"
+                    className="pl-12 pr-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                  />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2"
+                    onClick={() => setShowPassword(!showPassword)}
+                  >
+                    {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </Button>
+                </div>
+              </div>
+
+              {/* Remember Me & Forgot Password */}
+              <div className="flex items-center justify-between">
+                <label className="flex items-center cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 mr-3"
+                  />
+                  <span className="text-sm text-slate-600 font-medium">Hatırla</span>
+                </label>
+                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                  Şifremi Unuttum
+                </button>
+              </div>
+
+              {/* Login Button */}
+              <Button
+                onClick={handleLogin}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
+              >
+                <Shield className="mr-3" size={20} />
+                Giriş
+                <ArrowRight className="ml-3" size={20} />
+              </Button>
+            </div>
+          )}
 
           {/* Security Notice */}
           <div className="text-center mb-6 animate-in fade-in-0 duration-500 delay-800">
