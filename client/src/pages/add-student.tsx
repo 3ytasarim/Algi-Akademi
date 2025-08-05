@@ -64,13 +64,17 @@ export default function AddStudent() {
   const createStudentMutation = useMutation({
     mutationFn: async (data: any) => {
       const userData = {
-        email: data.email,
+        email: data.email || `${data.firstName?.toLowerCase()}.${data.lastName?.toLowerCase()}@student.com`,
         firstName: data.firstName,
         lastName: data.lastName,
         role: 'student',
-        assignedCategories: data.assignedCategories
+        assignedCategories: data.assignedCategories || [],
+        phone: data.phone,
+        tcNo: data.tcNo,
+        birthDate: data.birthDate
       };
       
+      console.log('Sending student data:', userData);
       return await apiRequest('/api/students', 'POST', userData);
     },
     onSuccess: () => {
@@ -82,10 +86,11 @@ export default function AddStudent() {
       setIsDialogOpen(false);
       resetForm();
     },
-    onError: (error) => {
+    onError: (error: any) => {
+      console.error('Student creation error:', error);
       toast({
         title: "Hata",
-        description: "Kursiyer eklenirken bir hata oluştu",
+        description: error?.message || "Kursiyer eklenirken bir hata oluştu",
         variant: "destructive",
       });
     },

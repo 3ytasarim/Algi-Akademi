@@ -89,6 +89,10 @@ export interface IStorage {
   // Category-based course operations
   getCoursesByUserCategories(userId: string): Promise<Course[]>;
   getUsersByRole(role: string): Promise<User[]>;
+  
+  // Student operations
+  getStudents(): Promise<User[]>;
+  createStudent(student: UpsertUser): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -430,6 +434,15 @@ export class DatabaseStorage implements IStorage {
       .where(eq(integrations.id, id))
       .returning();
     return updatedIntegration;
+  }
+
+  // Student operations implementation
+  async getStudents(): Promise<User[]> {
+    return this.getUsersByRole('student');
+  }
+
+  async createStudent(student: UpsertUser): Promise<User> {
+    return this.upsertUser(student);
   }
 }
 

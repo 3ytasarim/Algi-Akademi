@@ -14,119 +14,126 @@ export default function Landing() {
   };
 
   return (
-    <div className="min-h-screen gradient-primary flex items-center justify-center p-4">
-      <div className="bg-white/10 backdrop-blur-md rounded-2xl shadow-2xl w-full max-w-md p-8 border border-white/20">
+    <div className="min-h-screen bg-gradient-to-br from-primary via-accent to-primary flex items-center justify-center p-4">
+      <div className="glass-effect rounded-3xl shadow-2xl w-full max-w-lg p-8 animate-scale-in">
         {/* App Logo */}
         <div className="text-center mb-8">
-          <div className="w-16 h-16 bg-accent rounded-2xl mx-auto mb-4 flex items-center justify-center">
-            <Shield className="text-white text-2xl" size={32} />
+          <div className="w-20 h-20 bg-gradient-to-br from-white/20 to-white/10 backdrop-blur-lg rounded-3xl mx-auto mb-6 flex items-center justify-center shadow-lg animate-fade-in">
+            <Shield className="text-white" size={40} />
           </div>
-          <h1 className="text-3xl font-bold text-white mb-2">Algı Akademi</h1>
-          <p className="text-white/80">Eğitim Yönetim Sistemi</p>
+          <h1 className="text-4xl font-black text-white mb-3 tracking-tight">Algı Akademi</h1>
+          <p className="text-white/80 font-medium text-lg">Eğitim Yönetim Sistemi</p>
         </div>
 
         {/* Role Selector */}
-        <div className="flex gap-2 mb-6">
+        <div className="flex gap-4 mb-8 animate-slide-up">
           <Button
-            variant={selectedRole === 'student' ? 'default' : 'ghost'}
-            className={`flex-1 py-3 px-4 font-medium transition-all ${
+            variant="ghost"
+            className={`flex-1 py-4 px-6 font-bold text-base rounded-2xl transition-all duration-300 ${
               selectedRole === 'student' 
-                ? 'bg-accent text-white hover:bg-accent/90' 
-                : 'bg-white/20 text-white hover:bg-white/30'
+                ? 'button-modern text-white shadow-lg' 
+                : 'bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 border border-white/20'
             }`}
             onClick={() => setSelectedRole('student')}
           >
-            <GraduationCap className="mr-2" size={18} />
+            <GraduationCap className="mr-3" size={20} />
             Eğitimci
           </Button>
           <Button
-            variant={selectedRole === 'admin' ? 'default' : 'ghost'}
-            className={`flex-1 py-3 px-4 font-medium transition-all ${
+            variant="ghost"
+            className={`flex-1 py-4 px-6 font-bold text-base rounded-2xl transition-all duration-300 ${
               selectedRole === 'admin' 
-                ? 'bg-accent text-white hover:bg-accent/90' 
-                : 'bg-white/20 text-white hover:bg-white/30'
+                ? 'button-modern text-white shadow-lg' 
+                : 'bg-white/10 backdrop-blur-sm text-white/80 hover:text-white hover:bg-white/20 border border-white/20'
             }`}
             onClick={() => setSelectedRole('admin')}
           >
-            <UserCog className="mr-2" size={18} />
+            <UserCog className="mr-3" size={20} />
             Admin
           </Button>
         </div>
 
         {/* Login Form */}
-        <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
-          <div>
-            <Label className="block text-white/80 text-sm font-medium mb-2">
+        <form className="space-y-6" onSubmit={(e) => { e.preventDefault(); handleLogin(); }}>
+          <div className="space-y-3">
+            <Label className="block text-white font-bold text-sm uppercase tracking-wider">
               E-posta Adresi
             </Label>
             <div className="relative">
-              <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" size={18} />
+              <Mail className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white/60" size={20} />
               <Input
                 type="email"
-                className="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-12 pr-4 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-accent"
+                className="input-modern h-14 pl-14 pr-6 text-white placeholder-white/50 text-base font-medium"
                 placeholder="ornek@arkakademi.com"
               />
             </div>
           </div>
           
-          <div>
-            <Label className="block text-white/80 text-sm font-medium mb-2">
+          <div className="space-y-3">
+            <Label className="block text-white font-bold text-sm uppercase tracking-wider">
               Şifre
             </Label>
             <div className="relative">
-              <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-white/60" size={18} />
+              <Lock className="absolute left-5 top-1/2 transform -translate-y-1/2 text-white/60" size={20} />
               <Input
                 type={showPassword ? "text" : "password"}
-                className="w-full bg-white/10 border border-white/20 rounded-xl py-3 pl-12 pr-12 text-white placeholder-white/60 focus:outline-none focus:ring-2 focus:ring-accent"
+                className="input-modern h-14 pl-14 pr-14 text-white placeholder-white/50 text-base font-medium"
                 placeholder="••••••••"
               />
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
-                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white p-0"
+                className="absolute right-4 top-1/2 transform -translate-y-1/2 text-white/60 hover:text-white p-2 rounded-xl hover:bg-white/10"
                 onClick={() => setShowPassword(!showPassword)}
               >
-                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </Button>
             </div>
           </div>
 
           <div className="flex justify-between items-center text-sm">
-            <label className="flex items-center text-white/80">
-              <input type="checkbox" className="mr-2 rounded" />
-              Beni hatırla
+            <label className="flex items-center text-white/80 cursor-pointer hover:text-white transition-colors">
+              <input type="checkbox" className="mr-3 w-4 h-4 rounded border-white/30 text-accent focus:ring-accent/20" />
+              <span className="font-medium">Beni hatırla</span>
             </label>
-            <a href="#" className="text-accent hover:underline">
-              Şifremi unuttum
+            <a href="#" className="text-white/80 hover:text-white font-medium transition-colors underline-offset-4 hover:underline">
+              Şifremi unuttum?
             </a>
           </div>
 
           <Button
             type="submit"
-            className="w-full bg-accent text-white py-3 rounded-xl font-semibold transition-all hover:bg-accent/90 focus:outline-none focus:ring-2 focus:ring-accent focus:ring-offset-2 focus:ring-offset-transparent"
+            className="w-full button-modern py-4 rounded-2xl font-bold text-lg shadow-2xl"
           >
-            {selectedRole === 'admin' ? 'Admin Girişi' : 'Eğitimci Girişi'}
+            {selectedRole === 'admin' ? 'Yönetici Girişi' : 'Eğitimci Girişi'}
           </Button>
         </form>
 
         {/* Demo Credentials */}
-        <Card className="mt-8 bg-white/10 border border-white/20">
-          <CardContent className="p-4">
-            <div className="flex items-center mb-3">
-              <Info className="text-warning mr-2" size={18} />
-              <span className="text-white font-medium">Demo Hesapları</span>
+        <Card className="mt-8 card-modern border-0 animate-fade-in">
+          <CardContent className="p-6">
+            <div className="flex items-center mb-4">
+              <div className="w-8 h-8 bg-gradient-to-br from-accent/20 to-blue-500/20 rounded-xl flex items-center justify-center mr-3">
+                <Info className="text-accent" size={18} />
+              </div>
+              <span className="text-slate-900 font-bold text-lg">Test Hesapları</span>
             </div>
-            <div className="text-sm text-white/80 space-y-1">
-              <div><strong>Admin:</strong> admin@arkakademi.com</div>
-              <div><strong>Eğitimci:</strong> egitimci@arkakademi.com</div>
-              <div><strong>Şifre:</strong> 123456</div>
+            <div className="text-sm text-slate-700 space-y-2 font-medium">
+              <div className="flex justify-between">
+                <span className="text-slate-600">Yönetici:</span>
+                <span className="font-semibold">Replit ile giriş yapın</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-slate-600">Eğitimci:</span>
+                <span className="font-semibold">Replit ile giriş yapın</span>
+              </div>
             </div>
           </CardContent>
         </Card>
 
-        <div className="text-center mt-6 text-white/60 text-xs">
-          © 2024 ARK Akademi. Tüm hakları saklıdır.
+        <div className="text-center mt-6 text-white/70 text-sm font-medium">
+          © 2024 Algı Akademi. Tüm hakları saklıdır.
         </div>
       </div>
     </div>

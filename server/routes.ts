@@ -2,7 +2,7 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { setupAuth, isAuthenticated } from "./replitAuth";
-import { insertCourseSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
+import { insertCourseSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, type UpsertUser } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -219,6 +219,51 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Student routes
+  app.get('/api/students', isAuthenticated, async (req, res) => {
+    try {
+      const students = await storage.getUsersByRole('student');
+      res.json(students);
+    } catch (error) {
+      console.error("Error fetching students:", error);
+      res.status(500).json({ message: "Failed to fetch students" });
+    }
+  });
+
+  app.post('/api/students', isAuthenticated, async (req: any, res) => {
+    try {
+      console.log('Creating student with data:', req.body);
+      
+      // Convert data to UpsertUser format
+      const userData: UpsertUser = {
+        id: req.body.id || undefined, // let database generate if not provided
+        email: req.body.email,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        profileImageUrl: req.body.profileImageUrl || null,
+        role: 'student',
+        assignedCategories: req.body.assignedCategories || [],
+      };
+      
+      const student = await storage.upsertUser(userData);
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'student_created',
+        description: `Yeni öğrenci eklendi: ${student.firstName} ${student.lastName}`,
+      });
+      
+      res.status(201).json(student);
+    } catch (error) {
+      console.error("Error creating student:", error);
+      res.status(500).json({ 
+        message: "Failed to create student",
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
+  });
+
   // Exam results route
   app.get("/api/exam-results", isAuthenticated, async (req, res) => {
     try {
@@ -242,27 +287,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Students endpoint
-  app.get("/api/students", isAuthenticated, async (req, res) => {
-    try {
-      const students = await storage.getUsersByRole('student');
-      res.json(students);
-    } catch (error) {
-      console.error("Error fetching students:", error);
-      res.status(500).json({ message: "Failed to fetch students" });
-    }
-  });
 
-  app.post("/api/students", isAuthenticated, async (req, res) => {
-    try {
-      const studentData = req.body;
-      const student = await storage.upsertUser(studentData);
-      res.status(201).json(student);
-    } catch (error) {
-      console.error("Error creating student:", error);
-      res.status(500).json({ message: "Failed to create student" });
-    }
-  });
 
   const httpServer = createServer(app);
   return httpServer;
