@@ -199,6 +199,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.put('/api/courses/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const validatedData = insertCourseSchema.parse(req.body);
+      const course = await storage.updateCourse(req.params.id, validatedData);
+      
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'course_updated',
+        description: `Kurs güncellendi: ${course.title}`,
+      });
+      
+      res.json(course);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error updating course:", error);
+      res.status(500).json({ message: "Failed to update course" });
+    }
+  });
+
+  app.delete('/api/courses/:id', isAuthenticated, async (req: any, res) => {
+    try {
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+
+      await storage.deleteCourse(req.params.id);
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'course_deleted',
+        description: `Kurs silindi: ${course.title}`,
+      });
+      
+      res.json({ message: "Course deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting course:", error);
+      res.status(500).json({ message: "Failed to delete course" });
+    }
+  });
+
   // Enrollment routes
   app.get('/api/enrollments', isAuthenticated, async (req, res) => {
     try {

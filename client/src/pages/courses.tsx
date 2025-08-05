@@ -60,17 +60,14 @@ export default function CoursesPage() {
   const queryClient = useQueryClient();
 
   // Fetch courses
-  const { data: courses, isLoading } = useQuery({
+  const { data: courses = [], isLoading } = useQuery({
     queryKey: ["/api/courses"],
   });
 
   // Create course mutation
   const createCourseMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest(`/api/courses`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest("/api/courses", "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -93,10 +90,7 @@ export default function CoursesPage() {
   // Update course mutation
   const updateCourseMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string; data: any }) => {
-      await apiRequest(`/api/courses/${id}`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest(`/api/courses/${id}`, "PUT", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -112,9 +106,7 @@ export default function CoursesPage() {
   // Delete course mutation
   const deleteCourseMutation = useMutation({
     mutationFn: async (id: string) => {
-      await apiRequest(`/api/courses/${id}`, {
-        method: "DELETE",
-      });
+      return await apiRequest(`/api/courses/${id}`, "DELETE");
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -196,7 +188,7 @@ export default function CoursesPage() {
     }
   };
 
-  const filteredCourses = courses?.filter((course: any) => {
+  const filteredCourses = courses.filter((course: any) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.instructorName?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -205,7 +197,7 @@ export default function CoursesPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const categories = [...new Set(courses?.map((c: any) => c.category).filter(Boolean))];
+  const categories = Array.from(new Set(courses.map((c: any) => c.category).filter(Boolean)));
 
   return (
     <LayoutWrapper title="Kurs Yönetimi" subtitle="Kursları yönetin ve düzenleyin" activeHref="/courses">
@@ -351,7 +343,7 @@ export default function CoursesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Toplam Kurs</p>
-                  <p className="text-2xl font-bold text-gray-900">{courses?.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{courses.length || 0}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
@@ -364,7 +356,7 @@ export default function CoursesPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-500">Aktif Kurs</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {courses?.filter((c: any) => c.status === 'active').length || 0}
+                    {courses.filter((c: any) => c.status === 'active').length || 0}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-green-500" />
