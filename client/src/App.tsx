@@ -41,6 +41,7 @@ function Router() {
             <>
               {/* Admin routes */}
               <Route path="/" component={Dashboard} />
+              <Route path="/dashboard" component={Dashboard} />
               <Route path="/student-dashboard" component={StudentDashboard} />
               <Route path="/reports" component={Reports} />
               <Route path="/add-student" component={AddStudent} />
@@ -52,7 +53,6 @@ function Router() {
               <Route path="/courses" component={CoursesPage} />
               <Route path="/integrations/email" component={EmailIntegrationPage} />
               <Route path="/integrations/sms" component={SMSIntegrationPage} />
-
             </>
           )}
         </>
