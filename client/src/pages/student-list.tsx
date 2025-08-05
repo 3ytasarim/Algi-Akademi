@@ -11,12 +11,17 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   User, UserPlus, Search, Calendar, CreditCard, Mail, Phone, 
-  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload 
+  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload,
+  Menu, Gauge, Bell, ChevronLeft, ChevronRight, LogOut, Book, Users, 
+  ClipboardList, BarChart3, TrendingUp, PieChart, AreaChart, UserCog, 
+  Bus, Plug, Settings, MessageSquare
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
 export default function StudentList() {
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
@@ -31,6 +36,13 @@ export default function StudentList() {
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
+  
+  const toggleSidebar = () => setSidebarOpen(!sidebarOpen);
+  const toggleSidebarCollapse = () => setSidebarCollapsed(!sidebarCollapsed);
+  
+  const handleLogout = () => {
+    window.location.href = "/api/logout";
+  };
 
   // Fetch students
   const { data: students = [], isLoading } = useQuery({
@@ -109,10 +121,135 @@ export default function StudentList() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-gray-50">
+      {/* Sidebar */}
+      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform transition-all duration-300 z-20 shadow-2xl ${
+        sidebarCollapsed ? 'w-16' : 'w-72'
+      } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
+                <Gauge size={24} className="text-white" />
+              </div>
+              {!sidebarCollapsed && (
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Algı Akademi
+                  </h1>
+                  <p className="text-sm text-gray-400">Yönetim Paneli</p>
+                </div>
+              )}
+            </div>
+            <button
+              onClick={toggleSidebarCollapse}
+              className="hidden md:flex text-gray-400 hover:text-white hover:bg-slate-800/50 p-2 rounded-lg transition-all duration-200"
+            >
+              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </button>
+          </div>
+        </div>
+
+        {/* Navigation Menu */}
+        <nav className="flex-1 overflow-y-auto px-3 pb-4">
+          <div className="space-y-2 mt-4">
+            {menuItems.map((item) => (
+              <div key={item.id}>
+                {item.hasSubmenu ? (
+                  <div>
+                    <div className="px-4 py-3 text-gray-300 rounded-xl">
+                      <div className="flex items-center">
+                        <item.icon className="mr-3 w-5 h-5 text-primary" />
+                        {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+                      </div>
+                    </div>
+                    {!sidebarCollapsed && (
+                      <div className="mt-1 ml-6 space-y-1">
+                        {item.submenuItems?.map((subItem, subIndex) => (
+                          <a key={subIndex} href={subItem.href} className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group ${
+                            subItem.href === '/student-list' 
+                              ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                              : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
+                          }`}>
+                            <subItem.icon className={`mr-3 w-4 h-4 transition-colors ${
+                              subItem.href === '/student-list' ? 'text-white' : 'text-gray-500 group-hover:text-primary'
+                            }`} />
+                            <span>{subItem.label}</span>
+                          </a>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <a href={item.href} className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    item.active 
+                      ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                      : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                  }`}>
+                    <item.icon className={`mr-3 w-5 h-5 transition-colors ${
+                      item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                    }`} />
+                    {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+                  </a>
+                )}
+              </div>
+            ))}
+          </div>
+        </nav>
+
+        {/* Logout Button */}
+        <div className="p-4 border-t border-slate-700/50">
+          <button 
+            onClick={handleLogout}
+            className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
+              sidebarCollapsed ? 'px-2' : ''
+            }`}
+          >
+            <LogOut className={sidebarCollapsed ? "" : "mr-2"} size={18} />
+            {!sidebarCollapsed && <span className="font-medium">Çıkış Yap</span>}
+          </button>
+        </div>
+      </div>
+
+      {/* Mobile overlay */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden"
+          onClick={toggleSidebar}
+        ></div>
+      )}
+
+      {/* Main Content */}
+      <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-white transition-all duration-300 ${
+        sidebarCollapsed ? 'md:ml-16' : 'md:ml-72'
+      }`}>
+        {/* Top Bar */}
+        <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 sticky top-0 z-10">
+          <div className="flex items-center justify-between px-8 py-5">
+            <div className="flex items-center">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                onClick={toggleSidebar}
+                className="md:hidden mr-4 p-2 hover:bg-gray-100 rounded-xl"
+              >
+                <Menu size={20} />
+              </Button>
+              <div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                  Kursiyer Yönetimi
+                </h1>
+                <p className="text-sm text-gray-500">Tüm kursiyerleri görüntüleyin ve yönetin</p>
+              </div>
+            </div>
+          </div>
+        </header>
+
+        {/* Page Content */}
+        <div className="container mx-auto px-4 py-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">Kursiyer Yönetimi</h1>
             <p className="text-slate-600 mt-1">Tüm kursiyerleri görüntüleyin ve yönetin</p>
@@ -408,6 +545,7 @@ export default function StudentList() {
             )}
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );

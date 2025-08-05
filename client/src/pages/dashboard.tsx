@@ -184,14 +184,12 @@ export default function Dashboard() {
                 </div>
               )}
             </div>
-            <Button
-              variant="ghost"
-              size="sm"
+            <button
               onClick={toggleSidebarCollapse}
               className="hidden md:flex text-gray-400 hover:text-white hover:bg-slate-800/50 p-2 rounded-lg transition-all duration-200"
             >
               {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-            </Button>
+            </button>
           </div>
           
           {!sidebarCollapsed && (
@@ -290,7 +288,7 @@ export default function Dashboard() {
 
         {/* Logout Button */}
         <div className="p-4 border-t border-slate-700/50">
-          <Button 
+          <button 
             onClick={handleLogout}
             className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
               sidebarCollapsed ? 'px-2' : ''
@@ -298,7 +296,7 @@ export default function Dashboard() {
           >
             <LogOut className={sidebarCollapsed ? "" : "mr-2"} size={18} />
             {!sidebarCollapsed && <span className="font-medium">Çıkış Yap</span>}
-          </Button>
+          </button>
         </div>
       </div>
 
