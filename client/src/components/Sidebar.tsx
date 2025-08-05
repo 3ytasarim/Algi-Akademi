@@ -23,7 +23,7 @@ export default function Sidebar({
   toggleSidebarCollapse,
   activeHref 
 }: SidebarProps) {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses', 'system']);
   
   const handleLogout = () => {
     window.location.href = "/api/logout";
