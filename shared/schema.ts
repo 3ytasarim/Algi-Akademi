@@ -9,6 +9,7 @@ import {
   integer,
   decimal,
   boolean,
+  date,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 import { createInsertSchema } from "drizzle-zod";
@@ -85,6 +86,43 @@ export const activities = pgTable("activities", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+// Sales and consultants tables
+export const consultants = pgTable("consultants", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  tcNo: varchar("tc_no").unique().notNull(),
+  firstName: varchar("first_name").notNull(),
+  lastName: varchar("last_name").notNull(),
+  title: varchar("title").notNull().default('Danışman'), // 'Danışman', 'Uzman', 'Koordinatör'
+  email: varchar("email"),
+  phone: varchar("phone"),
+  userId: varchar("user_id").references(() => users.id),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+export const sales = pgTable("sales", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  consultantId: varchar("consultant_id").references(() => consultants.id),
+  studentId: varchar("student_id").references(() => users.id),
+  courseId: varchar("course_id").references(() => courses.id),
+  saleAmount: decimal("sale_amount", { precision: 10, scale: 2 }).notNull(),
+  collectedAmount: decimal("collected_amount", { precision: 10, scale: 2 }).default('0'),
+  remainingAmount: decimal("remaining_amount", { precision: 10, scale: 2 }).default('0'),
+  saleDate: date("sale_date").defaultNow(),
+  paymentStatus: varchar("payment_status").notNull().default('pending'), // 'pending', 'partial', 'completed'
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
+export const integrations = pgTable("integrations", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  type: varchar("type").notNull(), // 'sms', 'payment'
+  name: varchar("name").notNull(),
+  config: jsonb("config").notNull(), // Store API keys and settings
+  isActive: boolean("is_active").default(true),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
 // Relations
 export const usersRelations = relations(users, ({ many }) => ({
   coursesInstructed: many(courses),
@@ -139,6 +177,29 @@ export const activitiesRelations = relations(activities, ({ one }) => ({
   }),
 }));
 
+export const consultantsRelations = relations(consultants, ({ one, many }) => ({
+  user: one(users, {
+    fields: [consultants.userId],
+    references: [users.id],
+  }),
+  sales: many(sales),
+}));
+
+export const salesRelations = relations(sales, ({ one }) => ({
+  consultant: one(consultants, {
+    fields: [sales.consultantId],
+    references: [consultants.id],
+  }),
+  student: one(users, {
+    fields: [sales.studentId],
+    references: [users.id],
+  }),
+  course: one(courses, {
+    fields: [sales.courseId],
+    references: [courses.id],
+  }),
+}));
+
 // Insert schemas
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
@@ -173,6 +234,23 @@ export const insertActivitySchema = createInsertSchema(activities).omit({
   createdAt: true,
 });
 
+export const insertConsultantSchema = createInsertSchema(consultants).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
+export const insertSaleSchema = createInsertSchema(sales).omit({
+  id: true,
+  createdAt: true,
+});
+
+export const insertIntegrationSchema = createInsertSchema(integrations).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
@@ -187,3 +265,9 @@ export type ExamResult = typeof examResults.$inferSelect;
 export type InsertExamResult = z.infer<typeof insertExamResultSchema>;
 export type Activity = typeof activities.$inferSelect;
 export type InsertActivity = z.infer<typeof insertActivitySchema>;
+export type Consultant = typeof consultants.$inferSelect;
+export type InsertConsultant = z.infer<typeof insertConsultantSchema>;
+export type Sale = typeof sales.$inferSelect;
+export type InsertSale = z.infer<typeof insertSaleSchema>;
+export type Integration = typeof integrations.$inferSelect;
+export type InsertIntegration = z.infer<typeof insertIntegrationSchema>;

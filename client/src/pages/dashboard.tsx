@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
-import { isUnauthorizedError } from "@/lib/authUtils";
+import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { 
@@ -87,8 +87,8 @@ export default function Dashboard() {
     {
       title: "Ana Menü",
       items: [
-        { icon: Gauge, label: "Dashboard", href: "#", active: false },
-        { icon: Globe, label: "Web Site Yönetimi", href: "#", active: true, hasSubmenu: true },
+        { icon: Gauge, label: "Dashboard", href: "/", active: true },
+        { icon: Globe, label: "Web Site Yönetimi", href: "#", active: false, hasSubmenu: true },
         { icon: MessageSquare, label: "İletişim", href: "#", active: false },
         { icon: Settings, label: "Site Ayarları", href: "#", active: false },
       ]
@@ -96,26 +96,26 @@ export default function Dashboard() {
     {
       title: "Kurs Yönetimi",
       items: [
-        { icon: Book, label: "Kurs/Kursiyer İşlemleri", href: "#", active: true, hasSubmenu: true },
-        { icon: Users, label: "Kursiyer Tanımlama", href: "#", active: false },
-        { icon: ClipboardList, label: "Sınav Sonuçları", href: "#", active: false },
-        { icon: BarChart3, label: "Kursiyer İstatistik", href: "#", active: false },
+        { icon: Book, label: "Kurs/Kursiyer İşlemleri", href: "/", active: false, hasSubmenu: true },
+        { icon: Users, label: "Kursiyer Tanımlama", href: "/add-student", active: false },
+        { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results", active: false },
+        { icon: BarChart3, label: "Kursiyer İstatistik", href: "/reports", active: false },
       ]
     },
     {
       title: "Raporlar",
       items: [
-        { icon: TrendingUp, label: "Muhasebe", href: "#", active: true, hasSubmenu: true },
-        { icon: PieChart, label: "Danışman Satış Raporu", href: "#", active: false },
-        { icon: AreaChart, label: "Kurs Satış Raporu", href: "#", active: false },
+        { icon: TrendingUp, label: "Muhasebe", href: "/reports", active: false, hasSubmenu: true },
+        { icon: PieChart, label: "Danışman Satış Raporu", href: "/reports", active: false },
+        { icon: AreaChart, label: "Kurs Satış Raporu", href: "/reports", active: false },
       ]
     },
     {
       title: "Sistem",
       items: [
-        { icon: UserCog, label: "Ayarlar", href: "#", active: true, hasSubmenu: true },
-        { icon: Bus, label: "Danışmanlar", href: "#", active: false },
-        { icon: Plug, label: "Entegrasyon", href: "#", active: false },
+        { icon: UserCog, label: "Ayarlar", href: "#", active: false, hasSubmenu: true },
+        { icon: Bus, label: "Danışmanlar", href: "/consultants", active: false },
+        { icon: Plug, label: "Entegrasyon", href: "/integrations", active: false },
       ]
     }
   ];
@@ -165,23 +165,41 @@ export default function Dashboard() {
               </div>
               <div className="space-y-1">
                 {section.items.map((item, itemIndex) => (
-                  <a
-                    key={itemIndex}
-                    href={item.href}
-                    className={`flex items-center px-4 py-3 transition-colors ${
-                      item.active 
-                        ? 'bg-primary text-white rounded-r-full mr-4' 
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
-                  >
-                    <item.icon className="mr-3 w-5" size={20} />
-                    <span>{item.label}</span>
-                    {item.hasSubmenu && (
-                      <svg className="ml-auto w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
-                    )}
-                  </a>
+                  item.href.startsWith('#') ? (
+                    <a
+                      key={itemIndex}
+                      href={item.href}
+                      className={`flex items-center px-4 py-3 transition-colors ${
+                        item.active 
+                          ? 'bg-primary text-white rounded-r-full mr-4' 
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      }`}
+                    >
+                      <item.icon className="mr-3 w-5" size={20} />
+                      <span>{item.label}</span>
+                      {item.hasSubmenu && (
+                        <svg className="ml-auto w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </a>
+                  ) : (
+                    <Link key={itemIndex} href={item.href}>
+                      <a className={`flex items-center px-4 py-3 transition-colors ${
+                        item.active 
+                          ? 'bg-primary text-white rounded-r-full mr-4' 
+                          : 'text-gray-300 hover:bg-gray-700 hover:text-white'
+                      }`}>
+                        <item.icon className="mr-3 w-5" size={20} />
+                        <span>{item.label}</span>
+                        {item.hasSubmenu && (
+                          <svg className="ml-auto w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                          </svg>
+                        )}
+                      </a>
+                    </Link>
+                  )
                 ))}
               </div>
             </div>
@@ -294,18 +312,22 @@ export default function Dashboard() {
                   <Plus className="mr-2" size={18} />
                   Yeni Kurs Ekle
                 </Button>
-                <Button className="w-full gradient-accent text-white hover:opacity-90">
-                  <UserPlus className="mr-2" size={18} />
-                  Yeni Kursiyer Ekle
-                </Button>
+                <Link href="/add-student">
+                  <Button className="w-full gradient-accent text-white hover:opacity-90">
+                    <UserPlus className="mr-2" size={18} />
+                    Yeni Kursiyer Ekle
+                  </Button>
+                </Link>
                 <Button className="w-full bg-green-500 text-white hover:bg-green-600">
                   <ClipboardList className="mr-2" size={18} />
                   Sınav Oluştur
                 </Button>
-                <Button className="w-full bg-orange-500 text-white hover:bg-orange-600">
-                  <BarChart3 className="mr-2" size={18} />
-                  Raporları Görüntüle
-                </Button>
+                <Link href="/reports">
+                  <Button className="w-full bg-orange-500 text-white hover:bg-orange-600">
+                    <BarChart3 className="mr-2" size={18} />
+                    Raporları Görüntüle
+                  </Button>
+                </Link>
               </div>
 
               {/* Recent Activity */}

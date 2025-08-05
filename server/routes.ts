@@ -156,6 +156,80 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Consultant routes
+  app.get("/api/consultants", isAuthenticated, async (req, res) => {
+    try {
+      const consultants = await storage.getConsultants();
+      res.json(consultants);
+    } catch (error) {
+      console.error("Error fetching consultants:", error);
+      res.status(500).json({ message: "Failed to fetch consultants" });
+    }
+  });
+
+  app.post("/api/consultants", isAuthenticated, async (req, res) => {
+    try {
+      const consultant = await storage.createConsultant(req.body);
+      res.json(consultant);
+    } catch (error) {
+      console.error("Error creating consultant:", error);
+      res.status(500).json({ message: "Failed to create consultant" });
+    }
+  });
+
+  // Sales routes
+  app.get("/api/sales", isAuthenticated, async (req, res) => {
+    try {
+      const sales = await storage.getSales();
+      res.json(sales);
+    } catch (error) {
+      console.error("Error fetching sales:", error);
+      res.status(500).json({ message: "Failed to fetch sales" });
+    }
+  });
+
+  app.post("/api/sales", isAuthenticated, async (req, res) => {
+    try {
+      const sale = await storage.createSale(req.body);
+      res.json(sale);
+    } catch (error) {
+      console.error("Error creating sale:", error);
+      res.status(500).json({ message: "Failed to create sale" });
+    }
+  });
+
+  // Integration routes
+  app.get("/api/integrations", isAuthenticated, async (req, res) => {
+    try {
+      const integrations = await storage.getIntegrations();
+      res.json(integrations);
+    } catch (error) {
+      console.error("Error fetching integrations:", error);
+      res.status(500).json({ message: "Failed to fetch integrations" });
+    }
+  });
+
+  app.post("/api/integrations", isAuthenticated, async (req, res) => {
+    try {
+      const integration = await storage.createIntegration(req.body);
+      res.json(integration);
+    } catch (error) {
+      console.error("Error creating integration:", error);
+      res.status(500).json({ message: "Failed to create integration" });
+    }
+  });
+
+  // Exam results route
+  app.get("/api/exam-results", isAuthenticated, async (req, res) => {
+    try {
+      const examResults = await storage.getExamResults();
+      res.json(examResults);
+    } catch (error) {
+      console.error("Error fetching exam results:", error);
+      res.status(500).json({ message: "Failed to fetch exam results" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

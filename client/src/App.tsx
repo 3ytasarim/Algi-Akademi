@@ -7,9 +7,15 @@ import { useAuth } from "@/hooks/useAuth";
 import NotFound from "@/pages/not-found";
 import Landing from "@/pages/landing";
 import Dashboard from "@/pages/dashboard";
+import StudentDashboard from "@/pages/student-dashboard";
+import Reports from "@/pages/reports";
+import AddStudent from "@/pages/add-student";
+import ExamResults from "@/pages/exam-results";
+import Consultants from "@/pages/consultants";
+import Integrations from "@/pages/integrations";
 
 function Router() {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, user } = useAuth();
 
   return (
     <Switch>
@@ -17,7 +23,19 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <>
-          <Route path="/" component={Dashboard} />
+          {/* Route based on user role */}
+          {user?.role === 'student' ? (
+            <Route path="/" component={StudentDashboard} />
+          ) : (
+            <>
+              <Route path="/" component={Dashboard} />
+              <Route path="/reports" component={Reports} />
+              <Route path="/add-student" component={AddStudent} />
+              <Route path="/exam-results" component={ExamResults} />
+              <Route path="/consultants" component={Consultants} />
+              <Route path="/integrations" component={Integrations} />
+            </>
+          )}
         </>
       )}
       <Route component={NotFound} />

@@ -1,6 +1,16 @@
 # Overview
 
-This is a full-stack educational management system (Algı Akademi) built with React, Express.js, and PostgreSQL. The application provides a comprehensive platform for managing courses, students, exams, and educational activities with role-based access control for students, instructors, and administrators.
+This is a comprehensive CRM-based educational management system (Algı Akademi) with dual-interface design: Admin dashboard for management operations and Student dashboard for learning activities. Built with React, Express.js, and PostgreSQL, featuring Turkish language support and modern professional UI design.
+
+## Recent Changes (August 5, 2025)
+
+✓ Implemented complete admin dashboard with 9 specialized pages
+✓ Added student dashboard with course enrollment tracking
+✓ Created comprehensive database schema for consultants, sales, and integrations
+✓ Built responsive reports system with sales and consultant analytics
+✓ Integrated SMS and payment gateway configuration pages
+✓ Added exam results management and student registration workflows
+✓ Implemented role-based routing (admin vs student interfaces)
 
 # User Preferences
 
@@ -34,12 +44,15 @@ Preferred communication style: Simple, everyday language.
 - **Primary Database**: PostgreSQL with Neon serverless connection
 - **Schema Management**: Drizzle Kit for migrations and schema management
 - **Key Entities**:
-  - Users (with role-based permissions)
-  - Courses (with instructor assignments)
-  - Enrollments (student-course relationships)
-  - Exams (course-specific assessments)
+  - Users (with role-based permissions: admin/student)
+  - Courses (with instructor assignments and pricing)
+  - Enrollments (student-course relationships with progress tracking)
+  - Exams (course-specific assessments with scoring)
   - Exam Results (student performance tracking)
-  - Activities (course interactions and logs)
+  - Activities (course interactions and audit logs)
+  - Consultants (sales staff and advisors with contact info)
+  - Sales (course sales tracking with payment status)
+  - Integrations (SMS and payment gateway configurations)
 - **Relationships**: Proper foreign key constraints and relational integrity
 
 ## Development Workflow
