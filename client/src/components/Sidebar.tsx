@@ -81,8 +81,8 @@ export default function Sidebar({
     {
       id: "communication",
       icon: MessageSquare,
-      label: "İletişim",
-      href: "#"
+      label: "Bildirimler",
+      href: "/notifications"
     }
   ];
 

@@ -8,6 +8,9 @@ import {
   consultants,
   sales,
   integrations,
+  notifications,
+  notificationTemplates,
+  notificationSettings,
   type User,
   type UpsertUser,
   type Course,
@@ -94,6 +97,14 @@ export interface IStorage {
   getStudents(): Promise<User[]>;
   createStudent(student: any): Promise<User>;
   getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined>;
+
+  // Notification operations
+  getNotifications(): Promise<any[]>;
+  createNotification(data: any): Promise<any>;
+  getNotificationTemplates(): Promise<any[]>;
+  createNotificationTemplate(data: any): Promise<any>;
+  getNotificationSettings(userId: string): Promise<any>;
+  updateNotificationSettings(userId: string, data: any): Promise<any>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -481,6 +492,66 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .where(eq(users.tcKimlikNo, tcKimlikNo));
     return student;
+  }
+
+  // Notification operations
+  async getNotifications(): Promise<any[]> {
+    return await db
+      .select()
+      .from(notifications)
+      .orderBy(desc(notifications.createdAt));
+  }
+
+  async createNotification(data: any): Promise<any> {
+    const [notification] = await db
+      .insert(notifications)
+      .values(data)
+      .returning();
+    return notification;
+  }
+
+  async getNotificationTemplates(): Promise<any[]> {
+    return await db
+      .select()
+      .from(notificationTemplates)
+      .where(eq(notificationTemplates.isActive, true))
+      .orderBy(desc(notificationTemplates.createdAt));
+  }
+
+  async createNotificationTemplate(data: any): Promise<any> {
+    const [template] = await db
+      .insert(notificationTemplates)
+      .values(data)
+      .returning();
+    return template;
+  }
+
+  async getNotificationSettings(userId: string): Promise<any> {
+    const [settings] = await db
+      .select()
+      .from(notificationSettings)
+      .where(eq(notificationSettings.userId, userId));
+    
+    return settings || {
+      emailEnabled: true,
+      smsEnabled: true,
+      courseReminders: true,
+      examNotifications: true,
+      systemUpdates: true,
+      marketingEmails: false
+    };
+  }
+
+  async updateNotificationSettings(userId: string, data: any): Promise<any> {
+    const [settings] = await db
+      .insert(notificationSettings)
+      .values({ userId, ...data })
+      .onConflictDoUpdate({
+        target: notificationSettings.userId,
+        set: { ...data, updatedAt: new Date() }
+      })
+      .returning();
+    return settings;
   }
 }
 

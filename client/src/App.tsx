@@ -15,6 +15,8 @@ import StudentList from "@/pages/student-list";
 import ExamResults from "@/pages/exam-results";
 import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
+import NotificationsPage from "@/pages/notifications";
+import CoursesPage from "@/pages/courses";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -43,6 +45,8 @@ function Router() {
               <Route path="/exam-results" component={ExamResults} />
               <Route path="/consultants" component={Consultants} />
               <Route path="/integrations" component={Integrations} />
+              <Route path="/notifications" component={NotificationsPage} />
+              <Route path="/courses" component={CoursesPage} />
             </>
           )}
         </>
