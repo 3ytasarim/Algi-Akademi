@@ -29,16 +29,32 @@ export default function CoursesPage() {
   const [courseForm, setCourseForm] = useState({
     title: "",
     description: "",
-    category: "",
     price: "",
-    duration: "",
-    instructorName: "",
-    level: "beginner",
-    startDate: "",
-    endDate: "",
-    maxStudents: "",
-    status: "active"
+    sections: [{ name: "", pdfFile: null }]
   });
+
+  const addSection = () => {
+    setCourseForm(prev => ({
+      ...prev,
+      sections: [...prev.sections, { name: "", pdfFile: null }]
+    }));
+  };
+
+  const removeSection = (index: number) => {
+    setCourseForm(prev => ({
+      ...prev,
+      sections: prev.sections.filter((_, i) => i !== index)
+    }));
+  };
+
+  const updateSection = (index: number, field: string, value: any) => {
+    setCourseForm(prev => ({
+      ...prev,
+      sections: prev.sections.map((section, i) => 
+        i === index ? { ...section, [field]: value } : section
+      )
+    }));
+  };
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -113,27 +129,21 @@ export default function CoursesPage() {
     setCourseForm({
       title: "",
       description: "",
-      category: "",
       price: "",
-      duration: "",
-      instructorName: "",
-      level: "beginner",
-      startDate: "",
-      endDate: "",
-      maxStudents: "",
-      status: "active"
+      sections: [{ name: "", pdfFile: null }]
     });
+    setEditingCourse(null);
   };
 
   const handleCreateCourse = (e: React.FormEvent) => {
     e.preventDefault();
     const courseData = {
-      ...courseForm,
+      title: courseForm.title,
+      description: courseForm.description,
       price: parseFloat(courseForm.price) || 0,
-      duration: parseInt(courseForm.duration) || 0,
-      maxStudents: parseInt(courseForm.maxStudents) || 0,
-      startDate: courseForm.startDate ? new Date(courseForm.startDate) : null,
-      endDate: courseForm.endDate ? new Date(courseForm.endDate) : null,
+      duration: courseForm.sections.length, // Toplam ders sayısı = section sayısı
+      sections: courseForm.sections,
+      status: "active"
     };
     
     if (editingCourse) {
@@ -148,15 +158,8 @@ export default function CoursesPage() {
     setCourseForm({
       title: course.title || "",
       description: course.description || "",
-      category: course.category || "",
       price: course.price?.toString() || "",
-      duration: course.duration?.toString() || "",
-      instructorName: course.instructorName || "",
-      level: course.level || "beginner",
-      startDate: course.startDate ? course.startDate.split('T')[0] : "",
-      endDate: course.endDate ? course.endDate.split('T')[0] : "",
-      maxStudents: course.maxStudents?.toString() || "",
-      status: course.status || "active"
+      sections: course.sections || [{ name: "", pdfFile: null }]
     });
     setIsCreateDialogOpen(true);
   };
@@ -230,132 +233,103 @@ export default function CoursesPage() {
                 </DialogTitle>
               </DialogHeader>
               <form onSubmit={handleCreateCourse} className="space-y-6">
-                <div className="grid grid-cols-2 gap-4">
+                {/* Kurs Bilgileri */}
+                <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Kurs Adı *</Label>
+                    <Label>Kurs İsmi *</Label>
                     <Input
                       value={courseForm.title}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, title: e.target.value }))}
-                      placeholder="Kurs adını girin"
+                      placeholder="Adli Sekreterlik"
                       required
                     />
                   </div>
+
                   <div className="space-y-2">
-                    <Label>Kategori *</Label>
-                    <Input
-                      value={courseForm.category}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, category: e.target.value }))}
-                      placeholder="Kategori (örn: Programlama, Tasarım)"
-                      required
+                    <Label>Kurs Açıklama</Label>
+                    <Textarea
+                      value={courseForm.description}
+                      onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
+                      placeholder="Adli sekreterlik temel eğitimi ve UYAP sistemi kullanımı"
+                      rows={3}
                     />
                   </div>
                 </div>
 
+                {/* Ders Bölümleri */}
+                <div className="space-y-4">
+                  <div className="flex items-center justify-between">
+                    <Label className="text-lg font-semibold">Ders Sıralaması</Label>
+                    <Button 
+                      type="button" 
+                      variant="outline" 
+                      size="sm"
+                      onClick={addSection}
+                      className="flex items-center gap-2"
+                    >
+                      <Plus size={16} />
+                      Bölüm Ekle
+                    </Button>
+                  </div>
+
+                  <div className="space-y-3">
+                    {courseForm.sections.map((section, index) => (
+                      <div key={index} className="flex items-center gap-3 p-4 border rounded-lg">
+                        <div className="w-8 h-8 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center font-semibold text-sm">
+                          {index + 1}
+                        </div>
+                        <div className="flex-1">
+                          <Input
+                            value={section.name}
+                            onChange={(e) => updateSection(index, 'name', e.target.value)}
+                            placeholder={index === 0 ? "Uyap Nedir?" : index === 1 ? "Sisteme Giriş" : "Bölüm adı..."}
+                          />
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Label htmlFor={`pdf-${index}`} className="cursor-pointer">
+                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
+                              <Upload size={16} />
+                              <span className="text-sm">PDF Ekle</span>
+                            </div>
+                          </Label>
+                          <input
+                            id={`pdf-${index}`}
+                            type="file"
+                            accept=".pdf"
+                            className="hidden"
+                            onChange={(e) => updateSection(index, 'pdfFile', e.target.files?.[0] || null)}
+                          />
+                          {section.pdfFile && (
+                            <span className="text-sm text-green-600 font-medium">PDF Eklendi</span>
+                          )}
+                          {courseForm.sections.length > 1 && (
+                            <Button
+                              type="button"
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => removeSection(index)}
+                              className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
+                            >
+                              <Trash2 size={16} />
+                            </Button>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Fiyat */}
                 <div className="space-y-2">
-                  <Label>Açıklama</Label>
-                  <Textarea
-                    value={courseForm.description}
-                    onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
-                    placeholder="Kurs açıklaması"
-                    rows={3}
+                  <Label>Ücreti (₺)</Label>
+                  <Input
+                    type="number"
+                    value={courseForm.price}
+                    onChange={(e) => setCourseForm(prev => ({ ...prev, price: e.target.value }))}
+                    placeholder="0"
+                    min="0"
+                    step="0.01"
                   />
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Fiyat (₺)</Label>
-                    <Input
-                      type="number"
-                      value={courseForm.price}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, price: e.target.value }))}
-                      placeholder="0"
-                      min="0"
-                      step="0.01"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Süre (Saat)</Label>
-                    <Input
-                      type="number"
-                      value={courseForm.duration}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, duration: e.target.value }))}
-                      placeholder="0"
-                      min="0"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Max. Öğrenci</Label>
-                    <Input
-                      type="number"
-                      value={courseForm.maxStudents}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, maxStudents: e.target.value }))}
-                      placeholder="0"
-                      min="0"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label>Eğitmen Adı</Label>
-                    <Input
-                      value={courseForm.instructorName}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, instructorName: e.target.value }))}
-                      placeholder="Eğitmen adı"
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Seviye</Label>
-                    <Select 
-                      value={courseForm.level}
-                      onValueChange={(value) => setCourseForm(prev => ({ ...prev, level: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="beginner">Başlangıç</SelectItem>
-                        <SelectItem value="intermediate">Orta</SelectItem>
-                        <SelectItem value="advanced">İleri</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-3 gap-4">
-                  <div className="space-y-2">
-                    <Label>Başlangıç Tarihi</Label>
-                    <Input
-                      type="date"
-                      value={courseForm.startDate}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, startDate: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Bitiş Tarihi</Label>
-                    <Input
-                      type="date"
-                      value={courseForm.endDate}
-                      onChange={(e) => setCourseForm(prev => ({ ...prev, endDate: e.target.value }))}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label>Durum</Label>
-                    <Select 
-                      value={courseForm.status}
-                      onValueChange={(value) => setCourseForm(prev => ({ ...prev, status: value }))}
-                    >
-                      <SelectTrigger>
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="active">Aktif</SelectItem>
-                        <SelectItem value="draft">Taslak</SelectItem>
-                        <SelectItem value="completed">Tamamlandı</SelectItem>
-                        <SelectItem value="archived">Arşiv</SelectItem>
-                      </SelectContent>
-                    </Select>
-                  </div>
                 </div>
 
                 <Button 

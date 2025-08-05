@@ -52,7 +52,8 @@ export const courses = pgTable("courses", {
   description: text("description"),
   instructorId: varchar("instructor_id").references(() => users.id),
   price: decimal("price", { precision: 10, scale: 2 }),
-  duration: integer("duration"), // in weeks
+  duration: integer("duration"), // section count (toplam ders sayısı)
+  sections: jsonb("sections").default("[]"), // array of sections with name and pdf info
   status: varchar("status").notNull().default('active'), // 'active', 'inactive', 'starting'
   category: varchar("category").notNull().default('Genel'), // course category for assignment
   thumbnail: varchar("thumbnail"),
