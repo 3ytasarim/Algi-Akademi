@@ -403,44 +403,93 @@ export default function Dashboard() {
             <CourseTable />
 
             {/* Quick Actions */}
-            <div className="bg-white rounded-xl shadow-sm border border-gray-200">
-              <div className="p-6 border-b border-gray-200">
-                <h2 className="text-xl font-bold text-gray-900">Hızlı İşlemler</h2>
+            <div className="bg-white rounded-2xl shadow-lg border-0 overflow-hidden">
+              <div className="p-8 bg-gradient-to-r from-slate-50 to-blue-50">
+                <h2 className="text-2xl font-bold text-slate-900 flex items-center gap-3">
+                  <div className="w-8 h-8 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                    <Clock className="text-white" size={18} />
+                  </div>
+                  Hızlı İşlemler
+                </h2>
               </div>
-              <div className="p-6 space-y-4">
-                <Button className="w-full gradient-primary text-white hover:opacity-90">
-                  <Plus className="mr-2" size={18} />
-                  Yeni Kurs Ekle
-                </Button>
-                <Link href="/add-student">
-                  <Button className="w-full gradient-accent text-white hover:opacity-90">
-                    <UserPlus className="mr-2" size={18} />
-                    Yeni Kursiyer Ekle
-                  </Button>
-                </Link>
-                <Button className="w-full bg-green-500 text-white hover:bg-green-600">
-                  <ClipboardList className="mr-2" size={18} />
-                  Sınav Oluştur
-                </Button>
-                <Link href="/reports">
-                  <Button className="w-full bg-orange-500 text-white hover:bg-orange-600">
-                    <BarChart3 className="mr-2" size={18} />
-                    Raporları Görüntüle
-                  </Button>
-                </Link>
+              <div className="p-8">
+                <div className="grid grid-cols-1 gap-4">
+                  <Link href="/add-course">
+                    <div className="group p-6 rounded-xl bg-gradient-to-r from-purple-500 to-blue-600 hover:from-purple-600 hover:to-blue-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                      <div className="flex items-center justify-between text-white">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <Plus size={24} />
+                          </div>
+                          <span className="text-lg font-semibold">Yeni Kurs Ekle</span>
+                        </div>
+                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                  
+                  <Link href="/student-list">
+                    <div className="group p-6 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 transition-all duration-300 cursor-pointer shadow-lg hover:shadow-xl transform hover:scale-[1.02]">
+                      <div className="flex items-center justify-between text-white">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center backdrop-blur-sm">
+                            <UserPlus size={24} />
+                          </div>
+                          <span className="text-lg font-semibold">Yeni Kursiyer Ekle</span>
+                        </div>
+                        <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                </div>
+                
+                <div className="grid grid-cols-1 gap-3 mt-6">
+                  <Link href="/exam-results">
+                    <div className="group p-4 rounded-xl bg-green-50 hover:bg-green-100 border border-green-200 hover:border-green-300 transition-all duration-200 cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center">
+                            <ClipboardList className="text-white" size={18} />
+                          </div>
+                          <span className="font-medium text-green-800">Sınav Oluştur</span>
+                        </div>
+                        <ChevronRight size={16} className="text-green-600 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                  
+                  <Link href="/reports">
+                    <div className="group p-4 rounded-xl bg-orange-50 hover:bg-orange-100 border border-orange-200 hover:border-orange-300 transition-all duration-200 cursor-pointer">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-3">
+                          <div className="w-10 h-10 bg-orange-500 rounded-lg flex items-center justify-center">
+                            <BarChart3 className="text-white" size={18} />
+                          </div>
+                          <span className="font-medium text-orange-800">Raporları Görüntüle</span>
+                        </div>
+                        <ChevronRight size={16} className="text-orange-600 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </div>
+                  </Link>
+                </div>
               </div>
 
               {/* Recent Activity */}
-              <div className="p-6 border-t border-gray-200">
-                <h3 className="font-semibold text-gray-900 mb-4">Son Aktiviteler</h3>
-                <div className="space-y-3">
+              <div className="p-8 border-t border-gray-100">
+                <h3 className="text-lg font-bold text-slate-900 mb-6 flex items-center gap-3">
+                  <div className="w-6 h-6 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center">
+                    <Activity className="text-white" size={14} />
+                  </div>
+                  Son Aktiviteler
+                </h3>
+                <div className="space-y-4">
                   {activitiesLoading ? (
-                    <div className="animate-pulse space-y-3">
+                    <div className="animate-pulse space-y-4">
                       {[1, 2, 3].map(i => (
-                        <div key={i} className="flex items-start space-x-3">
-                          <div className="w-2 h-2 bg-gray-300 rounded-full mt-2"></div>
+                        <div key={i} className="flex items-start space-x-4 p-4 bg-gray-50 rounded-xl">
+                          <div className="w-3 h-3 bg-gray-300 rounded-full mt-2"></div>
                           <div className="flex-1">
-                            <div className="h-4 bg-gray-300 rounded mb-1"></div>
+                            <div className="h-4 bg-gray-300 rounded mb-2"></div>
                             <div className="h-3 bg-gray-200 rounded w-1/2"></div>
                           </div>
                         </div>
@@ -448,18 +497,23 @@ export default function Dashboard() {
                     </div>
                   ) : activities && activities.length > 0 ? (
                     activities.slice(0, 3).map((activity: any, index: number) => (
-                      <div key={activity.id || index} className="flex items-start space-x-3">
-                        <div className="w-2 h-2 bg-green-500 rounded-full mt-2"></div>
+                      <div key={activity.id || index} className="flex items-start space-x-4 p-4 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                        <div className="w-3 h-3 bg-green-500 rounded-full mt-2 shadow-sm"></div>
                         <div className="flex-1">
-                          <p className="text-sm text-gray-900">{activity.description}</p>
-                          <p className="text-xs text-gray-500">
+                          <p className="text-sm font-medium text-slate-900">{activity.description}</p>
+                          <p className="text-xs text-slate-500 mt-1">
                             {new Date(activity.createdAt).toLocaleString('tr-TR')}
                           </p>
                         </div>
                       </div>
                     ))
                   ) : (
-                    <p className="text-sm text-gray-500">Henüz aktivite bulunmuyor</p>
+                    <div className="text-center py-8">
+                      <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Activity className="text-gray-400" size={24} />
+                      </div>
+                      <p className="text-sm text-gray-500">Henüz aktivite bulunmuyor</p>
+                    </div>
                   )}
                 </div>
               </div>
