@@ -210,70 +210,79 @@ export default function AddStudent() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-72 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-20 shadow-2xl`}>
+      <div className={`fixed left-0 top-0 h-full w-80 sidebar-modern text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-all duration-500 z-30`}>
         {/* Header */}
-        <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
-          <div className="flex items-center mb-5">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
-              <Gauge size={24} className="text-white" />
+        <div className="p-8 border-b border-white/10 bg-gradient-to-br from-primary/30 via-accent/20 to-primary/30 backdrop-blur-xl">
+          <div className="flex items-center mb-6 animate-fade-in">
+            <div className="w-12 h-12 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+              <Gauge size={28} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-black tracking-tight bg-gradient-to-r from-white via-blue-100 to-white bg-clip-text text-transparent">
                 Algı Akademi
               </h1>
-              <p className="text-sm text-gray-400">Yönetim Paneli</p>
+              <p className="text-sm font-medium text-white/70">Eğitim Yönetim Sistemi</p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-xl backdrop-blur-sm">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white/20">
+          <div className="flex items-center space-x-4 p-4 bg-white/10 backdrop-blur-lg rounded-2xl border border-white/20 shadow-lg animate-slide-up">
+            <div className="w-12 h-12 bg-gradient-to-br from-white/30 to-white/10 rounded-xl overflow-hidden ring-2 ring-white/30 shadow-lg">
               <img 
-                src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
+                src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&h=48&fit=crop&crop=face"} 
                 alt="User profile" 
                 className="w-full h-full object-cover" 
               />
             </div>
             <div className="flex-1">
-              <div className="font-semibold text-white">
+              <div className="font-bold text-white text-lg">
                 {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
               </div>
-              <div className="text-xs text-primary font-medium">
-                {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitmen'}
+              <div className="text-sm font-medium text-blue-200">
+                {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitim Uzmanı'}
               </div>
             </div>
-            <Bell size={18} className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
+            <div className="flex items-center space-x-2">
+              <div className="w-10 h-10 bg-white/10 hover:bg-white/20 rounded-xl flex items-center justify-center cursor-pointer transition-all duration-300 group">
+                <Bell size={20} className="text-white/70 group-hover:text-white transition-colors" />
+                <div className="absolute top-2 right-2 w-2 h-2 bg-red-500 rounded-full animate-pulse"></div>
+              </div>
+            </div>
           </div>
         </div>
 
         {/* Search */}
-        <div className="p-4">
-          <div className="relative">
+        <div className="p-6">
+          <div className="relative animate-slide-up">
+            <div className="absolute left-4 top-1/2 transform -translate-y-1/2 z-10">
+              <Search size={20} className="text-white/50" />
+            </div>
             <Input 
               type="text" 
-              placeholder="Hızlı arama..." 
-              className="w-full bg-slate-800/50 text-white rounded-xl py-3 pl-12 pr-4 border border-slate-700/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/25 backdrop-blur-sm placeholder:text-gray-400"
+              placeholder="Hızlı arama ve navigasyon..." 
+              className="w-full bg-white/10 backdrop-blur-lg text-white rounded-2xl py-4 pl-14 pr-6 border border-white/20 focus:border-white/40 focus:ring-0 focus:bg-white/15 placeholder:text-white/50 text-sm font-medium transition-all duration-300 shadow-lg"
             />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
           </div>
         </div>
 
         {/* Navigation Menu */}
-        <nav className="flex-1 overflow-y-auto px-3 pb-4">
-          <div className="space-y-2">
-            {menuItems.map((item) => (
-              <div key={item.id}>
+        <nav className="flex-1 overflow-y-auto px-6 pb-6">
+          <div className="space-y-3">
+            {menuItems.map((item, index) => (
+              <div key={item.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
                 {item.hasSubmenu ? (
-                  <div>
+                  <div className="space-y-2">
                     <button
                       onClick={() => toggleMenu(item.id)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
+                      className="w-full flex items-center justify-between px-5 py-4 text-white/80 hover:text-white hover:bg-white/10 rounded-2xl transition-all duration-300 group backdrop-blur-sm border border-white/5 hover:border-white/20 shadow-lg"
                     >
                       <div className="flex items-center">
-                        <item.icon className="mr-3 w-5 h-5 text-primary group-hover:text-accent transition-colors" />
-                        <span className="font-medium">{item.label}</span>
+                        <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center mr-4 group-hover:bg-white/20 transition-all duration-300">
+                          <item.icon size={20} className="text-white/70 group-hover:text-white transition-colors" />
+                        </div>
+                        <span className="font-semibold text-sm">{item.label}</span>
                       </div>
                       <svg 
-                        className={`w-4 h-4 transition-transform duration-200 ${expandedMenus.includes(item.id) ? 'rotate-180' : ''}`}
+                        className={`w-5 h-5 transition-all duration-300 ${expandedMenus.includes(item.id) ? 'rotate-180 text-white' : 'text-white/60'}`}
                         fill="currentColor" 
                         viewBox="0 0 20 20"
                       >
@@ -282,18 +291,22 @@ export default function AddStudent() {
                     </button>
                     
                     {expandedMenus.includes(item.id) && (
-                      <div className="mt-1 ml-6 space-y-1">
+                      <div className="ml-8 space-y-2 animate-slide-up">
                         {item.submenuItems?.map((subItem, subIndex) => (
                           <Link key={subIndex} href={subItem.href}>
-                            <a className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group ${
+                            <a className={`flex items-center px-4 py-3 text-sm rounded-xl transition-all duration-300 group ${
                               subItem.active 
-                                ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg' 
-                                : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
+                                ? 'bg-gradient-to-r from-white/20 to-white/10 text-white shadow-lg border border-white/30 backdrop-blur-lg' 
+                                : 'text-white/60 hover:text-white hover:bg-white/5'
                             }`}>
-                              <subItem.icon className={`mr-3 w-4 h-4 transition-colors ${
-                                subItem.active ? 'text-white' : 'text-gray-500 group-hover:text-primary'
-                              }`} />
-                              <span>{subItem.label}</span>
+                              <div className={`w-8 h-8 rounded-lg flex items-center justify-center mr-3 transition-all duration-300 ${
+                                subItem.active ? 'bg-white/20' : 'bg-white/5 group-hover:bg-white/10'
+                              }`}>
+                                <subItem.icon size={16} className={`transition-colors ${
+                                  subItem.active ? 'text-white' : 'text-white/50 group-hover:text-white/80'
+                                }`} />
+                              </div>
+                              <span className="font-medium">{subItem.label}</span>
                             </a>
                           </Link>
                         ))}
@@ -302,15 +315,19 @@ export default function AddStudent() {
                   </div>
                 ) : (
                   <Link href={item.href || '#'}>
-                    <a className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
+                    <a className={`flex items-center px-5 py-4 rounded-2xl transition-all duration-300 group backdrop-blur-sm border shadow-lg ${
                       item.active 
-                        ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                        ? 'bg-gradient-to-r from-white/20 to-white/10 text-white border-white/30' 
+                        : 'text-white/80 hover:text-white hover:bg-white/10 border-white/5 hover:border-white/20'
                     }`}>
-                      <item.icon className={`mr-3 w-5 h-5 transition-colors ${
-                        item.active ? 'text-white' : 'text-primary group-hover:text-accent'
-                      }`} />
-                      <span className="font-medium">{item.label}</span>
+                      <div className={`w-10 h-10 rounded-xl flex items-center justify-center mr-4 transition-all duration-300 ${
+                        item.active ? 'bg-white/20' : 'bg-white/10 group-hover:bg-white/20'
+                      }`}>
+                        <item.icon size={20} className={`transition-colors ${
+                          item.active ? 'text-white' : 'text-white/70 group-hover:text-white'
+                        }`} />
+                      </div>
+                      <span className="font-semibold text-sm">{item.label}</span>
                     </a>
                   </Link>
                 )}
@@ -320,13 +337,13 @@ export default function AddStudent() {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t border-slate-700/50">
+        <div className="p-6 border-t border-white/10">
           <Button 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className="w-full flex items-center justify-center py-4 px-6 bg-gradient-to-r from-red-500/20 to-red-600/20 backdrop-blur-lg text-white rounded-2xl hover:from-red-500/30 hover:to-red-600/30 transition-all duration-300 shadow-lg hover:shadow-xl border border-red-500/30 hover:border-red-400/50 group"
           >
-            <LogOut className="mr-2" size={18} />
-            <span className="font-medium">Çıkış Yap</span>
+            <LogOut className="mr-3 group-hover:rotate-12 transition-transform duration-300" size={20} />
+            <span className="font-semibold">Güvenli Çıkış</span>
           </Button>
         </div>
       </div>
@@ -340,45 +357,53 @@ export default function AddStudent() {
       )}
 
       {/* Main Content */}
-      <div className="md:ml-72 min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className="lg:ml-80 min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-white">
         {/* Top Bar */}
-        <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 sticky top-0 z-10">
-          <div className="flex items-center justify-between px-8 py-5">
+        <header className="glass-effect sticky top-0 z-20 border-b border-white/20">
+          <div className="flex items-center justify-between px-8 py-6">
             <div className="flex items-center">
               <Button
                 variant="ghost"
                 size="sm"
-                className="md:hidden mr-4 text-gray-600 hover:text-gray-900 p-2 rounded-xl hover:bg-gray-100"
+                className="lg:hidden mr-6 p-3 rounded-2xl hover:bg-white/10 transition-all duration-300 shadow-lg"
                 onClick={toggleSidebar}
               >
-                <Menu size={22} />
+                <Menu size={24} className="text-slate-700" />
               </Button>
-              <div>
-                <h1 className="text-3xl font-bold bg-gradient-to-r from-slate-900 via-slate-700 to-slate-600 bg-clip-text text-transparent">
+              <div className="animate-fade-in">
+                <h1 className="text-4xl font-black tracking-tight bg-gradient-to-r from-slate-900 via-primary to-accent bg-clip-text text-transparent">
                   Kursiyer Tanımla
                 </h1>
-                <p className="text-sm text-gray-500 mt-1">Sistem kullanıcılarını yönetin</p>
+                <p className="text-sm font-medium text-slate-600 mt-1">Eğitim sistemi kullanıcı yönetimi</p>
               </div>
             </div>
+            
             <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="sm" className="relative p-3 text-gray-600 hover:text-gray-900 rounded-xl hover:bg-gray-100">
-                <Bell size={20} />
-                <span className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-red-500 to-red-600 rounded-full animate-pulse"></span>
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="relative p-4 text-slate-600 hover:text-slate-900 rounded-2xl hover:bg-white/50 transition-all duration-300 shadow-lg group"
+              >
+                <Bell size={22} className="group-hover:animate-pulse" />
+                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-red-500 to-red-600 rounded-full flex items-center justify-center">
+                  <span className="text-xs text-white font-bold">3</span>
+                </div>
               </Button>
-              <div className="flex items-center space-x-3 bg-gray-50 rounded-2xl px-4 py-2">
-                <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white shadow-md">
+              
+              <div className="flex items-center space-x-4 bg-white/60 backdrop-blur-lg rounded-3xl px-6 py-3 shadow-lg border border-white/30 animate-slide-up">
+                <div className="w-12 h-12 bg-gradient-to-br from-primary to-accent rounded-2xl overflow-hidden ring-2 ring-white/50 shadow-lg">
                   <img 
-                    src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
+                    src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=48&h=48&fit=crop&crop=face"} 
                     alt="Profile" 
                     className="w-full h-full object-cover" 
                   />
                 </div>
                 <div>
-                  <div className="font-semibold text-gray-900">
+                  <div className="font-bold text-slate-900 text-lg">
                     {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
                   </div>
-                  <div className="text-xs text-primary font-medium">
-                    {user?.role === 'admin' ? 'Yönetici' : 'Eğitmen'}
+                  <div className="text-sm font-semibold text-primary">
+                    {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitim Uzmanı'}
                   </div>
                 </div>
               </div>
@@ -387,48 +412,55 @@ export default function AddStudent() {
         </header>
 
         {/* Page Content */}
-        <main className="p-6">
+        <main className="p-8">
           {/* Page Header */}
-          <div className="flex justify-between items-center mb-6">
-            <div>
-              <p className="text-gray-600">Sistem kullanıcılarını yönetin</p>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 space-y-4 sm:space-y-0">
+            <div className="animate-fade-in">
+              <p className="text-slate-600 font-medium text-lg">Öğrenci kayıt ve yönetim merkezi</p>
             </div>
             
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="bg-gradient-to-r from-primary via-primary to-accent text-white hover:from-accent hover:to-primary flex items-center space-x-2 shadow-lg hover:shadow-xl transition-all duration-300 rounded-xl px-6 py-3">
-                  <Plus size={20} />
-                  <span className="font-medium">Yeni Kursiyer Ekle</span>
+                <Button className="button-modern text-white flex items-center space-x-3 rounded-2xl px-8 py-4 text-base font-semibold shadow-2xl">
+                  <Plus size={22} />
+                  <span>Yeni Kursiyer Ekle</span>
                 </Button>
               </DialogTrigger>
               
-              <DialogContent className="sm:max-w-[700px] max-h-[95vh] overflow-y-auto bg-white rounded-3xl shadow-2xl border-0">
-                <div className="bg-gradient-to-r from-primary to-accent p-6 rounded-t-3xl">
-                  <DialogHeader>
-                    <DialogTitle className="text-2xl font-bold text-white flex items-center">
-                      <div className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center mr-3">
-                        <User className="text-white" size={20} />
-                      </div>
-                      Yeni Kursiyer Ekle
-                    </DialogTitle>
-                    <p className="text-white/80 mt-2">Sisteme yeni bir kursiyer ekleyin ve kategorilerini belirleyin</p>
-                  </DialogHeader>
+              <DialogContent className="sm:max-w-[800px] max-h-[95vh] overflow-y-auto card-modern rounded-3xl border-0 p-0 animate-scale-in">
+                <div className="relative bg-gradient-to-br from-primary via-accent to-primary p-8 rounded-t-3xl overflow-hidden">
+                  <div className="absolute inset-0 bg-white/10 backdrop-blur-3xl"></div>
+                  <div className="relative z-10">
+                    <DialogHeader>
+                      <DialogTitle className="text-3xl font-black text-white flex items-center">
+                        <div className="w-14 h-14 bg-white/20 backdrop-blur-lg rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                          <User className="text-white" size={24} />
+                        </div>
+                        <div>
+                          <div>Yeni Kursiyer Ekle</div>
+                          <p className="text-white/80 font-medium text-lg mt-1">Sisteme yeni öğrenci kaydı oluşturun</p>
+                        </div>
+                      </DialogTitle>
+                    </DialogHeader>
+                  </div>
                 </div>
                 
-                <form onSubmit={handleSubmit} className="p-6 space-y-6">
+                <form onSubmit={handleSubmit} className="p-8 space-y-8">
                   {/* Kişisel Bilgiler */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                      <div className="w-6 h-6 bg-primary/10 rounded-full flex items-center justify-center mr-2">
-                        <User className="text-primary" size={14} />
+                  <div className="space-y-6 animate-fade-in">
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-accent/20 rounded-2xl flex items-center justify-center shadow-lg">
+                        <User className="text-primary" size={20} />
                       </div>
-                      Kişisel Bilgiler
-                    </h3>
+                      <h3 className="text-2xl font-bold text-slate-900">Kişisel Bilgiler</h3>
+                    </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* T.C. Kimlik No */}
-                      <div className="space-y-2">
-                        <Label htmlFor="tcNo" className="text-sm font-medium text-gray-700">T.C. Kimlik No</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="tcNo" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          T.C. Kimlik No
+                        </Label>
                         <Input
                           id="tcNo"
                           type="text"
@@ -436,14 +468,14 @@ export default function AddStudent() {
                           value={formData.tcNo}
                           onChange={(e) => handleInputChange('tcNo', e.target.value)}
                           maxLength={11}
-                          className="rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
+                          className="input-modern h-14 text-base"
                         />
                       </div>
 
                       {/* Ad */}
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName" className="text-sm font-medium text-gray-700">
-                          Adı <span className="text-red-500">*</span>
+                      <div className="space-y-3">
+                        <Label htmlFor="firstName" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          Adı <span className="text-red-500 text-lg">*</span>
                         </Label>
                         <Input
                           id="firstName"
@@ -452,14 +484,14 @@ export default function AddStudent() {
                           value={formData.firstName}
                           onChange={(e) => handleInputChange('firstName', e.target.value)}
                           required
-                          className="rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
+                          className="input-modern h-14 text-base"
                         />
                       </div>
 
                       {/* Soyad */}
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName" className="text-sm font-medium text-gray-700">
-                          Soyadı <span className="text-red-500">*</span>
+                      <div className="space-y-3">
+                        <Label htmlFor="lastName" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          Soyadı <span className="text-red-500 text-lg">*</span>
                         </Label>
                         <Input
                           id="lastName"
@@ -468,62 +500,71 @@ export default function AddStudent() {
                           value={formData.lastName}
                           onChange={(e) => handleInputChange('lastName', e.target.value)}
                           required
-                          className="rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
+                          className="input-modern h-14 text-base"
                         />
                       </div>
 
                       {/* Doğum Tarihi */}
-                      <div className="space-y-2">
-                        <Label htmlFor="birthDate" className="text-sm font-medium text-gray-700">Doğum Tarihi</Label>
-                        <Input
-                          id="birthDate"
-                          type="date"
-                          value={formData.birthDate}
-                          onChange={(e) => handleInputChange('birthDate', e.target.value)}
-                          className="rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
-                        />
+                      <div className="space-y-3">
+                        <Label htmlFor="birthDate" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          Doğum Tarihi
+                        </Label>
+                        <div className="relative">
+                          <Calendar className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
+                          <Input
+                            id="birthDate"
+                            type="date"
+                            value={formData.birthDate}
+                            onChange={(e) => handleInputChange('birthDate', e.target.value)}
+                            className="input-modern h-14 text-base pl-12"
+                          />
+                        </div>
                       </div>
                     </div>
                   </div>
 
                   {/* İletişim Bilgileri */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                      <div className="w-6 h-6 bg-accent/10 rounded-full flex items-center justify-center mr-2">
-                        <Phone className="text-accent" size={14} />
+                  <div className="space-y-6 animate-slide-up">
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-br from-accent/20 to-blue-500/20 rounded-2xl flex items-center justify-center shadow-lg">
+                        <Phone className="text-accent" size={20} />
                       </div>
-                      İletişim Bilgileri
-                    </h3>
+                      <h3 className="text-2xl font-bold text-slate-900">İletişim Bilgileri</h3>
+                    </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                       {/* Email */}
-                      <div className="space-y-2">
-                        <Label htmlFor="email" className="text-sm font-medium text-gray-700">E-posta</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="email" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          E-posta Adresi
+                        </Label>
                         <div className="relative">
-                          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                          <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
                           <Input
                             id="email"
                             type="email"
                             placeholder="ornek@email.com"
                             value={formData.email}
                             onChange={(e) => handleInputChange('email', e.target.value)}
-                            className="pl-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
+                            className="input-modern h-14 text-base pl-12"
                           />
                         </div>
                       </div>
 
                       {/* Telefon */}
-                      <div className="space-y-2">
-                        <Label htmlFor="phone" className="text-sm font-medium text-gray-700">Telefon</Label>
+                      <div className="space-y-3">
+                        <Label htmlFor="phone" className="text-sm font-bold text-slate-700 uppercase tracking-wider">
+                          Telefon Numarası
+                        </Label>
                         <div className="relative">
-                          <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+                          <Phone className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={20} />
                           <Input
                             id="phone"
                             type="tel"
                             placeholder="0555 123 45 67"
                             value={formData.phone}
                             onChange={(e) => handleInputChange('phone', e.target.value)}
-                            className="pl-12 rounded-xl border-gray-200 focus:border-primary focus:ring-primary/20 h-12"
+                            className="input-modern h-14 text-base pl-12"
                           />
                         </div>
                       </div>
@@ -531,20 +572,20 @@ export default function AddStudent() {
                   </div>
 
                   {/* Kategori Seçimi */}
-                  <div className="space-y-4">
-                    <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-                      <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-2">
-                        <BookOpen className="text-green-600" size={14} />
+                  <div className="space-y-6 animate-fade-in">
+                    <div className="flex items-center space-x-3 mb-6">
+                      <div className="w-10 h-10 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-2xl flex items-center justify-center shadow-lg">
+                        <BookOpen className="text-green-600" size={20} />
                       </div>
-                      Atanacak Kategoriler
-                    </h3>
+                      <h3 className="text-2xl font-bold text-slate-900">Eğitim Kategorileri</h3>
+                    </div>
                     
-                    <div className="bg-gray-50 rounded-2xl p-4">
-                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                    <div className="bg-gradient-to-br from-slate-50 to-blue-50/50 rounded-3xl p-6 border border-slate-200/50">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                         {categories.map((category: string) => (
                           <label 
                             key={category} 
-                            className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-primary/50 hover:bg-primary/5 cursor-pointer transition-all duration-200"
+                            className="flex items-center space-x-4 p-4 bg-white/80 backdrop-blur-sm rounded-2xl border border-white/50 hover:border-primary/40 hover:bg-white/90 cursor-pointer transition-all duration-300 shadow-lg hover:shadow-xl group"
                           >
                             <input
                               type="checkbox"
@@ -556,42 +597,48 @@ export default function AddStudent() {
                                   handleInputChange('assignedCategories', formData.assignedCategories.filter(c => c !== category));
                                 }
                               }}
-                              className="w-5 h-5 rounded border-gray-300 text-primary focus:ring-primary/20"
+                              className="w-6 h-6 rounded-lg border-2 border-slate-300 text-primary focus:ring-primary/20 focus:ring-2"
                             />
-                            <span className="text-sm font-medium text-gray-700">{category}</span>
+                            <span className="text-sm font-semibold text-slate-800 group-hover:text-primary transition-colors">
+                              {category}
+                            </span>
                           </label>
                         ))}
                       </div>
                       {categories.length === 0 && (
-                        <p className="text-center text-gray-500 py-4">Henüz kategori bulunmuyor</p>
+                        <div className="text-center py-12">
+                          <BookOpen className="mx-auto text-slate-400 mb-4" size={48} />
+                          <p className="text-slate-500 font-medium">Henüz eğitim kategorisi bulunmuyor</p>
+                          <p className="text-sm text-slate-400 mt-1">Kategori eklendikten sonra burada görünecek</p>
+                        </div>
                       )}
                     </div>
                   </div>
 
                   {/* Submit Buttons */}
-                  <div className="flex justify-end space-x-4 pt-6 border-t border-gray-100">
+                  <div className="flex flex-col sm:flex-row justify-end space-y-3 sm:space-y-0 sm:space-x-4 pt-8 border-t border-slate-200/50">
                     <Button
                       type="button"
                       variant="outline"
                       onClick={() => setIsDialogOpen(false)}
-                      className="px-6 py-3 rounded-xl border-gray-300 text-gray-700 hover:bg-gray-50"
+                      className="px-8 py-4 rounded-2xl border-2 border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold text-base transition-all duration-300"
                     >
-                      İptal
+                      İptal Et
                     </Button>
                     <Button
                       type="submit"
-                      className="bg-gradient-to-r from-primary to-accent text-white hover:from-accent hover:to-primary px-8 py-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300"
+                      className="button-modern px-10 py-4 rounded-2xl text-base font-bold"
                       disabled={createStudentMutation.isPending}
                     >
                       {createStudentMutation.isPending ? (
-                        <div className="flex items-center">
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Kaydediliyor...
+                        <div className="flex items-center space-x-3">
+                          <div className="animate-spin rounded-full h-5 w-5 border-2 border-white border-t-transparent"></div>
+                          <span>Kayıt Oluşturuluyor...</span>
                         </div>
                       ) : (
-                        <div className="flex items-center">
-                          <Plus className="mr-2" size={18} />
-                          Kursiyeri Kaydet
+                        <div className="flex items-center space-x-3">
+                          <Plus size={20} />
+                          <span>Kursiyeri Kaydet</span>
                         </div>
                       )}
                     </Button>
