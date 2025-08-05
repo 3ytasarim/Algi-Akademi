@@ -17,6 +17,9 @@ import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
 import NotificationsPage from "@/pages/notifications";
 import CoursesPage from "@/pages/courses";
+import EmailIntegrationPage from "@/pages/integrations/email";
+import SMSIntegrationPage from "@/pages/integrations/sms";
+import PaymentIntegrationPage from "@/pages/integrations/payment";
 
 function Router() {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -47,6 +50,9 @@ function Router() {
               <Route path="/integrations" component={Integrations} />
               <Route path="/notifications" component={NotificationsPage} />
               <Route path="/courses" component={CoursesPage} />
+              <Route path="/integrations/email" component={EmailIntegrationPage} />
+              <Route path="/integrations/sms" component={SMSIntegrationPage} />
+              <Route path="/integrations/payment" component={PaymentIntegrationPage} />
             </>
           )}
         </>

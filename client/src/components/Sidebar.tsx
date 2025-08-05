@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Gauge, MessageSquare, Settings, Book, Users, ClipboardList, BarChart3, 
   TrendingUp, PieChart, AreaChart, UserCog, Bus, Plug, Menu, Bell, 
-  Search, ChevronLeft, ChevronRight, LogOut, BookOpen
+  Search, ChevronLeft, ChevronRight, LogOut, BookOpen, Mail, CreditCard
 } from "lucide-react";
 
 interface SidebarProps {
@@ -23,7 +23,7 @@ export default function Sidebar({
   toggleSidebarCollapse,
   activeHref 
 }: SidebarProps) {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses', 'system']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses', 'system', 'integrations']);
   
   const handleLogout = () => {
     window.location.href = "/api/logout";
@@ -74,8 +74,18 @@ export default function Sidebar({
       submenuItems: [
         { icon: BookOpen, label: "Kurslar", href: "/courses" },
         { icon: Bus, label: "Danışmanlar", href: "/consultants" },
-        { icon: Plug, label: "Entegrasyonlar", href: "/integrations" },
         { icon: Settings, label: "Ayarlar", href: "#" },
+      ]
+    },
+    {
+      id: "integrations",
+      icon: Plug,
+      label: "Entegrasyonlar",
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: Mail, label: "E-posta Ayarları", href: "/integrations/email" },
+        { icon: MessageSquare, label: "NetGSM SMS", href: "/integrations/sms" },
+        { icon: CreditCard, label: "Ödeme Sistemleri", href: "/integrations/payment" },
       ]
     },
     {
