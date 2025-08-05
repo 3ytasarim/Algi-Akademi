@@ -28,7 +28,9 @@ import {
   Trash2,
   Plus,
   UserPlus,
-  LogOut
+  LogOut,
+  ChevronLeft,
+  ChevronRight
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import StatsCard from "@/components/ui/stats-card";
@@ -38,7 +40,8 @@ import StudentTable from "@/components/student-table";
 export default function Dashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
-  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
 
   // Redirect to home if not authenticated
@@ -89,6 +92,10 @@ export default function Dashboard() {
 
   const toggleSidebar = () => {
     setSidebarOpen(!sidebarOpen);
+  };
+
+  const toggleSidebarCollapse = () => {
+    setSidebarCollapsed(!sidebarCollapsed);
   };
 
   if (isLoading || !isAuthenticated) {
@@ -158,52 +165,70 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-72 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-20 shadow-2xl`}>
+      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform transition-all duration-300 z-20 shadow-2xl ${
+        sidebarCollapsed ? 'w-16' : 'w-72'
+      } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         {/* Header */}
         <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
-          <div className="flex items-center mb-5">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
-              <Gauge size={24} className="text-white" />
+          <div className="flex items-center justify-between mb-5">
+            <div className="flex items-center">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
+                <Gauge size={24} className="text-white" />
+              </div>
+              {!sidebarCollapsed && (
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
+                    Algı Akademi
+                  </h1>
+                  <p className="text-sm text-gray-400">Yönetim Paneli</p>
+                </div>
+              )}
             </div>
-            <div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                Algı Akademi
-              </h1>
-              <p className="text-sm text-gray-400">Yönetim Paneli</p>
-            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={toggleSidebarCollapse}
+              className="hidden md:flex text-gray-400 hover:text-white hover:bg-slate-800/50 p-2 rounded-lg transition-all duration-200"
+            >
+              {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
+            </Button>
           </div>
           
-          <div className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-xl backdrop-blur-sm">
-            <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white/20">
-              <img 
-                src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
-                alt="User profile" 
-                className="w-full h-full object-cover" 
-              />
-            </div>
-            <div className="flex-1">
-              <div className="font-semibold text-white">
-                {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
+          {!sidebarCollapsed && (
+            <div className="flex items-center space-x-3 p-3 bg-slate-800/50 rounded-xl backdrop-blur-sm">
+              <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-full overflow-hidden ring-2 ring-white/20">
+                <img 
+                  src={user?.profileImageUrl || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=40&h=40&fit=crop&crop=face"} 
+                  alt="User profile" 
+                  className="w-full h-full object-cover" 
+                />
               </div>
-              <div className="text-xs text-primary font-medium">
-                {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitmen'}
+              <div className="flex-1">
+                <div className="font-semibold text-white">
+                  {user?.firstName || 'Safiye'} {user?.lastName || 'Hanım'}
+                </div>
+                <div className="text-xs text-primary font-medium">
+                  {user?.role === 'admin' ? 'Sistem Yöneticisi' : 'Eğitmen'}
+                </div>
               </div>
+              <Bell size={18} className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
             </div>
-            <Bell size={18} className="text-gray-400 hover:text-white cursor-pointer transition-colors" />
-          </div>
+          )}
         </div>
 
         {/* Search */}
-        <div className="p-4">
-          <div className="relative">
-            <Input 
-              type="text" 
-              placeholder="Hızlı arama..." 
-              className="w-full bg-slate-800/50 text-white rounded-xl py-3 pl-12 pr-4 border border-slate-700/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/25 backdrop-blur-sm placeholder:text-gray-400"
-            />
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+        {!sidebarCollapsed && (
+          <div className="p-4">
+            <div className="relative">
+              <Input 
+                type="text" 
+                placeholder="Hızlı arama..." 
+                className="w-full bg-slate-800/50 text-white rounded-xl py-3 pl-12 pr-4 border border-slate-700/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/25 backdrop-blur-sm placeholder:text-gray-400"
+              />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
@@ -218,18 +243,20 @@ export default function Dashboard() {
                     >
                       <div className="flex items-center">
                         <item.icon className="mr-3 w-5 h-5 text-primary group-hover:text-accent transition-colors" />
-                        <span className="font-medium">{item.label}</span>
+                        {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                       </div>
-                      <svg 
-                        className={`w-4 h-4 transition-transform duration-200 ${expandedMenus.includes(item.id) ? 'rotate-180' : ''}`}
-                        fill="currentColor" 
-                        viewBox="0 0 20 20"
-                      >
-                        <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
-                      </svg>
+                      {!sidebarCollapsed && (
+                        <svg 
+                          className={`w-4 h-4 transition-transform duration-200 ${expandedMenus.includes(item.id) ? 'rotate-180' : ''}`}
+                          fill="currentColor" 
+                          viewBox="0 0 20 20"
+                        >
+                          <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                        </svg>
+                      )}
                     </button>
                     
-                    {expandedMenus.includes(item.id) && (
+                    {expandedMenus.includes(item.id) && !sidebarCollapsed && (
                       <div className="mt-1 ml-6 space-y-1">
                         {item.submenuItems?.map((subItem, subIndex) => (
                           <Link key={subIndex} href={subItem.href}>
@@ -252,7 +279,7 @@ export default function Dashboard() {
                       <item.icon className={`mr-3 w-5 h-5 transition-colors ${
                         item.active ? 'text-white' : 'text-primary group-hover:text-accent'
                       }`} />
-                      <span className="font-medium">{item.label}</span>
+                      {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                     </a>
                   </Link>
                 )}
@@ -265,10 +292,12 @@ export default function Dashboard() {
         <div className="p-4 border-t border-slate-700/50">
           <Button 
             onClick={handleLogout}
-            className="w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl"
+            className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
+              sidebarCollapsed ? 'px-2' : ''
+            }`}
           >
-            <LogOut className="mr-2" size={18} />
-            <span className="font-medium">Çıkış Yap</span>
+            <LogOut className={sidebarCollapsed ? "" : "mr-2"} size={18} />
+            {!sidebarCollapsed && <span className="font-medium">Çıkış Yap</span>}
           </Button>
         </div>
       </div>
@@ -282,7 +311,9 @@ export default function Dashboard() {
       )}
 
       {/* Main Content */}
-      <div className="md:ml-72 min-h-screen bg-gradient-to-br from-gray-50 to-white">
+      <div className={`min-h-screen bg-gradient-to-br from-gray-50 to-white transition-all duration-300 ${
+        sidebarCollapsed ? 'md:ml-16' : 'md:ml-72'
+      }`}>
         {/* Top Bar */}
         <header className="bg-white/80 backdrop-blur-lg shadow-lg border-b border-gray-200/50 sticky top-0 z-10">
           <div className="flex items-center justify-between px-8 py-5">
