@@ -1,0 +1,161 @@
+import type { Express } from "express";
+import { createServer, type Server } from "http";
+import { storage } from "./storage";
+import { setupAuth, isAuthenticated } from "./replitAuth";
+import { insertCourseSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
+import { z } from "zod";
+
+export async function registerRoutes(app: Express): Promise<Server> {
+  // Auth middleware
+  await setupAuth(app);
+
+  // Auth routes
+  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const user = await storage.getUser(userId);
+      res.json(user);
+    } catch (error) {
+      console.error("Error fetching user:", error);
+      res.status(500).json({ message: "Failed to fetch user" });
+    }
+  });
+
+  // Dashboard stats
+  app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
+    try {
+      const stats = await storage.getDashboardStats();
+      res.json(stats);
+    } catch (error) {
+      console.error("Error fetching dashboard stats:", error);
+      res.status(500).json({ message: "Failed to fetch dashboard stats" });
+    }
+  });
+
+  // Course routes
+  app.get('/api/courses', isAuthenticated, async (req, res) => {
+    try {
+      const courses = await storage.getCourses();
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching courses:", error);
+      res.status(500).json({ message: "Failed to fetch courses" });
+    }
+  });
+
+  app.get('/api/courses/:id', isAuthenticated, async (req, res) => {
+    try {
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      res.json(course);
+    } catch (error) {
+      console.error("Error fetching course:", error);
+      res.status(500).json({ message: "Failed to fetch course" });
+    }
+  });
+
+  app.post('/api/courses', isAuthenticated, async (req: any, res) => {
+    try {
+      const validatedData = insertCourseSchema.parse(req.body);
+      const course = await storage.createCourse(validatedData);
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'course_created',
+        description: `Yeni kurs oluşturuldu: ${course.title}`,
+      });
+      
+      res.status(201).json(course);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error creating course:", error);
+      res.status(500).json({ message: "Failed to create course" });
+    }
+  });
+
+  // Enrollment routes
+  app.get('/api/enrollments', isAuthenticated, async (req, res) => {
+    try {
+      const enrollments = await storage.getEnrollments();
+      res.json(enrollments);
+    } catch (error) {
+      console.error("Error fetching enrollments:", error);
+      res.status(500).json({ message: "Failed to fetch enrollments" });
+    }
+  });
+
+  app.post('/api/enrollments', isAuthenticated, async (req: any, res) => {
+    try {
+      const validatedData = insertEnrollmentSchema.parse(req.body);
+      const enrollment = await storage.createEnrollment(validatedData);
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'enrollment',
+        description: `Yeni kursiyer kaydı yapıldı`,
+      });
+      
+      res.status(201).json(enrollment);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error creating enrollment:", error);
+      res.status(500).json({ message: "Failed to create enrollment" });
+    }
+  });
+
+  // Exam routes
+  app.get('/api/exams', isAuthenticated, async (req, res) => {
+    try {
+      const exams = await storage.getExams();
+      res.json(exams);
+    } catch (error) {
+      console.error("Error fetching exams:", error);
+      res.status(500).json({ message: "Failed to fetch exams" });
+    }
+  });
+
+  app.post('/api/exams', isAuthenticated, async (req: any, res) => {
+    try {
+      const validatedData = insertExamSchema.parse(req.body);
+      const exam = await storage.createExam(validatedData);
+      
+      // Create activity
+      await storage.createActivity({
+        userId: req.user.claims.sub,
+        type: 'exam_created',
+        description: `Sınav oluşturuldu: ${exam.title}`,
+      });
+      
+      res.status(201).json(exam);
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        return res.status(400).json({ message: "Invalid data", errors: error.errors });
+      }
+      console.error("Error creating exam:", error);
+      res.status(500).json({ message: "Failed to create exam" });
+    }
+  });
+
+  // Activity routes
+  app.get('/api/activities', isAuthenticated, async (req, res) => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const activities = await storage.getRecentActivities(limit);
+      res.json(activities);
+    } catch (error) {
+      console.error("Error fetching activities:", error);
+      res.status(500).json({ message: "Failed to fetch activities" });
+    }
+  });
+
+  const httpServer = createServer(app);
+  return httpServer;
+}

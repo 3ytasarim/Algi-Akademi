@@ -1,0 +1,78 @@
+# Overview
+
+This is a full-stack educational management system (Algı Akademi) built with React, Express.js, and PostgreSQL. The application provides a comprehensive platform for managing courses, students, exams, and educational activities with role-based access control for students, instructors, and administrators.
+
+# User Preferences
+
+Preferred communication style: Simple, everyday language.
+
+# System Architecture
+
+## Frontend Architecture
+- **Framework**: React 18 with TypeScript for type safety
+- **Routing**: Wouter for lightweight client-side routing
+- **State Management**: TanStack React Query for server state management and caching
+- **UI Components**: Radix UI primitives with shadcn/ui component system
+- **Styling**: Tailwind CSS with CSS variables for theming support
+- **Build Tool**: Vite for fast development and optimized production builds
+
+## Backend Architecture
+- **Runtime**: Node.js with Express.js framework
+- **Language**: TypeScript with ES modules
+- **Database ORM**: Drizzle ORM for type-safe database operations
+- **Session Management**: Express sessions with PostgreSQL session store
+- **API Design**: RESTful API endpoints with error handling middleware
+- **Development**: Hot reload with tsx for server-side development
+
+## Authentication & Authorization
+- **Provider**: Replit OpenID Connect (OIDC) integration
+- **Session Storage**: PostgreSQL-backed sessions using connect-pg-simple
+- **Authorization**: Role-based access control (student, instructor, admin)
+- **Security**: HTTP-only cookies with secure flag for production
+
+## Database Design
+- **Primary Database**: PostgreSQL with Neon serverless connection
+- **Schema Management**: Drizzle Kit for migrations and schema management
+- **Key Entities**:
+  - Users (with role-based permissions)
+  - Courses (with instructor assignments)
+  - Enrollments (student-course relationships)
+  - Exams (course-specific assessments)
+  - Exam Results (student performance tracking)
+  - Activities (course interactions and logs)
+- **Relationships**: Proper foreign key constraints and relational integrity
+
+## Development Workflow
+- **Monorepo Structure**: Shared TypeScript types between client and server
+- **Path Aliases**: Configured for clean imports (@/, @shared/, @assets/)
+- **Hot Reload**: Vite HMR for frontend, tsx for backend development
+- **Type Safety**: End-to-end TypeScript with strict configuration
+
+# External Dependencies
+
+## Database Services
+- **Neon Database**: Serverless PostgreSQL hosting with connection pooling
+- **Connection Management**: WebSocket-based connections for serverless compatibility
+
+## Authentication Services
+- **Replit Identity**: OIDC-based authentication provider
+- **OpenID Client**: Standard OIDC implementation for secure authentication flows
+
+## UI & Component Libraries
+- **Radix UI**: Accessible, unstyled UI primitives
+- **Lucide React**: Consistent icon library
+- **TanStack React Query**: Server state management and caching
+- **React Hook Form**: Form handling with validation
+
+## Development Tools
+- **Vite Plugins**: 
+  - React plugin for JSX transformation
+  - Runtime error overlay for development
+  - Cartographer for Replit integration
+- **Drizzle Kit**: Database schema management and migrations
+- **PostCSS**: CSS processing with Tailwind and Autoprefixer
+
+## Build & Deployment
+- **ESBuild**: Fast bundling for server-side code
+- **Vite Build**: Optimized frontend production builds
+- **Static Assets**: Served through Express with proper routing fallback
