@@ -448,53 +448,62 @@ export default function CoursesPage() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  <TableHead>Kurs ID</TableHead>
                   <TableHead>Kurs Adı</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Eğitmen</TableHead>
-                  <TableHead>Seviye</TableHead>
-                  <TableHead>Fiyat</TableHead>
-                  <TableHead>Durum</TableHead>
-                  <TableHead>Oluşturma Tarihi</TableHead>
+                  <TableHead>Toplam Ders</TableHead>
+                  <TableHead>Kurs Fiyatı</TableHead>
+                  <TableHead>Aktif/Pasif</TableHead>
                   <TableHead>İşlemler</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {isLoading ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       <div className="animate-pulse">Yükleniyor...</div>
                     </TableCell>
                   </TableRow>
                 ) : filteredCourses?.length === 0 ? (
                   <TableRow>
-                    <TableCell colSpan={8} className="text-center py-8">
+                    <TableCell colSpan={6} className="text-center py-8">
                       <div className="text-gray-500">Kurs bulunamadı</div>
                     </TableCell>
                   </TableRow>
                 ) : (
-                  filteredCourses?.map((course: any) => (
+                  filteredCourses?.map((course: any, index: number) => (
                     <TableRow key={course.id}>
                       <TableCell>
-                        <div>
-                          <div className="font-medium">{course.title}</div>
-                          {course.description && (
-                            <div className="text-sm text-gray-500 truncate max-w-xs">
-                              {course.description}
-                            </div>
-                          )}
+                        <div className="font-mono text-sm text-gray-600">
+                          #{(index + 1).toString().padStart(3, '0')}
                         </div>
                       </TableCell>
                       <TableCell>
-                        <Badge variant="outline">{course.category || '-'}</Badge>
+                        <div className="font-medium">{course.title}</div>
+                        {course.description && (
+                          <div className="text-sm text-gray-500 truncate max-w-xs">
+                            {course.description}
+                          </div>
+                        )}
                       </TableCell>
-                      <TableCell>{course.instructorName || '-'}</TableCell>
-                      <TableCell>{getLevelBadge(course.level)}</TableCell>
                       <TableCell>
-                        {course.price ? `₺${course.price.toLocaleString()}` : 'Ücretsiz'}
+                        <div className="text-center">
+                          {course.duration || '-'}
+                        </div>
                       </TableCell>
-                      <TableCell>{getStatusBadge(course.status)}</TableCell>
                       <TableCell>
-                        {format(new Date(course.createdAt), "dd MMM yyyy", { locale: tr })}
+                        <div className="font-semibold">
+                          {course.price ? `₺${course.price.toLocaleString()}` : 'Ücretsiz'}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Badge 
+                          className={course.status === 'active' 
+                            ? 'bg-green-100 text-green-800 border-green-200' 
+                            : 'bg-red-100 text-red-800 border-red-200'
+                          }
+                        >
+                          {course.status === 'active' ? 'Aktif' : 'Pasif'}
+                        </Badge>
                       </TableCell>
                       <TableCell>
                         <div className="flex items-center gap-2">
@@ -502,6 +511,7 @@ export default function CoursesPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleEditCourse(course)}
+                            className="h-8 w-8 p-0"
                           >
                             <Edit size={14} />
                           </Button>
@@ -509,7 +519,7 @@ export default function CoursesPage() {
                             size="sm"
                             variant="ghost"
                             onClick={() => handleDeleteCourse(course.id)}
-                            className="text-red-600 hover:text-red-700"
+                            className="h-8 w-8 p-0 text-red-600 hover:text-red-700"
                           >
                             <Trash2 size={14} />
                           </Button>
