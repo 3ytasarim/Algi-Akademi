@@ -170,7 +170,7 @@ export default function Sidebar({
                       <div className="mt-1 ml-6 space-y-1">
                         {item.submenuItems?.map((subItem, subIndex) => (
                           <Link key={subIndex} href={subItem.href}>
-                            <a className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group ${
+                            <div className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group cursor-pointer ${
                               subItem.href === activeHref 
                                 ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
                                 : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
@@ -181,7 +181,7 @@ export default function Sidebar({
                                 }`} />
                               </div>
                               <span>{subItem.label}</span>
-                            </a>
+                            </div>
                           </Link>
                         ))}
                       </div>
