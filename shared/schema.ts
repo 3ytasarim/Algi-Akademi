@@ -34,6 +34,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull().default('student'), // 'student', 'admin', 'instructor'
+  assignedCategories: text("assigned_categories").array().default(sql`ARRAY[]::text[]`), // course categories assigned to student
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -46,6 +47,7 @@ export const courses = pgTable("courses", {
   price: decimal("price", { precision: 10, scale: 2 }),
   duration: integer("duration"), // in weeks
   status: varchar("status").notNull().default('active'), // 'active', 'inactive', 'starting'
+  category: varchar("category").notNull().default('Genel'), // course category for assignment
   thumbnail: varchar("thumbnail"),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

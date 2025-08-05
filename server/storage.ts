@@ -85,6 +85,9 @@ export interface IStorage {
   getIntegrations(): Promise<Integration[]>;
   createIntegration(integration: InsertIntegration): Promise<Integration>;
   updateIntegration(id: string, integration: Partial<InsertIntegration>): Promise<Integration>;
+
+  // Category-based course operations
+  getCoursesByUserCategories(userId: string): Promise<Course[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -170,6 +173,24 @@ export class DatabaseStorage implements IStorage {
       ...result.enrollments,
       course: result.courses,
     }));
+  }
+
+  async getCoursesByUserCategories(userId: string): Promise<Course[]> {
+    const user = await this.getUser(userId);
+    if (!user?.assignedCategories || user.assignedCategories.length === 0) {
+      return [];
+    }
+
+    return await db
+      .select()
+      .from(courses)
+      .where(
+        and(
+          eq(courses.status, 'active'),
+          sql`${courses.category} = ANY(${user.assignedCategories})`
+        )
+      )
+      .orderBy(desc(courses.createdAt));
   }
 
   async getEnrollmentsByCourse(courseId: string): Promise<(Enrollment & { student: User })[]> {

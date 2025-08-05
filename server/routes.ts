@@ -230,6 +230,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // User courses by category
+  app.get("/api/user-courses", isAuthenticated, async (req: any, res) => {
+    try {
+      const userId = req.user.claims.sub;
+      const courses = await storage.getCoursesByUserCategories(userId);
+      res.json(courses);
+    } catch (error) {
+      console.error("Error fetching user courses:", error);
+      res.status(500).json({ message: "Failed to fetch user courses" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

@@ -23,19 +23,14 @@ function Router() {
         <Route path="/" component={Landing} />
       ) : (
         <>
-          {/* Route based on user role */}
-          {user?.role === 'student' ? (
-            <Route path="/" component={StudentDashboard} />
-          ) : (
-            <>
-              <Route path="/" component={Dashboard} />
-              <Route path="/reports" component={Reports} />
-              <Route path="/add-student" component={AddStudent} />
-              <Route path="/exam-results" component={ExamResults} />
-              <Route path="/consultants" component={Consultants} />
-              <Route path="/integrations" component={Integrations} />
-            </>
-          )}
+          {/* Admin routes */}
+          <Route path="/" component={Dashboard} />
+          <Route path="/student-dashboard" component={StudentDashboard} />
+          <Route path="/reports" component={Reports} />
+          <Route path="/add-student" component={AddStudent} />
+          <Route path="/exam-results" component={ExamResults} />
+          <Route path="/consultants" component={Consultants} />
+          <Route path="/integrations" component={Integrations} />
         </>
       )}
       <Route component={NotFound} />
