@@ -123,7 +123,7 @@ export default function Dashboard() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full w-64 dark-bg text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 transition-transform duration-300 z-20`}>
+      <div className={`fixed left-0 top-0 h-full w-64 dark-bg text-white transform ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0 transition-transform duration-300 z-20`}>
         <div className="p-6 border-b border-gray-600">
           <div className="flex items-center mb-4">
             <Gauge className="text-2xl text-accent mr-3" size={32} />
@@ -221,13 +221,13 @@ export default function Dashboard() {
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black bg-opacity-50 z-10 lg:hidden" 
+          className="fixed inset-0 bg-black bg-opacity-50 z-10 md:hidden" 
           onClick={toggleSidebar}
         ></div>
       )}
 
       {/* Main Content */}
-      <div className="lg:ml-64 min-h-screen">
+      <div className="md:ml-64 min-h-screen">
         {/* Top Bar */}
         <header className="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-10">
           <div className="flex items-center justify-between px-6 py-4">
@@ -235,7 +235,7 @@ export default function Dashboard() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="lg:hidden mr-4 text-gray-600 hover:text-gray-900"
+                className="md:hidden mr-4 text-gray-600 hover:text-gray-900"
                 onClick={toggleSidebar}
               >
                 <Menu size={20} />
