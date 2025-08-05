@@ -5,7 +5,7 @@ import { Input } from "@/components/ui/input";
 import { 
   Gauge, MessageSquare, Settings, Book, Users, ClipboardList, BarChart3, 
   TrendingUp, PieChart, AreaChart, UserCog, Bus, Plug, Menu, Bell, 
-  Search, ChevronLeft, ChevronRight, LogOut
+  Search, ChevronLeft, ChevronRight, LogOut, BookOpen
 } from "lucide-react";
 
 interface SidebarProps {
@@ -72,6 +72,7 @@ export default function Sidebar({
       label: "Sistem Yönetimi", 
       hasSubmenu: true,
       submenuItems: [
+        { icon: BookOpen, label: "Kurs Ekle", href: "/add-course" },
         { icon: Bus, label: "Danışmanlar", href: "/consultants" },
         { icon: Plug, label: "Entegrasyonlar", href: "/integrations" },
         { icon: Settings, label: "Ayarlar", href: "#" },
