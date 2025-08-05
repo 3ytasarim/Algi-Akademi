@@ -115,6 +115,15 @@ export default function CoursesPage() {
         title: "Başarılı",
         description: "Kurs başarıyla silindi.",
       });
+      // Refresh the page to ensure clean state
+      window.location.reload();
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: "Kurs silinirken bir hata oluştu.",
+        variant: "destructive",
+      });
     },
   });
 

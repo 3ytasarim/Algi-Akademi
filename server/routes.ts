@@ -225,8 +225,23 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.delete('/api/courses/:id', isAuthenticated, async (req: any, res) => {
+  app.delete('/api/courses/:id', async (req: any, res) => {
     try {
+      // Debug authentication state
+      console.log('DELETE auth check:', {
+        sessionManualStudent: !!req.session.manualStudent,
+        isAuthenticated: !!req.isAuthenticated,
+        userClaims: !!req.user?.claims?.sub,
+        sessionId: req.sessionID
+      });
+      
+      // Check authentication (manual student or Replit)
+      const isAuthenticated = req.session.manualStudent || (req.isAuthenticated && req.user?.claims?.sub);
+      
+      if (!isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const course = await storage.getCourse(req.params.id);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
@@ -234,9 +249,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       await storage.deleteCourse(req.params.id);
       
-      // Create activity
+      // Create activity with proper user ID
+      const userId = req.session.manualStudent?.tcNo || req.user?.claims?.sub || 'unknown';
       await storage.createActivity({
-        userId: req.user.claims.sub,
+        userId: userId,
         type: 'course_deleted',
         description: `Kurs silindi: ${course.title}`,
       });
