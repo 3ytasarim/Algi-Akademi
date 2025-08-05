@@ -72,7 +72,7 @@ export default function Sidebar({
       label: "Sistem Yönetimi", 
       hasSubmenu: true,
       submenuItems: [
-        { icon: BookOpen, label: "Kurs Ekle", href: "/add-course" },
+        { icon: BookOpen, label: "Kurslar", href: "/courses" },
         { icon: Bus, label: "Danışmanlar", href: "/consultants" },
         { icon: Plug, label: "Entegrasyonlar", href: "/integrations" },
         { icon: Settings, label: "Ayarlar", href: "#" },
