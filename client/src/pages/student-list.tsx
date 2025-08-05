@@ -11,7 +11,7 @@ import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
 import { 
   User, UserPlus, Search, Calendar, CreditCard, Mail, Phone, 
-  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2 
+  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload 
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -25,7 +25,9 @@ export default function StudentList() {
     adı: "",
     soyadı: "",
     doğumTarihi: "",
+    profileImage: null as File | null,
   });
+  const [previewImage, setPreviewImage] = useState<string | null>(null);
 
   const { toast } = useToast();
   const queryClient = useQueryClient();
@@ -64,7 +66,10 @@ export default function StudentList() {
         adı: "",
         soyadı: "",
         doğumTarihi: "",
+        profileImage: null,
+        profileImage: null,
       });
+      setPreviewImage(null);
     },
     onError: (error) => {
       toast({
@@ -77,6 +82,18 @@ export default function StudentList() {
 
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData(prev => ({ ...prev, profileImage: file }));
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPreviewImage(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -119,6 +136,39 @@ export default function StudentList() {
               </DialogHeader>
               
               <form onSubmit={handleSubmit} className="space-y-4 mt-4">
+                {/* Profile Photo Upload */}
+                <div className="flex flex-col items-center space-y-4 mb-6">
+                  <div className="relative">
+                    <div className="w-24 h-24 rounded-full border-4 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 overflow-hidden">
+                      {previewImage ? (
+                        <img 
+                          src={previewImage} 
+                          alt="Preview" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <Camera size={32} className="text-slate-400" />
+                      )}
+                    </div>
+                    <label 
+                      htmlFor="profileImage" 
+                      className="absolute -bottom-2 -right-2 w-8 h-8 bg-blue-500 hover:bg-blue-600 rounded-full flex items-center justify-center cursor-pointer shadow-lg transition-colors group"
+                    >
+                      <Upload size={16} className="text-white group-hover:scale-110 transition-transform" />
+                    </label>
+                    <input
+                      id="profileImage"
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageChange}
+                      className="hidden"
+                    />
+                  </div>
+                  <p className="text-sm text-slate-500 text-center">
+                    Profil fotoğrafı yükle (isteğe bağlı)
+                  </p>
+                </div>
+
                 {/* TC Kimlik No */}
                 <div className="space-y-2">
                   <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium flex items-center gap-2">
