@@ -9,15 +9,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth middleware
   await setupAuth(app);
 
-  // Auth routes
-  app.get('/api/auth/user', isAuthenticated, async (req: any, res) => {
+  // Unified auth endpoint - checks both manual student and Replit auth
+  app.get('/api/auth/user', async (req: any, res) => {
     try {
-      const userId = req.user.claims.sub;
-      const user = await storage.getUser(userId);
-      res.json(user);
+      // First check if there's a manual student session
+      if (req.session.manualStudent) {
+        return res.json(req.session.manualStudent);
+      }
+
+      // Then check Replit auth
+      if (req.isAuthenticated && req.user?.claims?.sub) {
+        const userId = req.user.claims.sub;
+        const user = await storage.getUser(userId);
+        if (user) {
+          return res.json(user);
+        }
+      }
+
+      // No authentication found
+      res.status(401).json({ message: "Unauthorized" });
     } catch (error) {
-      console.error("Error fetching user:", error);
-      res.status(500).json({ message: "Failed to fetch user" });
+      console.error("Error in auth check:", error);
+      res.status(401).json({ message: "Unauthorized" });
     }
   });
 
@@ -85,9 +98,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Update user role
-  app.post('/api/auth/set-role', isAuthenticated, async (req: any, res) => {
+  // Update user role - only for Replit authenticated users
+  app.post('/api/auth/set-role', async (req: any, res) => {
     try {
+      // Skip role setting for manual students
+      if (req.session.manualStudent) {
+        return res.json(req.session.manualStudent);
+      }
+
+      // Handle Replit users
+      if (!req.isAuthenticated || !req.user?.claims?.sub) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const userId = req.user.claims.sub;
       const { role } = req.body;
       
@@ -112,9 +135,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Dashboard stats
-  app.get('/api/dashboard/stats', isAuthenticated, async (req: any, res) => {
+  // Dashboard stats - check unified auth
+  app.get('/api/dashboard/stats', async (req: any, res) => {
     try {
+      // Check authentication (manual student or Replit)
+      const isAuthenticated = req.session.manualStudent || (req.isAuthenticated && req.user?.claims?.sub);
+      
+      if (!isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
       const stats = await storage.getDashboardStats();
       res.json(stats);
     } catch (error) {
