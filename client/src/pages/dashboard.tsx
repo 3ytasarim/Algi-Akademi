@@ -30,7 +30,9 @@ import {
   UserPlus,
   LogOut,
   ChevronLeft,
-  ChevronRight
+  ChevronRight,
+  Clock,
+  Activity
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import StatsCard from "@/components/ui/stats-card";
