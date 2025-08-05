@@ -261,18 +261,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       console.log('Creating student with data:', req.body);
       
-      // Convert data to UpsertUser format
-      const userData: UpsertUser = {
-        id: req.body.id || undefined, // let database generate if not provided
-        email: req.body.email,
-        firstName: req.body.firstName,
-        lastName: req.body.lastName,
-        profileImageUrl: req.body.profileImageUrl || null,
-        role: 'student',
-        assignedCategories: req.body.assignedCategories || [],
-      };
-      
-      const student = await storage.upsertUser(userData);
+      const student = await storage.createStudent(req.body);
       
       // Create activity
       await storage.createActivity({

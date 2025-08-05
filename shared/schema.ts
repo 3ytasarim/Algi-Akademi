@@ -35,6 +35,13 @@ export const users = pgTable("users", {
   profileImageUrl: varchar("profile_image_url"),
   role: varchar("role").notNull().default('student'), // 'student', 'admin', 'instructor'
   assignedCategories: text("assigned_categories").array().default(sql`ARRAY[]::text[]`), // course categories assigned to student
+  // Manual student fields
+  tcKimlikNo: varchar("tc_kimlik_no"),
+  password: varchar("password"), // For manual students only
+  adı: varchar("adi"),
+  soyadı: varchar("soyadi"),
+  doğumTarihi: date("dogum_tarihi"),
+  isManualStudent: boolean("is_manual_student").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });

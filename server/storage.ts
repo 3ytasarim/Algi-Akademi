@@ -92,7 +92,7 @@ export interface IStorage {
   
   // Student operations
   getStudents(): Promise<User[]>;
-  createStudent(student: UpsertUser): Promise<User>;
+  createStudent(student: any): Promise<User>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -443,12 +443,35 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Student operations implementation
+  async getUsersByRole(role: string): Promise<User[]> {
+    return await db
+      .select()
+      .from(users)
+      .where(eq(users.role, role))
+      .orderBy(desc(users.createdAt));
+  }
+
   async getStudents(): Promise<User[]> {
     return this.getUsersByRole('student');
   }
 
-  async createStudent(student: UpsertUser): Promise<User> {
-    return this.upsertUser(student);
+  async createStudent(studentData: any): Promise<User> {
+    const [student] = await db
+      .insert(users)
+      .values({
+        email: studentData.email,
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
+        tcKimlikNo: studentData.tcKimlikNo,
+        password: studentData.password,
+        adı: studentData.adı,
+        soyadı: studentData.soyadı,
+        doğumTarihi: studentData.doğumTarihi,
+        role: 'student',
+        isManualStudent: true,
+      })
+      .returning();
+    return student;
   }
 }
 
