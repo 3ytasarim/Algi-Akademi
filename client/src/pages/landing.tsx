@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
-import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, CreditCard } from "lucide-react";
+import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, CreditCard, User } from "lucide-react";
 
 export default function Landing() {
   const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
@@ -11,15 +11,54 @@ export default function Landing() {
   const [rememberMe, setRememberMe] = useState(false);
   const [loginData, setLoginData] = useState({
     tcKimlikNo: '',
-    password: '112233'
+    username: '',
+    password: ''
   });
   const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
   const handleAdminLogin = async () => {
     if (selectedRole === 'admin') {
-      localStorage.setItem('pendingRole', selectedRole);
-      window.location.href = "/api/login";
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/auth/admin-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            username: loginData.username,
+            password: loginData.password
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Giriş Başarılı",
+            description: "Admin paneline yönlendiriliyorsunuz...",
+          });
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        } else {
+          toast({
+            title: "Giriş Başarısız",
+            description: data.message || "Kullanıcı adı veya şifre hatalı",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Bağlantı Hatası",
+          description: "Sunucuya bağlanırken bir hata oluştu",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -168,15 +207,17 @@ export default function Landing() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Label htmlFor="email" className="text-slate-700 font-medium">
-                    E-posta Adresi
+                  <Label htmlFor="username" className="text-slate-700 font-medium">
+                    Kullanıcı Adı
                   </Label>
                   <div className="relative">
-                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
                     <Input
-                      id="email"
-                      type="email"
-                      placeholder="admin@akademi.com"
+                      id="username"
+                      type="text"
+                      placeholder="admin"
+                      value={loginData.username || ''}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
                       className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
                     />
                   </div>
@@ -194,9 +235,8 @@ export default function Landing() {
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder={selectedRole === 'student' ? '112233' : 'Şifrenizi girin'}
-                    value={selectedRole === 'student' ? loginData.password : ''}
-                    onChange={(e) => selectedRole === 'student' && setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                    readOnly={selectedRole === 'student'}
+                    value={loginData.password || ''}
+                    onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
                     className="pl-12 pr-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
                   />
                   <Button
@@ -229,8 +269,8 @@ export default function Landing() {
 
               {/* Login Button */}
               <Button
-                onClick={handleLogin}
-                disabled={isLoading || (selectedRole === 'student' && !loginData.tcKimlikNo)}
+                onClick={selectedRole === 'student' ? handleStudentLogin : handleAdminLogin}
+                disabled={isLoading || (selectedRole === 'student' && !loginData.tcKimlikNo) || (selectedRole === 'admin' && (!loginData.username || !loginData.password))}
                 className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isLoading ? (
