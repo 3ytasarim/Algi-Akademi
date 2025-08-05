@@ -67,7 +67,6 @@ export default function StudentList() {
         soyadı: "",
         doğumTarihi: "",
         profileImage: null,
-        profileImage: null,
       });
       setPreviewImage(null);
     },

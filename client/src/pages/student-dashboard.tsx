@@ -70,8 +70,23 @@ export default function StudentDashboard() {
     user?.assignedCategories?.includes(course.category)
   ) || [];
 
-  const handleLogout = () => {
-    window.location.href = "/api/logout";
+  const handleLogout = async () => {
+    if (user?.isManualStudent) {
+      // Manual student logout
+      try {
+        await fetch('/api/auth/manual-logout', {
+          method: 'POST',
+          credentials: 'include',
+        });
+        window.location.reload();
+      } catch (error) {
+        console.error('Logout error:', error);
+        window.location.reload();
+      }
+    } else {
+      // Regular Replit logout
+      window.location.href = "/api/logout";
+    }
   };
 
   return (

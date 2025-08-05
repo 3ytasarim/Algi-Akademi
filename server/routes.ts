@@ -21,6 +21,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual student login endpoint
+  app.post('/api/auth/student-login', async (req, res) => {
+    try {
+      const { tcKimlikNo, password } = req.body;
+      
+      if (!tcKimlikNo || !password) {
+        return res.status(400).json({ message: "T.C. Kimlik No ve şifre gerekli" });
+      }
+
+      // Check if student exists and password matches
+      const student = await storage.getStudentByTcNo(tcKimlikNo);
+      
+      if (!student || !student.isManualStudent) {
+        return res.status(401).json({ message: "Geçersiz T.C. Kimlik No" });
+      }
+
+      if (student.password !== password) {
+        return res.status(401).json({ message: "Geçersiz şifre" });
+      }
+
+      // Create session for manual student
+      req.session.manualStudent = {
+        id: student.id,
+        tcKimlikNo: student.tcKimlikNo,
+        firstName: student.firstName || student.adı,
+        lastName: student.lastName || student.soyadı,
+        email: student.email,
+        role: 'student',
+        isManualStudent: true
+      };
+
+      res.json({ 
+        message: "Giriş başarılı",
+        user: req.session.manualStudent
+      });
+    } catch (error) {
+      console.error("Error in student login:", error);
+      res.status(500).json({ message: "Giriş işlemi başarısız" });
+    }
+  });
+
+  // Manual student auth check
+  app.get('/api/auth/manual-student', async (req: any, res) => {
+    try {
+      if (req.session.manualStudent) {
+        res.json(req.session.manualStudent);
+      } else {
+        res.status(401).json({ message: "Unauthorized" });
+      }
+    } catch (error) {
+      res.status(500).json({ message: "Auth check failed" });
+    }
+  });
+
+  // Manual student logout
+  app.post('/api/auth/manual-logout', async (req: any, res) => {
+    try {
+      req.session.manualStudent = null;
+      res.json({ message: "Çıkış başarılı" });
+    } catch (error) {
+      res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
   // Update user role
   app.post('/api/auth/set-role', isAuthenticated, async (req: any, res) => {
     try {

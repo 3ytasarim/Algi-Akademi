@@ -93,6 +93,7 @@ export interface IStorage {
   // Student operations
   getStudents(): Promise<User[]>;
   createStudent(student: any): Promise<User>;
+  getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -471,6 +472,14 @@ export class DatabaseStorage implements IStorage {
         isManualStudent: true,
       })
       .returning();
+    return student;
+  }
+
+  async getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined> {
+    const [student] = await db
+      .select()
+      .from(users)
+      .where(eq(users.tcKimlikNo, tcKimlikNo));
     return student;
   }
 }

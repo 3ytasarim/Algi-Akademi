@@ -2,20 +2,68 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
+import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, CreditCard } from "lucide-react";
 
 export default function Landing() {
   const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginData, setLoginData] = useState({
+    tcKimlikNo: '',
+    password: '112233'
+  });
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
 
-  const handleLogin = async () => {
-    // Store selected role in localStorage for now
-    if (selectedRole) {
+  const handleAdminLogin = async () => {
+    if (selectedRole === 'admin') {
       localStorage.setItem('pendingRole', selectedRole);
+      window.location.href = "/api/login";
     }
-    window.location.href = "/api/login";
   };
+
+  const handleStudentLogin = async () => {
+    if (selectedRole === 'student') {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/auth/student-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify(loginData),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Giriş Başarılı",
+            description: "Hoş geldiniz!",
+          });
+          window.location.reload();
+        } else {
+          toast({
+            title: "Giriş Hatası",
+            description: data.message || "Giriş yapılamadı",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Bağlantı Hatası",
+          description: "Sunucuya bağlanılamadı",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleLogin = selectedRole === 'admin' ? handleAdminLogin : handleStudentLogin;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-4 relative overflow-hidden">
@@ -99,33 +147,55 @@ export default function Landing() {
                 </Button>
               </div>
 
-              {/* Email Field */}
-              <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium">
-                  E-posta Adresi
-                </Label>
-                <div className="relative">
-                  <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
-                  <Input
-                    id="email"
-                    type="email"
-                    placeholder="ornek@akademi.com"
-                    className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
-                  />
+              {/* Login Field - Different for Student vs Admin */}
+              {selectedRole === 'student' ? (
+                <div className="space-y-2">
+                  <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium">
+                    T.C. Kimlik No
+                  </Label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <Input
+                      id="tcKimlikNo"
+                      type="text"
+                      placeholder="T.C. Kimlik Numaranız"
+                      value={loginData.tcKimlikNo}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
+                      className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                    />
+                  </div>
                 </div>
-              </div>
+              ) : (
+                <div className="space-y-2">
+                  <Label htmlFor="email" className="text-slate-700 font-medium">
+                    E-posta Adresi
+                  </Label>
+                  <div className="relative">
+                    <Mail className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <Input
+                      id="email"
+                      type="email"
+                      placeholder="admin@akademi.com"
+                      className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                    />
+                  </div>
+                </div>
+              )}
 
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-slate-700 font-medium">
-                  Şifre
+                  {selectedRole === 'student' ? 'Şifre (Varsayılan: 112233)' : 'Şifre'}
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder="••••••••"
+                    placeholder={selectedRole === 'student' ? '112233' : 'Şifrenizi girin'}
+                    value={selectedRole === 'student' ? loginData.password : ''}
+                    onChange={(e) => selectedRole === 'student' && setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                    readOnly={selectedRole === 'student'}
                     className="pl-12 pr-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
                   />
                   <Button
@@ -159,11 +229,21 @@ export default function Landing() {
               {/* Login Button */}
               <Button
                 onClick={handleLogin}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1"
+                disabled={isLoading || (selectedRole === 'student' && !loginData.tcKimlikNo)}
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
-                <Shield className="mr-3" size={20} />
-                Giriş
-                <ArrowRight className="ml-3" size={20} />
+                {isLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white mr-3"></div>
+                    Giriş Yapılıyor...
+                  </>
+                ) : (
+                  <>
+                    <Shield className="mr-3" size={20} />
+                    Giriş
+                    <ArrowRight className="ml-3" size={20} />
+                  </>
+                )}
               </Button>
             </div>
           )}
