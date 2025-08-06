@@ -12,7 +12,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { 
   User, UserPlus, Calendar, CreditCard, Mail, Camera, Upload, 
   ChevronRight, ChevronLeft, Briefcase, Shield, CheckCircle, XCircle, 
-  GraduationCap, TrendingUp, Clock
+  GraduationCap, TrendingUp, Clock, Phone
 } from "lucide-react";
 
 interface MultiStepStudentFormProps {
@@ -30,6 +30,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
     email: "",
     tcKimlikNo: "",
     doğumTarihi: "",
+    telefon: "",
     profileImage: null as File | null,
     // Step 2 - Ek Bilgiler
     cinsiyet: "",
@@ -55,7 +56,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
   const queryClient = useQueryClient();
 
   // Fetch courses for step 3
-  const { data: courses = [] } = useQuery({
+  const { data: courses = [] } = useQuery<any[]>({
     queryKey: ["/api/courses"],
   });
 
@@ -80,10 +81,10 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       formDataToSend.append('totalPrice', prices.total.toString());
       formDataToSend.append('finalPrice', prices.final.toString());
       
-      return apiRequest("/api/students", {
+      return fetch("/api/students", {
         method: "POST",
         body: formDataToSend,
-      });
+      }).then(res => res.json());
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
@@ -113,6 +114,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       email: "",
       tcKimlikNo: "",
       doğumTarihi: "",
+      telefon: "",
       profileImage: null as File | null,
       // Step 2 - Ek Bilgiler
       cinsiyet: "",
@@ -142,15 +144,28 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       } else if (cleanValue.length < 11) {
         setTcValidation({ isValid: false, message: "T.C. Kimlik No 11 haneli olmalıdır" });
       } else if (cleanValue.length === 11) {
-        // Basic TC Kimlik No validation (algorithm)
+        // T.C. Kimlik No validation algorithm
         const digits = cleanValue.split('').map(Number);
+        
+        // İlk hane 0 olamaz
+        if (digits[0] === 0) {
+          setTcValidation({ isValid: false, message: "T.C. Kimlik No'nun ilk hanesi 0 olamaz" });
+          return;
+        }
+        
         const firstTen = digits.slice(0, 10);
         const eleventhDigit = digits[10];
         
+        // Tek hanelerin toplamı
         const oddSum = firstTen.filter((_, i) => i % 2 === 0).reduce((sum, digit) => sum + digit, 0);
+        // Çift hanelerin toplamı  
         const evenSum = firstTen.filter((_, i) => i % 2 === 1).reduce((sum, digit) => sum + digit, 0);
         
-        const tenthDigit = ((oddSum * 7) - evenSum) % 10;
+        // 10. hane kontrolü
+        let tenthDigit = ((oddSum * 7) - evenSum) % 10;
+        if (tenthDigit < 0) tenthDigit += 10;
+        
+        // 11. hane kontrolü
         const checkSum = (firstTen.reduce((sum, digit) => sum + digit, 0) + tenthDigit) % 10;
         
         const isValid = digits[9] === tenthDigit && eleventhDigit === checkSum;
@@ -170,7 +185,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
   const calculateTotalPrice = () => {
     const selectedCoursePrices = formData.selectedCourses.map(courseId => {
-      const course = courses.find((c: any) => c.id === courseId);
+      const course = courses.find((c) => c.id === courseId);
       return course ? parseFloat(course.price || '0') : 0;
     });
     const total = selectedCoursePrices.reduce((sum, price) => sum + price, 0);
@@ -403,20 +418,58 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                 )}
               </div>
 
-              {/* Doğum Tarihi */}
-              <div className="space-y-2">
-                <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
-                  <Calendar size={16} />
-                  Doğum Tarihi *
-                </Label>
-                <Input
-                  id="doğumTarihi"
-                  type="date"
-                  value={formData.doğumTarihi}
-                  onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
-                  className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
-                  required
-                />
+              {/* Doğum Tarihi ve Telefon */}
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Calendar size={16} />
+                    Doğum Tarihi *
+                  </Label>
+                  <Input
+                    id="doğumTarihi"
+                    type="date"
+                    value={formData.doğumTarihi}
+                    onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="telefon" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Phone size={16} />
+                    Cep Telefonu *
+                  </Label>
+                  <Input
+                    id="telefon"
+                    type="tel"
+                    placeholder="05XX XXX XX XX"
+                    value={formData.telefon}
+                    onChange={(e) => {
+                      let value = e.target.value.replace(/\D/g, '');
+                      if (value.length > 0 && !value.startsWith('0')) {
+                        value = '0' + value;
+                      }
+                      if (value.length > 11) {
+                        value = value.slice(0, 11);
+                      }
+                      // Format: 0XXX XXX XX XX
+                      if (value.length >= 4) {
+                        value = value.slice(0, 4) + ' ' + value.slice(4);
+                      }
+                      if (value.length >= 8) {
+                        value = value.slice(0, 8) + ' ' + value.slice(8);
+                      }
+                      if (value.length >= 11) {
+                        value = value.slice(0, 11) + ' ' + value.slice(11);
+                      }
+                      handleInputChange('telefon', value);
+                    }}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    maxLength={14}
+                    required
+                  />
+                </div>
               </div>
 
               {/* Info */}
@@ -661,7 +714,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                 onClick={nextStep}
                 className="ml-auto flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                 disabled={
-                  (currentStep === 1 && (!formData.adı || !formData.soyadı || !formData.email || !formData.tcKimlikNo || !formData.doğumTarihi || tcValidation.isValid !== true)) ||
+                  (currentStep === 1 && (!formData.adı || !formData.soyadı || !formData.email || !formData.tcKimlikNo || !formData.doğumTarihi || !formData.telefon || tcValidation.isValid !== true)) ||
                   (currentStep === 2 && (!formData.cinsiyet || !formData.meslek || !formData.kayıtTarihi || !formData.bitişTarihi))
                 }
               >
