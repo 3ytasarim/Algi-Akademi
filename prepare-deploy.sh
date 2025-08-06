@@ -7,6 +7,9 @@ echo "Preparing Algı Akademi for deployment..."
 echo "Building application..."
 npm run build
 
+echo "Replacing server with simplified production server..."
+cp production-server.js dist/index.js
+
 # Create the deployment directory structure
 echo "Setting up deployment structure..."
 

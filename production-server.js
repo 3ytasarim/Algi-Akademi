@@ -99,8 +99,10 @@ app.post('/api/auth/logout', async (req, res) => {
   }
 });
 
-// Serve static files from dist/public
-const staticPath = path.resolve(__dirname, 'dist', 'public');
+// Serve static files - deployment uses current directory structure
+const staticPath = process.env.NODE_ENV === 'production' 
+  ? path.resolve(__dirname, 'public')  // For deployment: files are at same level
+  : path.resolve(__dirname, 'dist', 'public'); // For local testing
 console.log('Serving static files from:', staticPath);
 app.use(express.static(staticPath));
 
