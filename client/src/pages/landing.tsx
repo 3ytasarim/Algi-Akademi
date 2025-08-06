@@ -120,19 +120,13 @@ export default function Landing() {
         <div className="bg-black/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-red-500/30 p-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-32 h-32 mx-auto mb-6 rounded-2xl flex items-center justify-center animate-in zoom-in-0 duration-500 delay-200">
+            <div className="w-40 h-40 mx-auto mb-6 rounded-2xl flex items-center justify-center animate-in zoom-in-0 duration-500 delay-200">
               <img 
                 src={logoUrl} 
                 alt="Algı Akademi Logo" 
                 className="w-full h-full object-contain filter drop-shadow-2xl"
               />
             </div>
-            <h1 className="text-2xl font-bold text-white mb-2 animate-in fade-in-0 slide-in-from-top-2 duration-500 delay-300">
-              Algı Akademi
-            </h1>
-            <p className="text-red-400 font-medium animate-in fade-in-0 slide-in-from-top-2 duration-500 delay-400">
-              Eğitim Danışmanlık
-            </p>
           </div>
 
           {/* Elegant Separator */}
@@ -300,12 +294,7 @@ export default function Landing() {
             </div>
           )}
 
-          {/* Security Notice */}
-          <div className="text-center mb-6 animate-in fade-in-0 duration-500 delay-800">
-            <p className="text-sm text-gray-500">
-              Güvenli giriş sistemi ile korunmaktadır
-            </p>
-          </div>
+
 
           {/* Footer */}
           <div className="text-center border-t border-red-500/30 pt-6 animate-in fade-in-0 duration-500 delay-900">
