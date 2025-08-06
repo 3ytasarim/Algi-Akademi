@@ -53,7 +53,7 @@ export default function Sidebar({
       submenuItems: [
         { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
         { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
-        { icon: BarChart3, label: "Kursiyer İstatistik", href: "/reports" },
+        { icon: BarChart3, label: "Kursiyer İstatistik", href: "/student-statistics" },
       ]
     },
     {
