@@ -81,6 +81,15 @@ If admin login shows "Sunucuya bağlanırken bir hata oluştu":
 ### Fix: Re-deploy as Autoscale
 The deployment must be configured as **Autoscale Deployment** to run the Express server with API endpoints.
 
+## Alternative Production Server
+If deployment issues persist, use the simplified production server:
+- File: `production-server.js` (standalone Express server)
+- Tested working with admin login (admin/112233)
+- Direct PostgreSQL session support
+- Serves static files from dist/public
+
+This server was tested locally and admin authentication works correctly.
+
 ## File Descriptions
 
 - **create-deployment.js**: Node.js script that creates the deployment structure
