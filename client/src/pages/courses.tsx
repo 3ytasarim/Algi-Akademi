@@ -296,9 +296,9 @@ export default function CoursesPage() {
                         </div>
                         <div className="flex items-center gap-2">
                           <Label htmlFor={`pdf-${index}`} className="cursor-pointer">
-                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 rounded-md transition-colors">
-                              <Upload size={16} />
-                              <span className="text-sm">PDF Ekle</span>
+                            <div className="flex items-center gap-2 px-3 py-2 bg-gray-100 hover:bg-gray-200 dark:bg-red-900/20 dark:hover:bg-red-800/30 rounded-md transition-colors">
+                              <Upload size={16} className="dark:text-red-400" />
+                              <span className="text-sm dark:text-red-300">PDF Ekle</span>
                             </div>
                           </Label>
                           <input
