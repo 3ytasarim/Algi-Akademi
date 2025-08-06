@@ -51,8 +51,8 @@ export default function CourseTable() {
                 </div>
               ))}
             </div>
-          ) : courses && courses.length > 0 ? (
-            courses.slice(0, 3).map((course: any) => {
+          ) : courses && (courses as any).length > 0 ? (
+            (courses as any).slice(0, 3).map((course: any) => {
               const IconComponent = getIconForCourse(course.title);
               return (
                 <div key={course.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">

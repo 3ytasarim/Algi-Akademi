@@ -62,21 +62,21 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatsCard
             title="Toplam Kayıt"
-            value={`${stats?.totalStudents || 0}`}
+            value={`${(stats as any)?.totalStudents || 0}`}
             change="+12%"
             icon={Users}
             gradient="bg-gradient-to-br from-blue-500 to-blue-600"
           />
           <StatsCard
             title="Toplam Kursiyer"
-            value={`${stats?.totalEnrollments || 0}`}
+            value={`${(stats as any)?.totalEnrollments || 0}`}
             change="+8%"
             icon={BookOpen}
             gradient="bg-gradient-to-br from-green-500 to-green-600"
           />
           <StatsCard
             title="Farklı Kurs"
-            value={`${stats?.activeCourses || 0}`}
+            value={`${(stats as any)?.activeCourses || 0}`}
             change="+5%"
             icon={TrendingUp}
             gradient="bg-gradient-to-br from-purple-500 to-purple-600"
@@ -110,9 +110,9 @@ export default function Dashboard() {
                   </div>
                 ))}
               </div>
-            ) : activities && activities.length > 0 ? (
+            ) : activities && (activities as any).length > 0 ? (
               <div className="space-y-4">
-                {activities.slice(0, 5).map((activity: any, index: number) => (
+                {(activities as any).slice(0, 5).map((activity: any, index: number) => (
                   <div key={index} className="flex items-start space-x-4">
                     <div className="w-10 h-10 bg-blue-100 dark:bg-blue-900/30 rounded-full flex items-center justify-center">
                       <Activity className="w-5 h-5 text-blue-600 dark:text-blue-400" />

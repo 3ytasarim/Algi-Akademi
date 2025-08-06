@@ -63,8 +63,8 @@ export default function StudentTable() {
                     <div className="animate-pulse">Yükleniyor...</div>
                   </td>
                 </tr>
-              ) : enrollments && enrollments.length > 0 ? (
-                enrollments.slice(0, 10).map((enrollment: any) => (
+              ) : enrollments && (enrollments as any).length > 0 ? (
+                (enrollments as any).slice(0, 10).map((enrollment: any) => (
                   <tr key={enrollment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -145,7 +145,7 @@ export default function StudentTable() {
         <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-700 dark:text-gray-300">
-              {enrollments ? `Toplam ${enrollments.length} kursiyer` : 'Toplam 0 kursiyer'}
+              {enrollments ? `Toplam ${(enrollments as any).length} kursiyer` : 'Toplam 0 kursiyer'}
             </span>
             <div className="flex items-center space-x-2">
               <Button variant="outline" size="sm" disabled>
