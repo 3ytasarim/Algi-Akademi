@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, CreditCard, User } from "lucide-react";
+import logoUrl from "@assets/algi_akademi_logo_1754499491715.png";
 
 export default function Landing() {
   const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
@@ -106,37 +107,47 @@ export default function Landing() {
   const handleLogin = selectedRole === 'admin' ? handleAdminLogin : handleStudentLogin;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-blue-800 flex items-center justify-center p-4 relative overflow-hidden">
-      {/* Animated Background Orbs */}
+    <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-900 flex items-center justify-center p-4 relative overflow-hidden">
+      {/* Animated Background Effects */}
       <div className="absolute inset-0">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-white/5 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-purple-300/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-blue-300/10 rounded-full blur-3xl animate-pulse delay-500"></div>
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-red-600/10 rounded-full blur-3xl animate-pulse"></div>
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-red-500/5 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        <div className="absolute top-3/4 left-3/4 w-64 h-64 bg-gray-600/10 rounded-full blur-3xl animate-pulse delay-500"></div>
       </div>
 
       {/* Main Login Card */}
       <div className="relative z-10 w-full max-w-md mx-auto">
-        <div className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-8 border border-white/20 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
+        <div className="bg-black/90 backdrop-blur-xl rounded-3xl shadow-2xl border border-red-500/30 p-8 animate-in fade-in-0 slide-in-from-bottom-4 duration-700">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded-3xl flex items-center justify-center shadow-xl animate-in zoom-in-0 duration-500 delay-200">
-              <GraduationCap className="text-white" size={36} />
+            <div className="w-32 h-32 mx-auto mb-6 rounded-2xl flex items-center justify-center animate-in zoom-in-0 duration-500 delay-200">
+              <img 
+                src={logoUrl} 
+                alt="Algı Akademi Logo" 
+                className="w-full h-full object-contain filter drop-shadow-2xl"
+              />
             </div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2 animate-in fade-in-0 slide-in-from-top-2 duration-500 delay-300">
-              Eğitim Yönetim Sistemi
+            <h1 className="text-2xl font-bold text-white mb-2 animate-in fade-in-0 slide-in-from-top-2 duration-500 delay-300">
+              Algı Akademi
             </h1>
+            <p className="text-red-400 font-medium animate-in fade-in-0 slide-in-from-top-2 duration-500 delay-400">
+              Eğitim Danışmanlık
+            </p>
           </div>
 
-          {/* Sparkle Separator */}
+          {/* Elegant Separator */}
           <div className="flex justify-center mb-8 animate-in fade-in-0 duration-500 delay-400">
-            <div className="text-4xl animate-bounce">✨</div>
+            <div className="w-24 h-px bg-gradient-to-r from-transparent via-red-500 to-transparent"></div>
           </div>
 
           {/* Welcome Text */}
           <div className="text-center mb-8 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-500">
-            <h2 className="text-xl font-semibold text-slate-700 mb-2">
+            <h2 className="text-xl font-semibold text-white mb-2">
               Hesabınıza giriş yapın
             </h2>
+            <p className="text-gray-400 text-sm">
+              Eğitim yönetim sistemine hoş geldiniz
+            </p>
           </div>
 
           {/* Step 1: Role Selection */}
@@ -144,7 +155,7 @@ export default function Landing() {
             <div className="space-y-4 animate-in fade-in-0 slide-in-from-bottom-2 duration-500 delay-600">
               <Button
                 variant="outline"
-                className="w-full py-4 px-6 rounded-2xl border-2 border-blue-200 bg-blue-50 hover:bg-blue-100 text-blue-700 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-red-500/50 bg-red-950/50 hover:bg-red-900/50 text-red-400 hover:text-red-300 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-red-500/25"
                 onClick={() => setSelectedRole('student')}
               >
                 <GraduationCap className="mr-3" size={20} />
@@ -153,7 +164,7 @@ export default function Landing() {
               
               <Button
                 variant="outline"
-                className="w-full py-4 px-6 rounded-2xl border-2 border-purple-200 bg-purple-50 hover:bg-purple-100 text-purple-700 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-gray-500/50 bg-gray-950/50 hover:bg-gray-800/50 text-gray-400 hover:text-white font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-gray-500/25"
                 onClick={() => setSelectedRole('admin')}
               >
                 <UserCog className="mr-3" size={20} />
@@ -166,21 +177,21 @@ export default function Landing() {
           {selectedRole && (
             <div className="space-y-6 animate-in fade-in-0 slide-in-from-bottom-2 duration-500">
               {/* Selected Role Display */}
-              <div className="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200">
+              <div className="flex items-center justify-between p-4 bg-red-950/30 rounded-xl border border-red-500/30">
                 <div className="flex items-center">
                   {selectedRole === 'student' ? (
-                    <GraduationCap className="text-blue-600 mr-3" size={20} />
+                    <GraduationCap className="text-red-400 mr-3" size={20} />
                   ) : (
-                    <UserCog className="text-purple-600 mr-3" size={20} />
+                    <UserCog className="text-gray-400 mr-3" size={20} />
                   )}
-                  <span className="font-semibold text-slate-700">
+                  <span className="font-semibold text-white">
                     {selectedRole === 'student' ? 'Kursiyer Girişi' : 'Admin Girişi'}
                   </span>
                 </div>
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="text-slate-500 hover:text-slate-700"
+                  className="text-gray-400 hover:text-white"
                   onClick={() => setSelectedRole(null)}
                 >
                   Değiştir
@@ -190,35 +201,35 @@ export default function Landing() {
               {/* Login Field - Different for Student vs Admin */}
               {selectedRole === 'student' ? (
                 <div className="space-y-2">
-                  <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium">
+                  <Label htmlFor="tcKimlikNo" className="text-gray-300 font-medium">
                     T.C. Kimlik No
                   </Label>
                   <div className="relative">
-                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                     <Input
                       id="tcKimlikNo"
                       type="text"
                       placeholder="T.C. Kimlik Numaranız"
                       value={loginData.tcKimlikNo}
                       onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
-                      className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="pl-12 h-12 rounded-xl border-2 border-red-500/30 focus:border-red-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                     />
                   </div>
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Label htmlFor="username" className="text-slate-700 font-medium">
+                  <Label htmlFor="username" className="text-gray-300 font-medium">
                     Kullanıcı Adı
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                     <Input
                       id="username"
                       type="text"
                       placeholder="admin"
                       value={loginData.username || ''}
                       onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
-                      className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="pl-12 h-12 rounded-xl border-2 border-gray-500/30 focus:border-gray-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                     />
                   </div>
                 </div>
@@ -226,24 +237,24 @@ export default function Landing() {
 
               {/* Password Field */}
               <div className="space-y-2">
-                <Label htmlFor="password" className="text-slate-700 font-medium">
+                <Label htmlFor="password" className="text-gray-300 font-medium">
                   {selectedRole === 'student' ? 'Şifre (Varsayılan: 112233)' : 'Şifre'}
                 </Label>
                 <div className="relative">
-                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-slate-400" size={18} />
+                  <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
                     placeholder={selectedRole === 'student' ? '112233' : 'Şifrenizi girin'}
                     value={loginData.password || ''}
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                    className="pl-12 pr-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                    className="pl-12 pr-12 h-12 rounded-xl border-2 border-red-500/30 focus:border-red-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                   />
                   <Button
                     type="button"
                     variant="ghost"
                     size="sm"
-                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-slate-400 hover:text-slate-600 p-2"
+                    className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-gray-300 p-2"
                     onClick={() => setShowPassword(!showPassword)}
                   >
                     {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
@@ -258,11 +269,11 @@ export default function Landing() {
                     type="checkbox"
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
-                    className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 mr-3"
+                    className="w-4 h-4 rounded border-gray-500 text-red-600 focus:ring-red-500 bg-black/50 mr-3"
                   />
-                  <span className="text-sm text-slate-600 font-medium">Hatırla</span>
+                  <span className="text-sm text-gray-400 font-medium">Hatırla</span>
                 </label>
-                <button className="text-sm text-blue-600 hover:text-blue-700 font-medium transition-colors">
+                <button className="text-sm text-red-400 hover:text-red-300 font-medium transition-colors">
                   Şifremi Unuttum
                 </button>
               </div>
@@ -271,7 +282,7 @@ export default function Landing() {
               <Button
                 onClick={selectedRole === 'student' ? handleStudentLogin : handleAdminLogin}
                 disabled={isLoading || (selectedRole === 'student' && !loginData.tcKimlikNo) || (selectedRole === 'admin' && (!loginData.username || !loginData.password))}
-                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-bold text-lg shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
+                className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-lg shadow-xl shadow-red-500/25 hover:shadow-2xl hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isLoading ? (
                   <>
@@ -291,24 +302,24 @@ export default function Landing() {
 
           {/* Security Notice */}
           <div className="text-center mb-6 animate-in fade-in-0 duration-500 delay-800">
-            <p className="text-sm text-slate-600">
-              Güvenli giriş için Replit kimlik doğrulaması kullanılır
+            <p className="text-sm text-gray-500">
+              Güvenli giriş sistemi ile korunmaktadır
             </p>
           </div>
 
           {/* Footer */}
-          <div className="text-center border-t border-slate-200 pt-6 animate-in fade-in-0 duration-500 delay-900">
-            <p className="text-xs text-slate-500">
+          <div className="text-center border-t border-red-500/30 pt-6 animate-in fade-in-0 duration-500 delay-900">
+            <p className="text-xs text-gray-500">
               © 2024 Algı Akademi. Tüm hakları saklıdır.
             </p>
           </div>
         </div>
 
         {/* Floating Elements */}
-        <div className="absolute -top-4 -left-4 w-8 h-8 bg-yellow-300/30 rounded-full blur-sm animate-pulse delay-1000"></div>
-        <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-pink-300/30 rounded-full blur-sm animate-pulse delay-1500"></div>
-        <div className="absolute top-1/2 -left-6 w-4 h-4 bg-blue-300/30 rounded-full blur-sm animate-pulse delay-2000"></div>
-        <div className="absolute top-1/4 -right-6 w-5 h-5 bg-purple-300/30 rounded-full blur-sm animate-pulse delay-500"></div>
+        <div className="absolute -top-4 -left-4 w-8 h-8 bg-red-500/20 rounded-full blur-sm animate-pulse delay-1000"></div>
+        <div className="absolute -bottom-4 -right-4 w-6 h-6 bg-red-600/15 rounded-full blur-sm animate-pulse delay-1500"></div>
+        <div className="absolute top-1/2 -left-6 w-4 h-4 bg-gray-500/20 rounded-full blur-sm animate-pulse delay-2000"></div>
+        <div className="absolute top-1/4 -right-6 w-5 h-5 bg-red-400/15 rounded-full blur-sm animate-pulse delay-500"></div>
       </div>
     </div>
   );
