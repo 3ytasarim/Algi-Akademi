@@ -47,6 +47,16 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
         </div>
         
         <div className="flex items-center space-x-4">
+          {/* Dark/Light Mode Toggle */}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleTheme}
+            className="p-2 hover:bg-gray-100 dark:hover:bg-red-700/30 rounded-xl text-gray-700 dark:text-white"
+          >
+            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
+          </Button>
+          
           {/* Notifications */}
           <Button
             variant="ghost"
@@ -58,8 +68,6 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
               3
             </span>
           </Button>
-          
-
         </div>
       </div>
     </header>

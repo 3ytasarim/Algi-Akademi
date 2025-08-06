@@ -111,10 +111,10 @@ export default function Sidebar({
           <div className="flex flex-col items-center space-y-3">
             {!sidebarCollapsed ? (
               <>
-                <img src={logoUrl} alt="Algı Akademi" className="w-20 h-20 rounded-xl shadow-lg" />
+                <img src={logoUrl} alt="Algı Akademi" className="w-24 h-24 rounded-xl shadow-lg" />
                 <div className="text-center">
                   <h3 className="text-white font-bold text-base">Yönetim Paneli</h3>
-                  <p className="text-white/60 text-sm">Admin Dashboard</p>
+                  <p className="text-white/60 text-sm">Merhaba Admin</p>
                 </div>
               </>
             ) : (
