@@ -87,5 +87,10 @@ Preferred communication style: Simple, everyday language.
 
 ## Build & Deployment
 - **ESBuild**: Fast bundling for server-side code
-- **Vite Build**: Optimized frontend production builds
+- **Vite Build**: Optimized frontend production builds to `dist/public`
 - **Static Assets**: Served through Express with proper routing fallback
+- **Deployment Structure**: 
+  - Frontend builds to `dist/public` 
+  - Deployment expects files in `algi-akademi` directory
+  - Use `node create-deployment.js` or `./deploy-setup.sh` to prepare deployment
+  - Server files built to `dist/index.js` for production
