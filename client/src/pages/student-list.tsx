@@ -96,7 +96,7 @@ export default function StudentList() {
               <Users className="text-white" size={24} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
+              <p className="text-sm text-gray-500 dark:text-gray-200 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
             </div>
           </div>
         </div>
@@ -202,16 +202,16 @@ export default function StudentList() {
                         );
                       })()}
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-slate-600">
+                    <TableCell className="py-4 px-6 text-slate-600 dark:text-slate-200">
                       {student.createdAt ? format(new Date(student.createdAt), "dd MMM yyyy", { locale: tr }) : 'Bugün'}
                     </TableCell>
-                    <TableCell className="py-4 px-6 text-slate-600">
+                    <TableCell className="py-4 px-6 text-slate-600 dark:text-slate-200">
                       {student.bitişTarihi ? (
-                        <div className={`${new Date() > new Date(student.bitişTarihi) ? 'text-red-600 font-semibold' : 'text-slate-600'}`}>
+                        <div className={`${new Date() > new Date(student.bitişTarihi) ? 'text-red-600 dark:text-red-400 font-semibold' : 'text-slate-600 dark:text-slate-200'}`}>
                           {format(new Date(student.bitişTarihi), "dd MMM yyyy", { locale: tr })}
                         </div>
                       ) : (
-                        <span className="text-slate-400 italic">Belirtilmemiş</span>
+                        <span className="text-slate-400 dark:text-slate-500 italic">Belirtilmemiş</span>
                       )}
                     </TableCell>
                     <TableCell className="py-4 px-6">

@@ -305,7 +305,7 @@ export default function CostReport() {
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Arama</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Arama</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   <Input
@@ -318,7 +318,7 @@ export default function CostReport() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Başlangıç Tarihi</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Başlangıç Tarihi</label>
                 <Input
                   type="date"
                   value={dateRange.startDate}
@@ -327,7 +327,7 @@ export default function CostReport() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-2">Bitiş Tarihi</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Bitiş Tarihi</label>
                 <Input
                   type="date"
                   value={dateRange.endDate}
@@ -366,20 +366,20 @@ export default function CostReport() {
               <div className="overflow-x-auto">
                 <Table>
                   <TableHeader>
-                    <TableRow className="bg-slate-50">
-                      <TableHead className="font-semibold text-slate-700">KURSİYER</TableHead>
-                      <TableHead className="font-semibold text-slate-700">KAYIT TARİHİ</TableHead>
-                      <TableHead className="font-semibold text-slate-700">KURS SAYISI</TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">BRÜT TUTAR</TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">İNDİRİM</TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">NET TUTAR</TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">İNDİRİM ORANI</TableHead>
+                    <TableRow className="bg-slate-50 dark:bg-gray-700">
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KURSİYER</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KAYIT TARİHİ</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KURS SAYISI</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">BRÜT TUTAR</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">İNDİRİM</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">NET TUTAR</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">İNDİRİM ORANI</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredData.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-slate-500">
+                        <TableCell colSpan={7} className="text-center py-8 text-slate-500 dark:text-slate-400">
                           {searchTerm || dateRange.startDate || dateRange.endDate 
                             ? "Arama kriterlerinize uygun kayıt bulunamadı." 
                             : "Henüz maliyet verisi bulunmuyor."
@@ -388,7 +388,7 @@ export default function CostReport() {
                       </TableRow>
                     ) : (
                       filteredData.map((item: any) => (
-                        <TableRow key={item.id} className="hover:bg-slate-50">
+                        <TableRow key={item.id} className="hover:bg-slate-50 dark:hover:bg-gray-700">
                           <TableCell className="font-medium">
                             <div className="flex items-center space-x-2">
                               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -397,22 +397,22 @@ export default function CostReport() {
                                 </span>
                               </div>
                               <div>
-                                <div className="font-medium">{item.studentName}</div>
-                                <div className="text-xs text-slate-500">{item.tcKimlikNo}</div>
+                                <div className="font-medium dark:text-white">{item.studentName}</div>
+                                <div className="text-xs text-slate-500 dark:text-slate-400">{item.tcKimlikNo}</div>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell>{formatDate(item.kayıtTarihi)}</TableCell>
+                          <TableCell className="dark:text-gray-200">{formatDate(item.kayıtTarihi)}</TableCell>
                           <TableCell>
-                            <div className="font-medium">{item.courses.length} Kurs</div>
+                            <div className="font-medium dark:text-gray-200">{item.courses.length} Kurs</div>
                           </TableCell>
-                          <TableCell className="text-right font-semibold">
+                          <TableCell className="text-right font-semibold dark:text-gray-200">
                             ₺{item.totalPrice.toLocaleString('tr-TR')}
                           </TableCell>
-                          <TableCell className="text-right text-red-600 font-semibold">
+                          <TableCell className="text-right text-red-600 dark:text-red-400 font-semibold">
                             -₺{item.discountAmount.toLocaleString('tr-TR')}
                           </TableCell>
-                          <TableCell className="text-right text-green-600 font-bold">
+                          <TableCell className="text-right text-green-600 dark:text-green-400 font-bold">
                             ₺{item.finalPrice.toLocaleString('tr-TR')}
                           </TableCell>
                           <TableCell className="text-right">
