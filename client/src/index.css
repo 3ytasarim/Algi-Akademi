@@ -65,6 +65,12 @@
 }
 
 @layer components {
+  /* Override text-slate-900 to ivory color in dark mode */
+  .dark .text-slate-900 {
+    --tw-text-opacity: 1;
+    color: hsl(44, 100%, 96%); /* Fildişi rengi */
+  }
+  
   .modern-gradient {
     background: linear-gradient(135deg, 
       hsl(var(--primary)) 0%, 
