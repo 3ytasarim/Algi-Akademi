@@ -69,7 +69,7 @@ export default function Dashboard() {
           />
           <StatsCard
             title="Toplam Kursiyer"
-            value={`${(stats as any)?.totalEnrollments || 0}`}
+            value={`${(stats as any)?.totalStudents || 0}`}
             change="+8%"
             icon={BookOpen}
             gradient="bg-gradient-to-br from-green-500 to-green-600"

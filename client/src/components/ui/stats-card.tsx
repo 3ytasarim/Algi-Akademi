@@ -23,8 +23,8 @@ export default function StatsCard({ title, value, change, icon: Icon, gradient }
               : 'text-red-600 bg-red-50 dark:text-red-400 dark:bg-red-900/30'
           }`}>{change}</span>
         </div>
-        <h3 className="text-2xl font-bold text-white drop-shadow-sm">{value}</h3>
-        <p className="text-gray-100 font-medium drop-shadow-sm">{title}</p>
+        <h3 className="text-2xl font-bold text-gray-900 dark:text-white">{value}</h3>
+        <p className="text-gray-600 dark:text-gray-300">{title}</p>
       </CardContent>
     </Card>
   );
