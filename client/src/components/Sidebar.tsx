@@ -114,7 +114,7 @@ export default function Sidebar({
                 <img src={logoUrl} alt="Algı Akademi" className="w-24 h-24 rounded-xl shadow-lg" />
                 <div className="text-center">
                   <h3 className="text-white font-bold text-base">Yönetim Paneli</h3>
-                  <p className="text-white/60 text-sm">Merhaba Admin</p>
+                  <p className="text-white/60 text-sm">👋 Merhaba Admin</p>
                 </div>
               </>
             ) : (
