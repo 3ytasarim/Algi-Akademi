@@ -106,42 +106,35 @@ export default function Sidebar({
       <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-20 shadow-2xl border-r border-red-500/20 ${
         sidebarCollapsed ? 'w-20' : 'w-72'
       } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
-        {/* Header */}
-        <div className="p-6 border-b border-red-500/30 bg-gradient-to-r from-red-900/20 to-red-800/20">
-          <div className="flex items-center justify-between mb-5">
-            <div className="flex items-center">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3">
-                <img 
-                  src={logoUrl} 
-                  alt="Algı Akademi Logo" 
-                  className="w-full h-full object-contain filter drop-shadow-lg"
-                />
-              </div>
-              {!sidebarCollapsed && (
-                <div>
-                  <p className="text-sm text-red-300">Yönetim Paneli</p>
+        {/* Logo Section */}
+        <div className="p-6 border-b border-red-800/20 relative">
+          <div className="flex flex-col items-center space-y-3">
+            {!sidebarCollapsed ? (
+              <>
+                <img src={logoUrl} alt="Algı Akademi" className="w-20 h-20 rounded-xl shadow-lg" />
+                <div className="text-center">
+                  <h3 className="text-white font-bold text-base">Yönetim Paneli</h3>
+                  <p className="text-white/60 text-sm">Admin Dashboard</p>
                 </div>
-              )}
-            </div>
-            <div className="flex items-center space-x-2">
-              {!sidebarCollapsed && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={toggleTheme}
-                  className="text-white hover:bg-red-700/30 p-2 rounded-xl"
-                >
-                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
-                </Button>
-              )}
-              <button
-                onClick={toggleSidebarCollapse}
-                className="hidden md:flex text-gray-300 hover:text-white hover:bg-red-700/60 p-2.5 rounded-xl transition-all duration-200 bg-red-800/40 border border-red-600/30"
-              >
-                <ChevronLeft size={18} />
-              </button>
-            </div>
+              </>
+            ) : (
+              <div className="relative group">
+                <img src={logoUrl} alt="AA" className="w-12 h-12 rounded-lg shadow-md hover:shadow-lg transition-all duration-200" />
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-xl">
+                  Algı Akademi
+                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
+                </div>
+              </div>
+            )}
           </div>
+          
+          {/* Toggle Button - Single button only */}
+          <button
+            onClick={toggleSidebarCollapse}
+            className="absolute top-4 right-4 text-white/60 hover:text-white hover:bg-red-600/30 p-2 rounded-lg transition-all duration-200"
+          >
+            {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+          </button>
         </div>
 
         {/* Search */}
@@ -240,22 +233,49 @@ export default function Sidebar({
           </div>
         </nav>
 
-        {/* Logout Button */}
-        <div className="p-4 border-t border-slate-700/50">
+        {/* Theme Toggle & Logout Section */}
+        <div className="p-4 border-t border-red-800/20 bg-gradient-to-r from-red-950/60 to-red-900/40 space-y-2">
+          {/* Theme Toggle */}
           <div className="relative group">
-            <button 
-              onClick={handleLogout}
-              className={`w-full flex items-center justify-center py-3 px-4 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-xl hover:from-red-700 hover:to-red-800 transition-all duration-200 shadow-lg hover:shadow-xl ${
-                sidebarCollapsed ? 'px-2' : ''
-              }`}
+            <button
+              onClick={toggleTheme}
+              className="w-full flex items-center space-x-3 p-3 rounded-xl text-white hover:bg-red-700/30 transition-all duration-200"
             >
-              <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-0 flex-shrink-0`}>
-                <LogOut className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'}`} />
+              <div className="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center">
+                {theme === 'dark' ? <Sun className="w-5 h-5 text-white" /> : <Moon className="w-5 h-5 text-white" />}
               </div>
-              {!sidebarCollapsed && <span className="font-medium ml-2">Çıkış Yap</span>}
+              {!sidebarCollapsed && (
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-white">{theme === 'dark' ? 'Açık Tema' : 'Koyu Tema'}</p>
+                  <p className="text-xs text-red-200">Görünümü değiştir</p>
+                </div>
+              )}
             </button>
             {sidebarCollapsed && (
-              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 shadow-xl">
+                {theme === 'dark' ? 'Açık Tema' : 'Koyu Tema'}
+              </div>
+            )}
+          </div>
+          
+          {/* Logout Button */}
+          <div className="relative group">
+            <button 
+              onClick={() => window.location.href = '/api/logout'}
+              className="w-full flex items-center space-x-3 p-3 rounded-xl text-white hover:bg-red-700/30 transition-all duration-200"
+            >
+              <div className="w-10 h-10 bg-red-700 rounded-xl flex items-center justify-center">
+                <LogOut className="w-5 h-5 text-white" />
+              </div>
+              {!sidebarCollapsed && (
+                <div className="flex-1 text-left">
+                  <p className="text-sm font-medium text-white">Çıkış Yap</p>
+                  <p className="text-xs text-red-200">Güvenli çıkış</p>
+                </div>
+              )}
+            </button>
+            {sidebarCollapsed && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-gray-900 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 shadow-xl">
                 Çıkış Yap
               </div>
             )}

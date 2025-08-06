@@ -59,15 +59,7 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
             </span>
           </Button>
           
-          {/* Dark/Light Mode Toggle */}
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={toggleTheme}
-            className="p-2 hover:bg-gray-100 dark:hover:bg-red-700/30 rounded-xl text-gray-700 dark:text-white"
-          >
-            {theme === 'dark' ? <Sun size={18} /> : <Moon size={18} />}
-          </Button>
+
         </div>
       </div>
     </header>
