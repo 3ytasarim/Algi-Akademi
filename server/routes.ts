@@ -246,6 +246,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post('/api/students', async (req: any, res) => {
+    try {
+      console.log("Creating student with data:", req.body);
+      
+      // Create student
+      const student = await storage.createStudent({
+        adı: req.body.adı,
+        soyadı: req.body.soyadı,
+        email: req.body.email,
+        tcKimlikNo: req.body.tcKimlikNo,
+        doğumTarihi: req.body.doğumTarihi,
+        telefon: req.body.telefon,
+        cinsiyet: req.body.cinsiyet,
+        meslek: req.body.meslek,
+        kayıtTarihi: req.body.kayıtTarihi,
+        bitişTarihi: req.body.bitişTarihi,
+        isMernisOnaylı: req.body.isMernisOnaylı === 'true',
+        isÜniversiteOnaylı: req.body.isÜniversiteOnaylı === 'true',
+        isEDevletOnaylı: req.body.isEDevletOnaylı === 'true',
+        isUluslararasıSertifikasyon: req.body.isUluslararasıSertifikasyon === 'true',
+        selectedCourses: req.body.selectedCourses ? JSON.parse(req.body.selectedCourses) : [],
+        totalPrice: req.body.totalPrice || '0',
+        discountAmount: req.body.discountAmount || '0',
+        finalPrice: req.body.finalPrice || '0',
+        isManualStudent: true,
+        password: '112233' // Default password for manual students
+      });
+
+      console.log("Student created successfully:", student.id);
+      
+      res.status(200).json({ 
+        success: true,
+        message: "Kursiyer başarıyla kaydedildi",
+        student: student 
+      });
+    } catch (error) {
+      console.error("Error creating student:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Kursiyer kaydı sırasında bir hata oluştu" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

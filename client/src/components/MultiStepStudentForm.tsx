@@ -84,7 +84,12 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       return fetch("/api/students", {
         method: "POST",
         body: formDataToSend,
-      }).then(res => res.json());
+      }).then(res => {
+        if (!res.ok) {
+          throw new Error(`HTTP ${res.status}`);
+        }
+        return res.json();
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });

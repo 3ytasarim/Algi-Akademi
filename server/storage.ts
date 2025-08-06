@@ -66,6 +66,10 @@ export interface IStorage {
   getRecentActivities(limit?: number): Promise<Activity[]>;
   createActivity(activity: InsertActivity): Promise<Activity>;
   
+  // Student operations
+  getStudents(): Promise<User[]>;
+  createStudent(student: any): Promise<User>;
+
   // Dashboard stats
   getDashboardStats(): Promise<{
     totalStudents: number;
@@ -455,13 +459,6 @@ export class DatabaseStorage implements IStorage {
   }
 
   // Student operations implementation
-  async getUsersByRole(role: string): Promise<User[]> {
-    return await db
-      .select()
-      .from(users)
-      .where(eq(users.role, role))
-      .orderBy(desc(users.createdAt));
-  }
 
   async getStudents(): Promise<User[]> {
     return this.getUsersByRole('student');
@@ -479,8 +476,21 @@ export class DatabaseStorage implements IStorage {
         adı: studentData.adı,
         soyadı: studentData.soyadı,
         doğumTarihi: studentData.doğumTarihi,
+        telefon: studentData.telefon,
+        cinsiyet: studentData.cinsiyet,
+        meslek: studentData.meslek,
+        kayıtTarihi: studentData.kayıtTarihi,
+        bitişTarihi: studentData.bitişTarihi,
+        isMernisOnaylı: studentData.isMernisOnaylı,
+        isÜniversiteOnaylı: studentData.isÜniversiteOnaylı,
+        isEDevletOnaylı: studentData.isEDevletOnaylı,
+        isUluslararasıSertifikasyon: studentData.isUluslararasıSertifikasyon,
+        selectedCourses: studentData.selectedCourses || [],
+        totalPrice: studentData.totalPrice,
+        discountAmount: studentData.discountAmount,
+        finalPrice: studentData.finalPrice,
         role: 'student',
-        isManualStudent: true,
+        isManualStudent: studentData.isManualStudent || true,
       })
       .returning();
     return student;

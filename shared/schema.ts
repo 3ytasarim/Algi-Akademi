@@ -33,6 +33,7 @@ export const users = pgTable("users", {
   firstName: varchar("first_name"),
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
+  telefon: varchar("telefon"),
   role: varchar("role").notNull().default('student'), // 'student', 'admin', 'instructor'
   assignedCategories: text("assigned_categories").array().default(sql`ARRAY[]::text[]`), // course categories assigned to student
   // Manual student fields
