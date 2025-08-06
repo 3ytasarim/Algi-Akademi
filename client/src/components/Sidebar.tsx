@@ -128,12 +128,13 @@ export default function Sidebar({
             )}
           </div>
           
-          {/* Toggle Button - Single button only */}
+          {/* Professional Toggle Button */}
           <button
             onClick={toggleSidebarCollapse}
-            className="absolute top-4 right-4 text-white/60 hover:text-white hover:bg-red-600/30 p-2 rounded-lg transition-all duration-200"
+            className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-red-600/40 p-2.5 rounded-xl transition-all duration-200 border border-red-600/30 bg-red-900/20 shadow-sm backdrop-blur-sm"
+            title={sidebarCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
           >
-            {sidebarCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
+            {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
           </button>
         </div>
 

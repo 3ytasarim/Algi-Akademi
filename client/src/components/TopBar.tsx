@@ -26,17 +26,7 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
             <Menu size={20} />
           </Button>
           
-          {/* Desktop collapse button */}
-          {sidebarCollapsed && toggleSidebarCollapse && (
-            <Button
-              variant="ghost"
-              size="sm"
-              onClick={toggleSidebarCollapse}
-              className="hidden md:flex mr-4 p-2.5 hover:bg-gray-100 dark:hover:bg-red-700/30 rounded-xl border border-gray-200 dark:border-red-600/30 bg-white dark:bg-red-900/20 shadow-sm text-gray-700 dark:text-white"
-            >
-              <ChevronRight size={18} className="text-red-600 dark:text-red-400" />
-            </Button>
-          )}
+
           
           <div>
             <h1 className="text-2xl font-bold bg-gradient-to-r from-red-600 to-red-800 dark:from-red-400 dark:to-red-600 bg-clip-text text-transparent">
