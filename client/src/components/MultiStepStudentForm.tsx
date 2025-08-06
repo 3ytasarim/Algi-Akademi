@@ -147,28 +147,39 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         // T.C. Kimlik No validation algorithm
         const digits = cleanValue.split('').map(Number);
         
-        // İlk hane 0 olamaz
+        // İlk hane 0 olamaz ve tüm haneler aynı olamaz
         if (digits[0] === 0) {
           setTcValidation({ isValid: false, message: "T.C. Kimlik No'nun ilk hanesi 0 olamaz" });
           return;
         }
         
+        // Tüm haneler aynı olmamalı
+        const allSame = digits.every(digit => digit === digits[0]);
+        if (allSame) {
+          setTcValidation({ isValid: false, message: "Tüm haneler aynı olamaz" });
+          return;
+        }
+        
+        // İlk 10 hane ve 11. hane
         const firstTen = digits.slice(0, 10);
         const eleventhDigit = digits[10];
         
-        // Tek hanelerin toplamı
-        const oddSum = firstTen.filter((_, i) => i % 2 === 0).reduce((sum, digit) => sum + digit, 0);
-        // Çift hanelerin toplamı  
-        const evenSum = firstTen.filter((_, i) => i % 2 === 1).reduce((sum, digit) => sum + digit, 0);
+        // Tek ve çift pozisyonlardaki hanelerin toplamı (0-indexed)
+        const oddSum = digits[0] + digits[2] + digits[4] + digits[6] + digits[8];
+        const evenSum = digits[1] + digits[3] + digits[5] + digits[7];
         
         // 10. hane kontrolü
-        let tenthDigit = ((oddSum * 7) - evenSum) % 10;
-        if (tenthDigit < 0) tenthDigit += 10;
+        const tenthDigitExpected = ((oddSum * 7) - evenSum) % 10;
+        const tenthDigitActual = digits[9];
         
         // 11. hane kontrolü
-        const checkSum = (firstTen.reduce((sum, digit) => sum + digit, 0) + tenthDigit) % 10;
+        const totalSum = firstTen.reduce((sum, digit) => sum + digit, 0);
+        const eleventhDigitExpected = totalSum % 10;
         
-        const isValid = digits[9] === tenthDigit && eleventhDigit === checkSum;
+        // Negatif değerleri düzelt
+        const correctedTenthDigit = tenthDigitExpected < 0 ? tenthDigitExpected + 10 : tenthDigitExpected;
+        
+        const isValid = tenthDigitActual === correctedTenthDigit && eleventhDigit === eleventhDigitExpected;
         setTcValidation({
           isValid,
           message: isValid ? "Geçerli T.C. Kimlik No (Mernis onaylı)" : "Geçersiz T.C. Kimlik No"
