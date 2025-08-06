@@ -82,12 +82,35 @@ export default function Landing() {
           });
         }
       } catch (error) {
-        // Backend not available, use client-side fallback
-        toast({
-          title: "Giriş Başarısız",
-          description: "Kullanıcı adı veya şifre hatalı",
-          variant: "destructive",
-        });
+        // Backend not available - check credentials for client-side fallback
+        if (loginData.username === 'admin' && loginData.password === '112233') {
+          const adminUser = {
+            id: 'admin',
+            username: 'admin',
+            role: 'admin',
+            firstName: 'Admin',
+            lastName: 'User',
+            isAuthenticated: true
+          };
+          
+          localStorage.setItem('auth_user', JSON.stringify(adminUser));
+          localStorage.setItem('auth_authenticated', 'true');
+          
+          toast({
+            title: "Giriş Başarılı",
+            description: "Admin paneline yönlendiriliyorsunuz...",
+          });
+          
+          setTimeout(() => {
+            window.location.href = "/dashboard";
+          }, 1000);
+        } else {
+          toast({
+            title: "Giriş Başarısız",
+            description: "Kullanıcı adı veya şifre hatalı",
+            variant: "destructive",
+          });
+        }
       } finally {
         setIsLoading(false);
       }
