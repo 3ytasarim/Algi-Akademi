@@ -26,6 +26,7 @@ export default function StudentList() {
     soyadı: "",
     email: "",
     doğumTarihi: "",
+    bitişTarihi: "",
     tcKimlikNo: "",
     telefon: "",
     adres: "",
@@ -67,6 +68,7 @@ export default function StudentList() {
         soyadı: "",
         email: "",
         doğumTarihi: "",
+        bitişTarihi: "",
         tcKimlikNo: "",
         telefon: "",
         adres: "",
@@ -306,20 +308,38 @@ export default function StudentList() {
                 )}
               </div>
 
-              {/* Doğum Tarihi */}
-              <div className="space-y-2">
-                <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
-                  <Calendar size={16} />
-                  Doğum Tarihi
-                </Label>
-                <Input
-                  id="doğumTarihi"
-                  type="date"
-                  value={formData.doğumTarihi}
-                  onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
-                  className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
-                  required
-                />
+              <div className="grid grid-cols-2 gap-4">
+                {/* Doğum Tarihi */}
+                <div className="space-y-2">
+                  <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Calendar size={16} />
+                    Doğum Tarihi
+                  </Label>
+                  <Input
+                    id="doğumTarihi"
+                    type="date"
+                    value={formData.doğumTarihi}
+                    onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
+
+                {/* Bitiş Tarihi */}
+                <div className="space-y-2">
+                  <Label htmlFor="bitişTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Clock size={16} />
+                    Bitiş Tarihi
+                  </Label>
+                  <Input
+                    id="bitişTarihi"
+                    type="date"
+                    value={formData.bitişTarihi}
+                    onChange={(e) => handleInputChange('bitişTarihi', e.target.value)}
+                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    required
+                  />
+                </div>
               </div>
 
               {/* Info */}
@@ -386,6 +406,7 @@ export default function StudentList() {
                   <TableHead className="py-4 px-6 text-slate-600 font-semibold">İletişim</TableHead>
                   <TableHead className="py-4 px-6 text-slate-600 font-semibold">Durum</TableHead>
                   <TableHead className="py-4 px-6 text-slate-600 font-semibold">Kayıt Tarihi</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">Bitiş Tarihi</TableHead>
                   <TableHead className="py-4 px-6 text-slate-600 font-semibold text-right">İşlemler</TableHead>
                 </TableRow>
               </TableHeader>
@@ -418,12 +439,33 @@ export default function StudentList() {
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
-                      <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
-                        Aktif
-                      </Badge>
+                      {(() => {
+                        const today = new Date();
+                        const bitişTarihi = student.bitişTarihi ? new Date(student.bitişTarihi) : null;
+                        const isExpired = bitişTarihi && today > bitişTarihi;
+                        
+                        return isExpired ? (
+                          <Badge className="bg-red-100 text-red-800 hover:bg-red-100">
+                            Süresi Dolmuş
+                          </Badge>
+                        ) : (
+                          <Badge className="bg-green-100 text-green-800 hover:bg-green-100">
+                            Aktif
+                          </Badge>
+                        );
+                      })()}
                     </TableCell>
                     <TableCell className="py-4 px-6 text-slate-600">
                       {student.createdAt ? format(new Date(student.createdAt), "dd MMM yyyy", { locale: tr }) : 'Bugün'}
+                    </TableCell>
+                    <TableCell className="py-4 px-6 text-slate-600">
+                      {student.bitişTarihi ? (
+                        <div className={`${new Date() > new Date(student.bitişTarihi) ? 'text-red-600 font-semibold' : 'text-slate-600'}`}>
+                          {format(new Date(student.bitişTarihi), "dd MMM yyyy", { locale: tr })}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">Belirsiz</span>
+                      )}
                     </TableCell>
                     <TableCell className="py-4 px-6 text-right">
                       <div className="flex items-center justify-end space-x-2">

@@ -41,6 +41,7 @@ export const users = pgTable("users", {
   adı: varchar("adi"),
   soyadı: varchar("soyadi"),
   doğumTarihi: date("dogum_tarihi"),
+  bitişTarihi: date("bitis_tarihi"), // Course access expiration date
   isManualStudent: boolean("is_manual_student").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
