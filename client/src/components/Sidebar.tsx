@@ -5,8 +5,11 @@ import { Input } from "@/components/ui/input";
 import { 
   Gauge, MessageSquare, Settings, Book, Users, ClipboardList, BarChart3, 
   TrendingUp, PieChart, AreaChart, UserCog, Bus, Plug, Menu, Bell, 
-  Search, ChevronLeft, ChevronRight, LogOut, BookOpen, Mail, CreditCard
+  Search, ChevronLeft, ChevronRight, LogOut, BookOpen, Mail, CreditCard,
+  Moon, Sun
 } from "lucide-react";
+import { useTheme } from "@/contexts/ThemeContext";
+import logoUrl from "@assets/image_1754501716774.png";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -24,6 +27,7 @@ export default function Sidebar({
   activeHref 
 }: SidebarProps) {
   const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses', 'system', 'integrations']);
+  const { theme, toggleTheme } = useTheme();
   
   const handleLogout = () => {
     window.location.href = "/api/logout";
@@ -99,33 +103,44 @@ export default function Sidebar({
   return (
     <>
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white transform transition-all duration-300 z-20 shadow-2xl ${
+      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-20 shadow-2xl border-r border-red-500/20 ${
         sidebarCollapsed ? 'w-20' : 'w-72'
       } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         {/* Header */}
-        <div className="p-6 border-b border-slate-700/50 bg-gradient-to-r from-primary/20 to-accent/20">
+        <div className="p-6 border-b border-red-500/30 bg-gradient-to-r from-red-900/20 to-red-800/20">
           <div className="flex items-center justify-between mb-5">
             <div className="flex items-center">
-              <div className="w-10 h-10 bg-gradient-to-r from-primary to-accent rounded-lg flex items-center justify-center mr-3">
-                <Gauge size={24} className="text-white" />
+              <div className="w-10 h-10 rounded-lg flex items-center justify-center mr-3">
+                <img 
+                  src={logoUrl} 
+                  alt="Algı Akademi Logo" 
+                  className="w-full h-full object-contain filter drop-shadow-lg"
+                />
               </div>
               {!sidebarCollapsed && (
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">
-                    Algı Akademi
-                  </h1>
-                  <p className="text-sm text-gray-400">Yönetim Paneli</p>
+                  <p className="text-sm text-red-300">Yönetim Paneli</p>
                 </div>
               )}
             </div>
-            {!sidebarCollapsed && (
+            <div className="flex items-center space-x-2">
+              {!sidebarCollapsed && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={toggleTheme}
+                  className="text-white hover:bg-red-700/30 p-2 rounded-xl"
+                >
+                  {theme === 'dark' ? <Sun size={16} /> : <Moon size={16} />}
+                </Button>
+              )}
               <button
                 onClick={toggleSidebarCollapse}
-                className="hidden md:flex text-gray-300 hover:text-white hover:bg-slate-700/60 p-2.5 rounded-xl transition-all duration-200 bg-slate-800/40 border border-slate-600/30"
+                className="hidden md:flex text-gray-300 hover:text-white hover:bg-red-700/60 p-2.5 rounded-xl transition-all duration-200 bg-red-800/40 border border-red-600/30"
               >
                 <ChevronLeft size={18} />
               </button>
-            )}
+            </div>
           </div>
         </div>
 
@@ -136,9 +151,9 @@ export default function Sidebar({
               <Input 
                 type="text" 
                 placeholder="Hızlı arama..." 
-                className="w-full bg-slate-800/50 text-white rounded-xl py-3 pl-12 pr-4 border border-slate-700/50 focus:border-primary/50 focus:ring-1 focus:ring-primary/25 backdrop-blur-sm placeholder:text-gray-400"
+                className="w-full bg-red-900/30 text-white rounded-xl py-3 pl-12 pr-4 border border-red-600/50 focus:border-red-400/50 focus:ring-1 focus:ring-red-400/25 backdrop-blur-sm placeholder:text-red-300"
               />
-              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={18} />
+              <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-red-300" size={18} />
             </div>
           </div>
         )}
@@ -152,11 +167,11 @@ export default function Sidebar({
                   <div className="relative group">
                     <button
                       onClick={() => toggleMenu(item.id)}
-                      className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-slate-800/50 rounded-xl transition-all duration-200 group"
+                      className="w-full flex items-center justify-between px-4 py-3 text-gray-300 hover:text-white hover:bg-red-800/50 rounded-xl transition-all duration-200 group"
                     >
                       <div className="flex items-center">
                         <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
-                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} text-primary group-hover:text-accent transition-colors`} />
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} text-red-400 group-hover:text-red-300 transition-colors`} />
                         </div>
                         {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                       </div>
