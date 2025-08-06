@@ -1,0 +1,34 @@
+Algı Akademi - Complete Deployment Package
+==========================================
+
+İçerik:
+✓ Full-stack React + Node.js uygulaması
+✓ PostgreSQL database schema ve sample data
+✓ Production-ready server konfigürasyonu
+✓ Deployment instructions ve setup guides
+
+Admin Login:
+- Kullanıcı adı: admin
+- Şifre: 112233
+
+Database Setup:
+1. PostgreSQL database oluştur
+2. database-schema.sql dosyasını çalıştır
+3. Environment variables ayarla (.env.example'dan .env oluştur)
+
+Deployment:
+1. npm install
+2. npm run build  
+3. npm start
+
+Önerilen Hosting Platformları:
+- Railway (en kolay, otomatik PostgreSQL)
+- Render (web service + database)
+- DigitalOcean App Platform
+- Vercel (frontend) + separate backend hosting
+
+Dosyalar:
+- algi-akademi/ - Complete source code
+- database-schema.sql - Database setup
+- DEPLOYMENT.md - Detailed instructions
+- .env.example - Environment variables template
