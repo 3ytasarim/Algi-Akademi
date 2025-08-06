@@ -65,7 +65,7 @@ export default function StudentTable() {
                 </tr>
               ) : enrollments && enrollments.length > 0 ? (
                 enrollments.slice(0, 10).map((enrollment: any) => (
-                  <tr key={enrollment.id}>
+                  <tr key={enrollment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden mr-4">
@@ -76,18 +76,18 @@ export default function StudentTable() {
                           />
                         </div>
                         <div>
-                          <div className="text-sm font-medium text-gray-900">
+                          <div className="text-sm font-medium text-gray-900 dark:text-white">
                             {enrollment.student?.firstName} {enrollment.student?.lastName}
                           </div>
-                          <div className="text-sm text-gray-500">
+                          <div className="text-sm text-gray-500 dark:text-gray-400">
                             {enrollment.student?.email}
                           </div>
                         </div>
                       </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <div className="text-sm text-gray-900">{enrollment.course?.title}</div>
-                      <div className="text-sm text-gray-500">
+                      <div className="text-sm text-gray-900 dark:text-white">{enrollment.course?.title}</div>
+                      <div className="text-sm text-gray-500 dark:text-gray-400">
                         {enrollment.course?.instructor || 'Eğitmen belirlenmemiş'}
                       </div>
                     </td>
@@ -99,10 +99,10 @@ export default function StudentTable() {
                             style={{ width: `${enrollment.progress || 0}%` }}
                           ></div>
                         </div>
-                        <span className="text-sm text-gray-600">{enrollment.progress || 0}%</span>
+                        <span className="text-sm text-gray-600 dark:text-gray-300">{enrollment.progress || 0}%</span>
                       </div>
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-400">
                       {enrollment.lastActivity ? new Date(enrollment.lastActivity).toLocaleString('tr-TR') : 'Belirsiz'}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -134,7 +134,7 @@ export default function StudentTable() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
+                  <td colSpan={6} className="px-6 py-8 text-center text-gray-500 dark:text-gray-400">
                     Henüz kursiyer kaydı bulunmuyor
                   </td>
                 </tr>
@@ -142,9 +142,9 @@ export default function StudentTable() {
             </tbody>
           </table>
         </div>
-        <div className="px-6 py-4 border-t border-gray-200">
+        <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700">
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">
+            <span className="text-sm text-gray-700 dark:text-gray-300">
               {enrollments ? `Toplam ${enrollments.length} kursiyer` : 'Toplam 0 kursiyer'}
             </span>
             <div className="flex items-center space-x-2">

@@ -55,7 +55,7 @@ export default function CourseTable() {
             courses.slice(0, 3).map((course: any) => {
               const IconComponent = getIconForCourse(course.title);
               return (
-                <div key={course.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
+                <div key={course.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600 transition-colors">
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 gradient-primary rounded-lg flex items-center justify-center">
                       <IconComponent className="text-white text-xl" size={24} />
@@ -73,13 +73,13 @@ export default function CourseTable() {
                   </div>
                   <div className="text-right">
                     <div className="text-lg font-bold text-gray-900 dark:text-white">{course.price ? `₺${course.price}` : '₺0'}</div>
-                    <div className="text-sm text-gray-500">{course.duration ? `${course.duration} Hafta` : 'Süre belirsiz'}</div>
+                    <div className="text-sm text-gray-500 dark:text-gray-400">{course.duration ? `${course.duration} Hafta` : 'Süre belirsiz'}</div>
                   </div>
                 </div>
               );
             })
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-8 text-gray-500 dark:text-gray-400">
               Henüz kurs bulunmuyor
             </div>
           )}

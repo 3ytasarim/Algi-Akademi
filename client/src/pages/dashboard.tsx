@@ -68,16 +68,16 @@ export default function Dashboard() {
             gradient="bg-gradient-to-br from-blue-500 to-blue-600"
           />
           <StatsCard
-            title="Aktif Kurslar"
-            value={`${stats?.activeCourses || 0}`}
-            change="+5%"
+            title="Toplam Kursiyer"
+            value={`${stats?.totalEnrollments || 0}`}
+            change="+8%"
             icon={BookOpen}
             gradient="bg-gradient-to-br from-green-500 to-green-600"
           />
           <StatsCard
-            title="Aylık Gelir"
-            value={`₺${stats?.monthlyRevenue ? stats.monthlyRevenue.toLocaleString('tr-TR') : '0'}`}
-            change="+8%"
+            title="Farklı Kurs"
+            value={`${stats?.activeCourses || 0}`}
+            change="+5%"
             icon={TrendingUp}
             gradient="bg-gradient-to-br from-purple-500 to-purple-600"
           />
