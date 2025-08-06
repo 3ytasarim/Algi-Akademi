@@ -187,8 +187,8 @@ export default function Consultants() {
       {/* Page Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Danışmanlar</h1>
-          <p className="text-gray-600">Personel yönetimi ve kayıtları</p>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Danışmanlar</h1>
+          <p className="text-gray-600 dark:text-gray-300">Personel yönetimi ve kayıtları</p>
         </div>
         <Dialog open={isAddDialogOpen} onOpenChange={setIsAddDialogOpen}>
           <DialogTrigger asChild>

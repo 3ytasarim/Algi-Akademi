@@ -147,8 +147,8 @@ export default function CostReport() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900">Kursiyer Maliyet Raporu</h1>
-            <p className="text-slate-600 mt-1">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Kursiyer Maliyet Raporu</h1>
+            <p className="text-slate-600 dark:text-slate-300 mt-1">
               Kurs satışları, indirimler ve karlılık analizi
             </p>
           </div>
@@ -160,12 +160,12 @@ export default function CostReport() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 border-green-200/50">
+          <Card className="bg-gradient-to-br from-green-500/10 to-green-600/5 dark:from-green-500/20 dark:to-green-600/10 border-green-200/50 dark:border-green-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">₺{totalRevenue.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 text-sm font-medium">Net Gelir</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalRevenue.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Net Gelir</p>
                 </div>
                 <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                   <DollarSign size={20} className="text-green-600" />
@@ -174,12 +174,12 @@ export default function CostReport() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200/50">
+          <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 dark:from-blue-500/20 dark:to-blue-600/10 border-blue-200/50 dark:border-blue-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">₺{totalGrossRevenue.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 text-sm font-medium">Brüt Gelir</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalGrossRevenue.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Brüt Gelir</p>
                 </div>
                 <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
                   <TrendingUp size={20} className="text-blue-600" />
@@ -188,12 +188,12 @@ export default function CostReport() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 border-red-200/50">
+          <Card className="bg-gradient-to-br from-red-500/10 to-red-600/5 dark:from-red-500/20 dark:to-red-600/10 border-red-200/50 dark:border-red-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">₺{totalDiscount.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 text-sm font-medium">Toplam İndirim</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalDiscount.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Toplam İndirim</p>
                 </div>
                 <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                   <Percent size={20} className="text-red-600" />
@@ -202,12 +202,12 @@ export default function CostReport() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 border-purple-200/50">
+          <Card className="bg-gradient-to-br from-purple-500/10 to-purple-600/5 dark:from-purple-500/20 dark:to-purple-600/10 border-purple-200/50 dark:border-purple-500/30">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900">%{avgDiscountPercent.toFixed(1)}</h3>
-                  <p className="text-slate-600 text-sm font-medium">Ort. İndirim Oranı</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">%{avgDiscountPercent.toFixed(1)}</h3>
+                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Ort. İndirim Oranı</p>
                 </div>
                 <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                   <BarChart3 size={20} className="text-purple-600" />
@@ -220,9 +220,9 @@ export default function CostReport() {
         {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Course Revenue Chart */}
-          <Card>
+          <Card className="dark:bg-gray-800">
             <CardHeader>
-              <CardTitle>Kurslara Göre Gelir Dağılımı</CardTitle>
+              <CardTitle className="dark:text-white">Kurslara Göre Gelir Dağılımı</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>

@@ -96,7 +96,7 @@ export default function StudentList() {
               <Users className="text-white" size={24} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
+              <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
             </div>
           </div>
         </div>
@@ -117,16 +117,16 @@ export default function StudentList() {
             placeholder="Kursiyer ara (ad, soyad, email, TC kimlik no)..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            className="pl-12 h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white shadow-sm"
+            className="pl-12 h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 bg-white dark:bg-gray-700 dark:text-white shadow-sm"
           />
           <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
         </div>
       </div>
 
       {/* Students Table */}
-      <Card className="rounded-xl shadow-lg border-0 bg-white/80 backdrop-blur-sm">
-        <CardHeader className="border-b border-slate-100 bg-gradient-to-r from-slate-50 to-blue-50/30 rounded-t-xl">
-          <CardTitle className="text-xl text-slate-900 flex items-center gap-3">
+      <Card className="rounded-xl shadow-lg border-0 bg-white/80 dark:bg-gray-800/90 backdrop-blur-sm">
+        <CardHeader className="border-b border-slate-100 dark:border-gray-700 bg-gradient-to-r from-slate-50 to-blue-50/30 dark:from-gray-800 dark:to-gray-800 rounded-t-xl">
+          <CardTitle className="text-xl text-slate-900 dark:text-white flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
               <Users className="text-white" size={18} />
             </div>
@@ -140,26 +140,26 @@ export default function StudentList() {
             </div>
           ) : filteredStudents.length === 0 ? (
             <div className="text-center py-12">
-              <Users className="mx-auto h-12 w-12 text-gray-300 mb-4" />
-              <p className="text-gray-500">
+              <Users className="mx-auto h-12 w-12 text-gray-300 dark:text-gray-600 mb-4" />
+              <p className="text-gray-500 dark:text-gray-400">
                 {searchTerm ? "Arama kriterlerine uygun kursiyer bulunamadı." : "Henüz kayıtlı kursiyer bulunmuyor."}
               </p>
             </div>
           ) : (
             <Table>
               <TableHeader>
-                <TableRow className="border-slate-100">
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">Kursiyer</TableHead>
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">İletişim</TableHead>
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">Durum</TableHead>
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">Kayıt Tarihi</TableHead>
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold">Bitiş Tarihi</TableHead>
-                  <TableHead className="py-4 px-6 text-slate-600 font-semibold text-center">İşlemler</TableHead>
+                <TableRow className="border-slate-100 dark:border-gray-700">
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">Kursiyer</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">İletişim</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">Durum</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">Kayıt Tarihi</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold">Bitiş Tarihi</TableHead>
+                  <TableHead className="py-4 px-6 text-slate-600 dark:text-slate-300 font-semibold text-center">İşlemler</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((student: any, index: number) => (
-                  <TableRow key={student.id || index} className="border-slate-100 hover:bg-slate-50/50 transition-colors">
+                  <TableRow key={student.id || index} className="border-slate-100 dark:border-gray-700 hover:bg-slate-50/50 dark:hover:bg-gray-700/50 transition-colors">
                     <TableCell className="py-4 px-6">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
@@ -168,18 +168,18 @@ export default function StudentList() {
                           </span>
                         </div>
                         <div>
-                          <p className="font-semibold text-slate-900">{student.firstName || student.adı} {student.lastName || student.soyadı}</p>
-                          <p className="text-sm text-slate-500">TC: {student.tcKimlikNo || 'Belirtilmemiş'}</p>
+                          <p className="font-semibold text-slate-900 dark:text-white">{student.firstName || student.adı} {student.lastName || student.soyadı}</p>
+                          <p className="text-sm text-slate-500 dark:text-slate-400">TC: {student.tcKimlikNo || 'Belirtilmemiş'}</p>
                         </div>
                       </div>
                     </TableCell>
                     <TableCell className="py-4 px-6">
                       <div className="space-y-1">
-                        <div className="flex items-center text-sm text-slate-600">
+                        <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                           <Mail size={14} className="mr-2" />
                           {student.email || 'Belirtilmemiş'}
                         </div>
-                        <div className="flex items-center text-sm text-slate-600">
+                        <div className="flex items-center text-sm text-slate-600 dark:text-slate-400">
                           <Phone size={14} className="mr-2" />
                           {student.telefon || 'Belirtilmemiş'}
                         </div>
