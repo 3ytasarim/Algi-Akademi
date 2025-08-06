@@ -54,8 +54,16 @@ async function createDeploymentStructure() {
     // Copy all files from source to target
     copyRecursive(sourceDir, targetDir);
     
+    // Also ensure backend can serve static files from server/public
+    const serverPublicDir = path.join(__dirname, 'server', 'public');
+    if (!fs.existsSync(serverPublicDir)) {
+      fs.mkdirSync(serverPublicDir, { recursive: true });
+    }
+    copyRecursive(sourceDir, serverPublicDir);
+    
     console.log('✅ Deployment structure created successfully!');
     console.log(`📁 Frontend files available in: ${targetDir}`);
+    console.log(`📁 Server static files available in: ${serverPublicDir}`);
     console.log(`📁 Backend files available in: ${path.join(__dirname, 'dist')}`);
     
   } catch (error) {

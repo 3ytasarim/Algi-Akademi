@@ -52,20 +52,34 @@ project-root/
 
 ## Production Deployment
 
-1. Build and prepare deployment files:
-   ```bash
-   npm run build
-   node create-deployment.js
-   ```
+**IMPORTANT**: Make sure your Replit deployment is configured as **Autoscale Deployment** (not Static)!
 
-2. The deployment system should now find:
-   - **Frontend**: `algi-akademi/` directory with static files
-   - **Backend**: `dist/index.js` for the server
+### Step 1: Prepare files
+```bash
+./prepare-deploy.sh
+```
 
-3. Start production server:
-   ```bash
-   npm start
-   ```
+### Step 2: Configure Replit Deployment
+When deploying on Replit:
+1. **Deployment Type**: Choose "Autoscale" (NOT Static)
+2. **Build Command**: `npm run build`
+3. **Run Command**: `npm start`
+4. **Public Directory**: Leave empty (backend will serve files)
+
+### Step 3: Verify Deployment Structure
+The deployment should have:
+- **Backend Server**: `dist/index.js` (Express server with API routes)
+- **Static Files**: `server/public/` (served by Express)
+- **Environment**: `NODE_ENV=production`
+
+### Current Issue Analysis
+If admin login shows "Sunucuya bağlanırken bir hata oluştu":
+- Check if deployment is set to **Autoscale** (not Static)
+- API endpoints return 404 → Backend server is not running
+- Only static files are served → Wrong deployment type
+
+### Fix: Re-deploy as Autoscale
+The deployment must be configured as **Autoscale Deployment** to run the Express server with API endpoints.
 
 ## File Descriptions
 
