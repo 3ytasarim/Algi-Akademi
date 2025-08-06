@@ -216,6 +216,36 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/consultants", async (req: any, res) => {
+    try {
+      const consultant = await storage.createConsultant(req.body);
+      res.status(201).json(consultant);
+    } catch (error) {
+      console.error("Error creating consultant:", error);
+      res.status(500).json({ message: "Failed to create consultant" });
+    }
+  });
+
+  app.put("/api/consultants/:id", async (req: any, res) => {
+    try {
+      const consultant = await storage.updateConsultant(req.params.id, req.body);
+      res.json(consultant);
+    } catch (error) {
+      console.error("Error updating consultant:", error);
+      res.status(500).json({ message: "Failed to update consultant" });
+    }
+  });
+
+  app.delete("/api/consultants/:id", async (req: any, res) => {
+    try {
+      await storage.deleteConsultant(req.params.id);
+      res.json({ message: "Consultant deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting consultant:", error);
+      res.status(500).json({ message: "Failed to delete consultant" });
+    }
+  });
+
   app.get("/api/sales", async (req: any, res) => {
     try {
       const sales = await storage.getSales();

@@ -24,6 +24,8 @@ export default function Consultants() {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState("");
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingConsultant, setEditingConsultant] = useState<any>(null);
   const [formData, setFormData] = useState({
     tcNo: "",
     firstName: "",
@@ -54,10 +56,7 @@ export default function Consultants() {
 
   const createConsultantMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest('/api/consultants', {
-        method: 'POST',
-        body: data
-      });
+      return await apiRequest('/api/consultants', 'POST', data);
     },
     onSuccess: () => {
       toast({
@@ -72,6 +71,49 @@ export default function Consultants() {
       toast({
         title: "Hata",
         description: "Personel eklenirken bir hata oluştu",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const updateConsultantMutation = useMutation({
+    mutationFn: async ({ id, data }: { id: string, data: any }) => {
+      return await apiRequest(`/api/consultants/${id}`, 'PUT', data);
+    },
+    onSuccess: () => {
+      toast({
+        title: "Başarılı",
+        description: "Personel başarıyla güncellendi",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/consultants"] });
+      setIsEditDialogOpen(false);
+      setEditingConsultant(null);
+      resetForm();
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
+        description: "Personel güncellenirken bir hata oluştu",
+        variant: "destructive",
+      });
+    },
+  });
+
+  const deleteConsultantMutation = useMutation({
+    mutationFn: async (id: string) => {
+      return await apiRequest(`/api/consultants/${id}`, 'DELETE');
+    },
+    onSuccess: () => {
+      toast({
+        title: "Başarılı",
+        description: "Personel başarıyla silindi",
+      });
+      queryClient.invalidateQueries({ queryKey: ["/api/consultants"] });
+    },
+    onError: (error) => {
+      toast({
+        title: "Hata",
+        description: "Personel silinirken bir hata oluştu",
         variant: "destructive",
       });
     },
@@ -100,7 +142,30 @@ export default function Consultants() {
       return;
     }
 
-    createConsultantMutation.mutate(formData);
+    if (editingConsultant) {
+      updateConsultantMutation.mutate({ id: editingConsultant.id, data: formData });
+    } else {
+      createConsultantMutation.mutate(formData);
+    }
+  };
+
+  const handleEdit = (consultant: any) => {
+    setEditingConsultant(consultant);
+    setFormData({
+      tcNo: consultant.tcNo || "",
+      firstName: consultant.firstName || "",
+      lastName: consultant.lastName || "",
+      title: consultant.title || "Danışman",
+      email: consultant.email || "",
+      phone: consultant.phone || ""
+    });
+    setIsEditDialogOpen(true);
+  };
+
+  const handleDelete = (id: number | string, name: string) => {
+    if (window.confirm(`${name} adlı personeli silmek istediğinizden emin misiniz?`)) {
+      deleteConsultantMutation.mutate(String(id));
+    }
   };
 
   const handleInputChange = (field: string, value: string) => {
@@ -234,6 +299,111 @@ export default function Consultants() {
             </form>
           </DialogContent>
         </Dialog>
+
+        {/* Edit Dialog */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle>Personel Düzenle</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <Label htmlFor="editTcNo">T.C. Kimlik No *</Label>
+                <Input
+                  id="editTcNo"
+                  type="text"
+                  placeholder="T.C. Kimlik No"
+                  value={formData.tcNo}
+                  onChange={(e) => handleInputChange('tcNo', e.target.value)}
+                  maxLength={11}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="editFirstName">Ad *</Label>
+                <Input
+                  id="editFirstName"
+                  type="text"
+                  placeholder="Adı"
+                  value={formData.firstName}
+                  onChange={(e) => handleInputChange('firstName', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="editLastName">Soyad *</Label>
+                <Input
+                  id="editLastName"
+                  type="text"
+                  placeholder="Soyadı"
+                  value={formData.lastName}
+                  onChange={(e) => handleInputChange('lastName', e.target.value)}
+                  required
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="editTitle">Ünvan</Label>
+                <Select value={formData.title} onValueChange={(value) => handleInputChange('title', value)}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Ünvan seçin" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="Danışman">Danışman</SelectItem>
+                    <SelectItem value="Uzman">Uzman</SelectItem>
+                    <SelectItem value="Koordinatör">Koordinatör</SelectItem>
+                    <SelectItem value="Müdür">Müdür</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="editEmail">E-posta</Label>
+                <Input
+                  id="editEmail"
+                  type="email"
+                  placeholder="E-posta adresi"
+                  value={formData.email}
+                  onChange={(e) => handleInputChange('email', e.target.value)}
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="editPhone">Telefon</Label>
+                <Input
+                  id="editPhone"
+                  type="tel"
+                  placeholder="Telefon numarası"
+                  value={formData.phone}
+                  onChange={(e) => handleInputChange('phone', e.target.value)}
+                />
+              </div>
+
+              <div className="flex justify-end space-x-2 pt-4">
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => {
+                    setIsEditDialogOpen(false);
+                    setEditingConsultant(null);
+                    resetForm();
+                  }}
+                >
+                  İptal
+                </Button>
+                <Button
+                  type="submit"
+                  className="bg-primary text-white"
+                  disabled={updateConsultantMutation.isPending}
+                >
+                  {updateConsultantMutation.isPending ? "Güncelleniyor..." : "Güncelle"}
+                </Button>
+              </div>
+            </form>
+          </DialogContent>
+        </Dialog>
       </div>
 
       {/* Search and Controls */}
@@ -325,10 +495,20 @@ export default function Consultants() {
                           <Button variant="ghost" size="sm" className="text-primary hover:text-secondary p-1">
                             <Eye size={16} />
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-gray-400 hover:text-gray-600 p-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-gray-400 hover:text-gray-600 p-1"
+                            onClick={() => handleEdit(consultant)}
+                          >
                             <Edit size={16} />
                           </Button>
-                          <Button variant="ghost" size="sm" className="text-red-400 hover:text-red-600 p-1">
+                          <Button 
+                            variant="ghost" 
+                            size="sm" 
+                            className="text-red-400 hover:text-red-600 p-1"
+                            onClick={() => handleDelete(consultant.id, `${consultant.firstName} ${consultant.lastName}`)}
+                          >
                             <Trash2 size={16} />
                           </Button>
                         </div>

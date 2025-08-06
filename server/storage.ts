@@ -82,6 +82,7 @@ export interface IStorage {
   getConsultant(id: string): Promise<Consultant | undefined>;
   createConsultant(consultant: InsertConsultant): Promise<Consultant>;
   updateConsultant(id: string, consultant: Partial<InsertConsultant>): Promise<Consultant>;
+  deleteConsultant(id: string): Promise<void>;
 
   // Sales operations
   getSales(): Promise<(Sale & { consultant: Consultant; student: User; course: Course })[]>;
@@ -404,6 +405,10 @@ export class DatabaseStorage implements IStorage {
       .where(eq(consultants.id, id))
       .returning();
     return updatedConsultant;
+  }
+
+  async deleteConsultant(id: string): Promise<void> {
+    await db.delete(consultants).where(eq(consultants.id, id));
   }
 
   // Sales operations
