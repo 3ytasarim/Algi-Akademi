@@ -206,6 +206,7 @@ export default function Landing() {
                       placeholder="T.C. Kimlik Numaranız"
                       value={loginData.tcKimlikNo}
                       onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
+                      onKeyDown={(e) => e.key === 'Enter' && handleStudentLogin()}
                       className="pl-12 h-12 rounded-xl border-2 border-red-500/30 focus:border-red-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                     />
                   </div>
@@ -220,9 +221,10 @@ export default function Landing() {
                     <Input
                       id="username"
                       type="text"
-                      placeholder="admin"
+                      placeholder="T.C Kimlik Numaranızı Giriniz"
                       value={loginData.username || ''}
                       onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
+                      onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
                       className="pl-12 h-12 rounded-xl border-2 border-gray-500/30 focus:border-gray-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                     />
                   </div>
@@ -242,6 +244,7 @@ export default function Landing() {
                     placeholder={selectedRole === 'student' ? '112233' : 'Şifrenizi girin'}
                     value={loginData.password || ''}
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
+                    onKeyDown={(e) => e.key === 'Enter' && (selectedRole === 'student' ? handleStudentLogin() : handleAdminLogin())}
                     className="pl-12 pr-12 h-12 rounded-xl border-2 border-red-500/30 focus:border-red-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                   />
                   <Button
