@@ -106,8 +106,18 @@ export default function Sidebar({
       <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-20 shadow-2xl border-r border-red-500/20 ${
         sidebarCollapsed ? 'w-20' : 'w-72'
       } ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        
+        {/* Toggle Button - At top of sidebar */}
+        <button
+          onClick={toggleSidebarCollapse}
+          className="absolute top-2 right-2 text-white/70 hover:text-white hover:bg-red-600/40 p-1.5 rounded-md transition-all duration-200 border border-red-600/30 bg-red-900/20 shadow-sm backdrop-blur-sm z-30"
+          title={sidebarCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
+        >
+          {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+        </button>
+        
         {/* Logo Section */}
-        <div className="p-6 border-b border-red-800/20 relative">
+        <div className="p-6 border-b border-red-800/20 pt-12">
           <div className="flex flex-col items-center space-y-3">
             {!sidebarCollapsed ? (
               <>
@@ -127,15 +137,7 @@ export default function Sidebar({
               </div>
             )}
           </div>
-          
-          {/* Professional Toggle Button */}
-          <button
-            onClick={toggleSidebarCollapse}
-            className="absolute top-4 right-4 text-white/70 hover:text-white hover:bg-red-600/40 p-2.5 rounded-xl transition-all duration-200 border border-red-600/30 bg-red-900/20 shadow-sm backdrop-blur-sm"
-            title={sidebarCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
-          >
-            {sidebarCollapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
-          </button>
+
         </div>
 
         {/* Search */}
