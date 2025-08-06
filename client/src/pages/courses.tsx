@@ -150,9 +150,9 @@ export default function CoursesPage() {
       title: courseForm.title,
       description: courseForm.description,
       instructorId: "admin", // Default instructor for admin-created courses
-      price: parseFloat(courseForm.price) || 0,
+      price: courseForm.price || "0",
       duration: courseForm.sections.length, // Toplam ders sayısı = section sayısı
-      sections: JSON.stringify(courseForm.sections), // Convert to JSON string for database
+      sections: courseForm.sections, // Keep as object for JSON field
       status: "active",
       category: "Genel"
     };
