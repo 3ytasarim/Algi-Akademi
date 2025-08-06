@@ -70,6 +70,11 @@
     --tw-text-opacity: 1;
     color: hsl(44, 100%, 96%); /* Fildişi rengi */
   }
+
+  .dark .text-gray-900 {
+    --tw-text-opacity: 1;
+    color: hsl(44, 100%, 96%); /* Fildişi rengi */
+  }
   
   .modern-gradient {
     background: linear-gradient(135deg, 
