@@ -64,7 +64,10 @@ export default function Sidebar({
       id: "reports", 
       icon: TrendingUp,
       label: "Raporlar",
-      href: "/reports"
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: TrendingUp, label: "Kursiyer Maliyet Raporu", href: "/reports" },
+      ]
     },
     {
       id: "system",
