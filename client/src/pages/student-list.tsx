@@ -164,7 +164,7 @@ export default function StudentList() {
               </TableHeader>
               <TableBody>
                 {filteredStudents.map((student: any, index: number) => (
-                  <TableRow key={student.id || index} className="border-slate-100 dark:border-gray-700 hover:bg-slate-50/50 dark:hover:bg-gray-700/50 transition-colors">
+                  <TableRow key={student.id || index} className="border-slate-100 dark:border-gray-700 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                     <TableCell className="py-4 px-6">
                       <div className="flex items-center space-x-3">
                         <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">

@@ -388,7 +388,7 @@ export default function CostReport() {
                       </TableRow>
                     ) : (
                       filteredData.map((item: any) => (
-                        <TableRow key={item.id} className="hover:bg-slate-50 dark:hover:bg-gray-700">
+                        <TableRow key={item.id} className="hover:bg-red-50 dark:hover:bg-red-900/20">
                           <TableCell className="font-medium">
                             <div className="flex items-center space-x-2">
                               <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">

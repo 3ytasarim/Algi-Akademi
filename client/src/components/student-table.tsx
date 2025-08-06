@@ -65,7 +65,7 @@ export default function StudentTable() {
                 </tr>
               ) : enrollments && (enrollments as any).length > 0 ? (
                 (enrollments as any).slice(0, 10).map((enrollment: any) => (
-                  <tr key={enrollment.id} className="hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                  <tr key={enrollment.id} className="hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
                         <div className="w-10 h-10 bg-gray-300 rounded-full overflow-hidden mr-4">
