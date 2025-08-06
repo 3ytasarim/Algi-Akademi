@@ -111,7 +111,7 @@ app.use("*", (req, res) => {
   res.sendFile(path.resolve(staticPath, 'index.html'));
 });
 
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 app.listen(port, '0.0.0.0', () => {
   console.log(`[Production Server] serving on port ${port}`);
   console.log(`[Production Server] Static files: ${staticPath}`);
