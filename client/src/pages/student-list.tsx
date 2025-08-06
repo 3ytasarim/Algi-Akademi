@@ -58,8 +58,13 @@ export default function StudentList() {
     },
   });
 
+  // Filter out empty students (students without basic info)
+  const validStudents = (students as any[]).filter((student: any) => 
+    student.adı || student.firstName || student.tcKimlikNo
+  );
+
   // Filter students based on search term
-  const filteredStudents = (students as any[]).filter((student: any) =>
+  const filteredStudents = validStudents.filter((student: any) =>
     student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.adı?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -96,7 +101,7 @@ export default function StudentList() {
               <Users className="text-white" size={24} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 dark:text-gray-200 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
+              <p className="text-sm text-gray-500 dark:text-gray-200 font-medium">Toplam {validStudents.length} Kursiyer</p>
             </div>
           </div>
         </div>
