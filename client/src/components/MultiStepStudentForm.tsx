@@ -231,7 +231,12 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    createStudentMutation.mutate(formData);
+    if (currentStep < 3) {
+      nextStep();
+    } else {
+      console.log("Submitting form data:", formData);
+      createStudentMutation.mutate(formData);
+    }
   };
 
   return (
