@@ -100,6 +100,8 @@ export interface IStorage {
   // Student operations
   getStudents(): Promise<User[]>;
   createStudent(student: any): Promise<User>;
+  updateStudent(id: string, student: any): Promise<User>;
+  deleteStudent(id: string): Promise<void>;
   getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined>;
 
   // Notification operations
@@ -494,6 +496,41 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return student;
+  }
+
+  async updateStudent(id: string, studentData: any): Promise<User> {
+    const [updatedStudent] = await db
+      .update(users)
+      .set({
+        email: studentData.email,
+        firstName: studentData.firstName,
+        lastName: studentData.lastName,
+        tcKimlikNo: studentData.tcKimlikNo,
+        adı: studentData.adı,
+        soyadı: studentData.soyadı,
+        doğumTarihi: studentData.doğumTarihi,
+        telefon: studentData.telefon,
+        cinsiyet: studentData.cinsiyet,
+        meslek: studentData.meslek,
+        kayıtTarihi: studentData.kayıtTarihi,
+        bitişTarihi: studentData.bitişTarihi,
+        isMernisOnaylı: studentData.isMernisOnaylı,
+        isÜniversiteOnaylı: studentData.isÜniversiteOnaylı,
+        isEDevletOnaylı: studentData.isEDevletOnaylı,
+        isUluslararasıSertifikasyon: studentData.isUluslararasıSertifikasyon,
+        selectedCourses: studentData.selectedCourses || [],
+        totalPrice: studentData.totalPrice,
+        discountAmount: studentData.discountAmount,
+        finalPrice: studentData.finalPrice,
+        updatedAt: new Date(),
+      })
+      .where(eq(users.id, id))
+      .returning();
+    return updatedStudent;
+  }
+
+  async deleteStudent(id: string): Promise<void> {
+    await db.delete(users).where(eq(users.id, id));
   }
 
   async getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined> {

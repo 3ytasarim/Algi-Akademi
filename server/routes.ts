@@ -290,6 +290,72 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Update student route
+  app.put('/api/students/:id', async (req: any, res) => {
+    try {
+      const studentId = req.params.id;
+      console.log("Updating student with ID:", studentId, "Data:", req.body);
+      
+      const updatedStudent = await storage.updateStudent(studentId, {
+        adı: req.body.adı,
+        soyadı: req.body.soyadı,
+        email: req.body.email,
+        tcKimlikNo: req.body.tcKimlikNo,
+        doğumTarihi: req.body.doğumTarihi,
+        telefon: req.body.telefon,
+        cinsiyet: req.body.cinsiyet,
+        meslek: req.body.meslek,
+        kayıtTarihi: req.body.kayıtTarihi,
+        bitişTarihi: req.body.bitişTarihi,
+        isMernisOnaylı: req.body.isMernisOnaylı === true || req.body.isMernisOnaylı === 'true',
+        isÜniversiteOnaylı: req.body.isÜniversiteOnaylı === true || req.body.isÜniversiteOnaylı === 'true',
+        isEDevletOnaylı: req.body.isEDevletOnaylı === true || req.body.isEDevletOnaylı === 'true',
+        isUluslararasıSertifikasyon: req.body.isUluslararasıSertifikasyon === true || req.body.isUluslararasıSertifikasyon === 'true',
+        selectedCourses: Array.isArray(req.body.selectedCourses) ? req.body.selectedCourses : [],
+        totalPrice: req.body.totalPrice || '0',
+        discountAmount: req.body.discountAmount || '0',
+        finalPrice: req.body.finalPrice || '0',
+      });
+
+      console.log("Student updated successfully:", updatedStudent.id);
+      
+      res.status(200).json({ 
+        success: true,
+        message: "Kursiyer başarıyla güncellendi",
+        student: updatedStudent 
+      });
+    } catch (error) {
+      console.error("Error updating student:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Kursiyer güncellenirken bir hata oluştu" 
+      });
+    }
+  });
+
+  // Delete student route
+  app.delete('/api/students/:id', async (req: any, res) => {
+    try {
+      const studentId = req.params.id;
+      console.log("Deleting student with ID:", studentId);
+      
+      await storage.deleteStudent(studentId);
+      
+      console.log("Student deleted successfully:", studentId);
+      
+      res.status(200).json({ 
+        success: true,
+        message: "Kursiyer başarıyla silindi" 
+      });
+    } catch (error) {
+      console.error("Error deleting student:", error);
+      res.status(500).json({ 
+        success: false,
+        message: "Kursiyer silinirken bir hata oluştu" 
+      });
+    }
+  });
+
   // Student login route
   app.post('/api/auth/student-login', async (req: any, res) => {
     try {

@@ -4,20 +4,47 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import MultiStepStudentForm from "@/components/MultiStepStudentForm";
 import { User, UserPlus, Search, Mail, Phone, Users } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
+  const [editingStudent, setEditingStudent] = useState(null);
   const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   // Fetch students
   const { data: students = [], isLoading } = useQuery({
     queryKey: ["/api/students"],
+  });
+
+  // Delete student mutation
+  const deleteStudentMutation = useMutation({
+    mutationFn: async (studentId: string) => {
+      return await apiRequest(`/api/students/${studentId}`, {
+        method: "DELETE",
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      toast({
+        title: "Başarılı",
+        description: "Kursiyer başarıyla silindi.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "Kursiyer silinirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
   });
 
   // Filter students based on search term
@@ -29,6 +56,22 @@ export default function StudentList() {
     student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.tcKimlikNo?.includes(searchTerm)
   );
+
+  const handleEditStudent = (student: any) => {
+    setEditingStudent(student);
+    // Could open a modal or navigate to edit page
+    toast({
+      title: "Düzenleme",
+      description: "Kursiyer düzenleme özelliği yakında eklenecek.",
+    });
+  };
+
+  const handleDeleteStudent = (student: any) => {
+    const studentName = `${student.firstName || student.adı} ${student.lastName || student.soyadı}`;
+    if (confirm(`${studentName} adlı kursiyeri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
+      deleteStudentMutation.mutate(student.id);
+    }
+  };
 
   return (
     <LayoutWrapper 
@@ -168,10 +211,7 @@ export default function StudentList() {
                           variant="outline"
                           size="sm"
                           className="h-8 w-8 p-0 rounded-lg border-blue-200 hover:bg-blue-50 hover:border-blue-300"
-                          onClick={() => {
-                            // TODO: Edit student functionality
-                            console.log("Edit student:", student.id);
-                          }}
+                          onClick={() => handleEditStudent(student)}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -182,12 +222,7 @@ export default function StudentList() {
                           variant="outline"
                           size="sm"
                           className="h-8 w-8 p-0 rounded-lg border-red-200 hover:bg-red-50 hover:border-red-300 text-red-600 hover:text-red-700"
-                          onClick={() => {
-                            // TODO: Delete student functionality
-                            if (confirm(`${student.firstName || student.adı} ${student.lastName || student.soyadı} adlı kursiyeri silmek istediğinizden emin misiniz?`)) {
-                              console.log("Delete student:", student.id);
-                            }
-                          }}
+                          onClick={() => handleDeleteStudent(student)}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <polyline points="3,6 5,6 21,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
