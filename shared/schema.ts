@@ -42,6 +42,18 @@ export const users = pgTable("users", {
   soyadı: varchar("soyadi"),
   doğumTarihi: date("dogum_tarihi"),
   bitişTarihi: date("bitis_tarihi"), // Course access expiration date
+  // Additional student fields
+  cinsiyet: varchar("cinsiyet"), // 'Erkek', 'Kadın'
+  meslek: varchar("meslek"), // 'Özel Sektör', 'Kamu', 'Serbest Meslek', etc.
+  kayıtTarihi: date("kayit_tarihi"), // Registration date
+  isMernisOnaylı: boolean("is_mernis_onayli").default(false),
+  isÜniversiteOnaylı: boolean("is_universite_onayli").default(false),
+  isEDevletOnaylı: boolean("is_edevlet_onayli").default(false),
+  isUluslararasıSertifikasyon: boolean("is_uluslararasi_sertifikasyon").default(false),
+  selectedCourses: text("selected_courses").array().default(sql`ARRAY[]::text[]`), // Course IDs
+  totalPrice: decimal("total_price", { precision: 10, scale: 2 }).default('0'),
+  discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }).default('0'),
+  finalPrice: decimal("final_price", { precision: 10, scale: 2 }).default('0'),
   isManualStudent: boolean("is_manual_student").default(false),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),

@@ -4,6 +4,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -13,7 +15,8 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import { validateTCKimlikNo, formatTCKimlikNo } from "@/utils/tcValidation";
 import { 
   User, UserPlus, Search, Calendar, CreditCard, Mail, Phone, 
-  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload, Users, CheckCircle, XCircle
+  MapPin, GraduationCap, Clock, Check, X, Eye, Edit, Trash2, Camera, Upload, Users, CheckCircle, XCircle,
+  ChevronRight, ChevronLeft, Briefcase, Shield, Award, Globe, TrendingUp
 } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -21,16 +24,27 @@ import { tr } from "date-fns/locale";
 export default function StudentList() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
+  const [currentStep, setCurrentStep] = useState(1);
   const [formData, setFormData] = useState({
+    // Step 1 - Kişisel Bilgiler
     adı: "",
     soyadı: "",
     email: "",
-    doğumTarihi: "",
-    bitişTarihi: "",
     tcKimlikNo: "",
-    telefon: "",
-    adres: "",
+    doğumTarihi: "",
     profileImage: null as File | null,
+    // Step 2 - Ek Bilgiler
+    cinsiyet: "",
+    meslek: "",
+    kayıtTarihi: new Date().toISOString().split('T')[0],
+    bitişTarihi: "",
+    // Step 3 - Onaylar ve Kurslar
+    isMernisOnaylı: false,
+    isÜniversiteOnaylı: false,
+    isEDevletOnaylı: false,
+    isUluslararasıSertifikasyon: false,
+    selectedCourses: [] as string[],
+    discountAmount: "0",
   });
   const [tcValidation, setTcValidation] = useState<{
     isValid: boolean | null;
@@ -44,6 +58,11 @@ export default function StudentList() {
   // Fetch students
   const { data: students = [], isLoading } = useQuery({
     queryKey: ["/api/students"],
+  });
+
+  // Fetch courses for step 3
+  const { data: courses = [] } = useQuery({
+    queryKey: ["/api/courses"],
   });
 
   // Create student mutation
@@ -63,16 +82,27 @@ export default function StudentList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
       setIsDialogOpen(false);
+      setCurrentStep(1);
       setFormData({
+        // Step 1 - Kişisel Bilgiler
         adı: "",
         soyadı: "",
         email: "",
-        doğumTarihi: "",
-        bitişTarihi: "",
         tcKimlikNo: "",
-        telefon: "",
-        adres: "",
-        profileImage: null,
+        doğumTarihi: "",
+        profileImage: null as File | null,
+        // Step 2 - Ek Bilgiler
+        cinsiyet: "",
+        meslek: "",
+        kayıtTarihi: new Date().toISOString().split('T')[0],
+        bitişTarihi: "",
+        // Step 3 - Onaylar ve Kurslar
+        isMernisOnaylı: false,
+        isÜniversiteOnaylı: false,
+        isEDevletOnaylı: false,
+        isUluslararasıSertifikasyon: false,
+        selectedCourses: [] as string[],
+        discountAmount: "0",
       });
       setPreviewImage(null);
       setTcValidation({ isValid: null, message: "" });
@@ -90,11 +120,11 @@ export default function StudentList() {
     },
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     
     // T.C. Kimlik No özel kontrolü
-    if (field === 'tcKimlikNo') {
+    if (field === 'tcKimlikNo' && typeof value === 'string') {
       const cleanValue = value.replace(/\D/g, ''); // Sadece rakamları al
       if (cleanValue.length === 0) {
         setTcValidation({ isValid: null, message: "" });
@@ -104,12 +134,34 @@ export default function StudentList() {
         const isValid = validateTCKimlikNo(cleanValue);
         setTcValidation({
           isValid,
-          message: isValid ? "Geçerli T.C. Kimlik No" : "Geçersiz T.C. Kimlik No"
+          message: isValid ? "Geçerli T.C. Kimlik No (Mernis onaylı)" : "Geçersiz T.C. Kimlik No"
         });
+        // Auto-check Mernis if TC is valid
+        if (isValid) {
+          setFormData(prev => ({ ...prev, isMernisOnaylı: true }));
+        }
       } else {
         setTcValidation({ isValid: false, message: "T.C. Kimlik No 11 haneli olmalıdır" });
       }
     }
+  };
+
+  const calculateTotalPrice = () => {
+    const selectedCoursePrices = formData.selectedCourses.map(courseId => {
+      const course = courses.find((c: any) => c.id === courseId);
+      return course ? parseFloat(course.price || '0') : 0;
+    });
+    const total = selectedCoursePrices.reduce((sum, price) => sum + price, 0);
+    const discount = parseFloat(formData.discountAmount || '0');
+    return { total, discount, final: Math.max(0, total - discount) };
+  };
+
+  const nextStep = () => {
+    if (currentStep < 3) setCurrentStep(currentStep + 1);
+  };
+
+  const prevStep = () => {
+    if (currentStep > 1) setCurrentStep(currentStep - 1);
   };
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -156,7 +208,12 @@ export default function StudentList() {
           </div>
         </div>
         
-        <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+        <Dialog open={isDialogOpen} onOpenChange={(open) => {
+          setIsDialogOpen(open);
+          if (!open) {
+            setCurrentStep(1);
+          }
+        }}>
           <DialogTrigger asChild>
             <Button className="h-12 px-6 rounded-xl bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700 text-white font-semibold shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:scale-[1.02]">
               <UserPlus className="mr-2" size={18} />
@@ -164,12 +221,37 @@ export default function StudentList() {
             </Button>
           </DialogTrigger>
           
-          <DialogContent className="max-w-md mx-auto">
-            <DialogHeader>
-              <DialogTitle className="text-xl font-bold text-slate-900 flex items-center gap-2">
-                <UserPlus size={20} />
-                Yeni Kursiyer Tanımla
+          <DialogContent className="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border-0 max-h-[90vh] overflow-y-auto">
+            <DialogHeader className="text-center pb-4 border-b border-gray-100">
+              <DialogTitle className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
+                  <UserPlus className="text-white" size={20} />
+                </div>
+                Yeni Kursiyer Tanımlama
               </DialogTitle>
+              
+              {/* Step Progress */}
+              <div className="flex items-center justify-center mt-4 space-x-4">
+                {[1, 2, 3].map((step) => (
+                  <div key={step} className="flex items-center">
+                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                      currentStep >= step 
+                        ? 'bg-blue-500 text-white' 
+                        : 'bg-gray-200 text-gray-500'
+                    }`}>
+                      {step}
+                    </div>
+                    {step < 3 && (
+                      <ChevronRight size={16} className="mx-2 text-gray-400" />
+                    )}
+                  </div>
+                ))}
+              </div>
+              <div className="mt-2 text-sm text-gray-600">
+                {currentStep === 1 && "Kişisel Bilgiler"}
+                {currentStep === 2 && "Ek Bilgiler"}
+                {currentStep === 3 && "Onaylar ve Kurslar"}
+              </div>
             </DialogHeader>
             
             <form onSubmit={handleSubmit} className="space-y-4 mt-4">
