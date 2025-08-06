@@ -9,7 +9,7 @@ import {
   Moon, Sun
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
-import logoUrl from "@assets/image_1754501716774.png";
+import logoUrl from "@assets/algi_akademi_logo_1754502318927.png";
 
 interface SidebarProps {
   sidebarOpen: boolean;

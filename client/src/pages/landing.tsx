@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useToast } from "@/hooks/use-toast";
 import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, CreditCard, User } from "lucide-react";
-import logoUrl from "@assets/algi_akademi_logo_1754499491715.png";
+import logoUrl from "@assets/algi_akademi_logo_1754502318927.png";
 
 export default function Landing() {
   const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);

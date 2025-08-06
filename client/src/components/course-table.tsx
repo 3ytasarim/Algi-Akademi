@@ -21,10 +21,10 @@ export default function CourseTable() {
   };
 
   return (
-    <Card className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200">
-      <CardHeader className="p-6 border-b border-gray-200">
+    <Card className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+      <CardHeader className="p-6 border-b border-gray-200 dark:border-gray-700">
         <div className="flex items-center justify-between">
-          <h2 className="text-xl font-bold text-gray-900">Son Eklenen Kurslar</h2>
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white">Son Eklenen Kurslar</h2>
           <Button variant="link" className="text-primary hover:text-secondary font-medium p-0">
             Tümünü Gör
           </Button>
@@ -35,7 +35,7 @@ export default function CourseTable() {
           {isLoading ? (
             <div className="animate-pulse space-y-4">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={i} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 bg-gray-300 rounded-lg"></div>
                     <div>
@@ -55,16 +55,16 @@ export default function CourseTable() {
             courses.slice(0, 3).map((course: any) => {
               const IconComponent = getIconForCourse(course.title);
               return (
-                <div key={course.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                <div key={course.id} className="flex items-center justify-between p-4 bg-gray-50 dark:bg-gray-700 rounded-lg">
                   <div className="flex items-center space-x-4">
                     <div className="w-16 h-16 gradient-primary rounded-lg flex items-center justify-center">
                       <IconComponent className="text-white text-xl" size={24} />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">{course.title}</h3>
-                      <p className="text-sm text-gray-600">Eğitmen: {course.instructor || 'Belirtilmemiş'}</p>
+                      <h3 className="font-semibold text-gray-900 dark:text-white">{course.title}</h3>
+                      <p className="text-sm text-gray-600 dark:text-gray-300">Eğitmen: {course.instructor || 'Belirtilmemiş'}</p>
                       <div className="flex items-center space-x-4 mt-1">
-                        <span className="text-xs text-gray-500">Kursiyer sayısı belirleniyor</span>
+                        <span className="text-xs text-gray-500 dark:text-gray-400">Kursiyer sayısı belirleniyor</span>
                         <span className={`text-xs ${course.status === 'active' ? 'text-green-600' : 'text-orange-600'}`}>
                           {course.status === 'active' ? 'Aktif' : 'Başlıyor'}
                         </span>
@@ -72,7 +72,7 @@ export default function CourseTable() {
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-lg font-bold text-gray-900">{course.price ? `₺${course.price}` : '₺0'}</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">{course.price ? `₺${course.price}` : '₺0'}</div>
                     <div className="text-sm text-gray-500">{course.duration ? `${course.duration} Hafta` : 'Süre belirsiz'}</div>
                   </div>
                 </div>
