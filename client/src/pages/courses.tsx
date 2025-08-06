@@ -81,9 +81,10 @@ export default function CoursesPage() {
       });
     },
     onError: (error: any) => {
+      console.error("Create course error:", error);
       toast({
         title: "Hata",
-        description: "Kurs oluşturulurken bir hata oluştu.",
+        description: error.message || "Kurs oluşturulurken bir hata oluştu.",
         variant: "destructive",
       });
     },
@@ -148,10 +149,12 @@ export default function CoursesPage() {
     const courseData = {
       title: courseForm.title,
       description: courseForm.description,
+      instructorId: "admin", // Default instructor for admin-created courses
       price: parseFloat(courseForm.price) || 0,
       duration: courseForm.sections.length, // Toplam ders sayısı = section sayısı
-      sections: courseForm.sections,
-      status: "active"
+      sections: JSON.stringify(courseForm.sections), // Convert to JSON string for database
+      status: "active",
+      category: "Genel"
     };
     
     if (editingCourse) {
