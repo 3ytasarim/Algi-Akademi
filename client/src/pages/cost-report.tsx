@@ -147,8 +147,8 @@ export default function CostReport() {
       <div className="p-6 space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="text-2xl font-bold text-slate-900 dark:text-white">Kursiyer Maliyet Raporu</h1>
-            <p className="text-slate-600 dark:text-slate-300 mt-1">
+            <h1 className="text-2xl font-bold text-slate-900 dark:text-yellow-50">Kursiyer Maliyet Raporu</h1>
+            <p className="text-slate-600 dark:text-yellow-100 mt-1">
               Kurs satışları, indirimler ve karlılık analizi
             </p>
           </div>
@@ -164,8 +164,8 @@ export default function CostReport() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalRevenue.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Net Gelir</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-yellow-50">₺{totalRevenue.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-yellow-100 text-sm font-medium">Net Gelir</p>
                 </div>
                 <div className="w-10 h-10 bg-green-500/20 rounded-lg flex items-center justify-center">
                   <DollarSign size={20} className="text-green-600" />
@@ -178,8 +178,8 @@ export default function CostReport() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalGrossRevenue.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Brüt Gelir</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-yellow-50">₺{totalGrossRevenue.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-yellow-100 text-sm font-medium">Brüt Gelir</p>
                 </div>
                 <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
                   <TrendingUp size={20} className="text-blue-600" />
@@ -192,8 +192,8 @@ export default function CostReport() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₺{totalDiscount.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Toplam İndirim</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-yellow-50">₺{totalDiscount.toLocaleString('tr-TR')}</h3>
+                  <p className="text-slate-600 dark:text-yellow-100 text-sm font-medium">Toplam İndirim</p>
                 </div>
                 <div className="w-10 h-10 bg-red-500/20 rounded-lg flex items-center justify-center">
                   <Percent size={20} className="text-red-600" />
@@ -206,8 +206,8 @@ export default function CostReport() {
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-2xl font-bold text-slate-900 dark:text-white">%{avgDiscountPercent.toFixed(1)}</h3>
-                  <p className="text-slate-600 dark:text-slate-300 text-sm font-medium">Ort. İndirim Oranı</p>
+                  <h3 className="text-2xl font-bold text-slate-900 dark:text-yellow-50">%{avgDiscountPercent.toFixed(1)}</h3>
+                  <p className="text-slate-600 dark:text-yellow-100 text-sm font-medium">Ort. İndirim Oranı</p>
                 </div>
                 <div className="w-10 h-10 bg-purple-500/20 rounded-lg flex items-center justify-center">
                   <BarChart3 size={20} className="text-purple-600" />
@@ -222,7 +222,7 @@ export default function CostReport() {
           {/* Course Revenue Chart */}
           <Card className="dark:bg-gray-800">
             <CardHeader>
-              <CardTitle className="dark:text-white">Kurslara Göre Gelir Dağılımı</CardTitle>
+              <CardTitle className="dark:text-yellow-50">Kurslara Göre Gelir Dağılımı</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -248,7 +248,7 @@ export default function CostReport() {
           {/* Discount Distribution */}
           <Card>
             <CardHeader>
-              <CardTitle>Gelir vs İndirim Dağılımı</CardTitle>
+              <CardTitle className="dark:text-yellow-50">Gelir vs İndirim Dağılımı</CardTitle>
             </CardHeader>
             <CardContent>
               <ResponsiveContainer width="100%" height={300}>
@@ -275,7 +275,7 @@ export default function CostReport() {
         {/* Monthly Revenue Trend */}
         <Card>
           <CardHeader>
-            <CardTitle>Aylık Gelir Trendi</CardTitle>
+            <CardTitle className="dark:text-yellow-50">Aylık Gelir Trendi</CardTitle>
           </CardHeader>
           <CardContent>
             <ResponsiveContainer width="100%" height={300}>
@@ -300,12 +300,12 @@ export default function CostReport() {
         {/* Filters */}
         <Card>
           <CardHeader>
-            <CardTitle>Filtreler</CardTitle>
+            <CardTitle className="dark:text-yellow-50">Filtreler</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Arama</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-yellow-100 mb-2">Arama</label>
                 <div className="relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={16} />
                   <Input
@@ -318,7 +318,7 @@ export default function CostReport() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Başlangıç Tarihi</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-yellow-100 mb-2">Başlangıç Tarihi</label>
                 <Input
                   type="date"
                   value={dateRange.startDate}
@@ -327,7 +327,7 @@ export default function CostReport() {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Bitiş Tarihi</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-yellow-100 mb-2">Bitiş Tarihi</label>
                 <Input
                   type="date"
                   value={dateRange.endDate}
@@ -354,7 +354,7 @@ export default function CostReport() {
         {/* Detailed Cost Table */}
         <Card>
           <CardHeader>
-            <CardTitle>Detaylı Maliyet Analizi</CardTitle>
+            <CardTitle className="dark:text-yellow-50">Detaylı Maliyet Analizi</CardTitle>
           </CardHeader>
           <CardContent className="p-0">
             {isLoading ? (
@@ -367,19 +367,19 @@ export default function CostReport() {
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-slate-50 dark:bg-gray-700">
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KURSİYER</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KAYIT TARİHİ</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200">KURS SAYISI</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">BRÜT TUTAR</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">İNDİRİM</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">NET TUTAR</TableHead>
-                      <TableHead className="font-semibold text-slate-700 dark:text-slate-200 text-right">İNDİRİM ORANI</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50">KURSİYER</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50">KAYIT TARİHİ</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50">KURS SAYISI</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50 text-right">BRÜT TUTAR</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50 text-right">İNDİRİM</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50 text-right">NET TUTAR</TableHead>
+                      <TableHead className="font-semibold text-slate-700 dark:text-yellow-50 text-right">İNDİRİM ORANI</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredData.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={7} className="text-center py-8 text-slate-500 dark:text-slate-400">
+                        <TableCell colSpan={7} className="text-center py-8 text-slate-500 dark:text-yellow-100">
                           {searchTerm || dateRange.startDate || dateRange.endDate 
                             ? "Arama kriterlerinize uygun kayıt bulunamadı." 
                             : "Henüz maliyet verisi bulunmuyor."
@@ -397,16 +397,16 @@ export default function CostReport() {
                                 </span>
                               </div>
                               <div>
-                                <div className="font-medium dark:text-white">{item.studentName}</div>
-                                <div className="text-xs text-slate-500 dark:text-slate-400">{item.tcKimlikNo}</div>
+                                <div className="font-medium dark:text-yellow-50">{item.studentName}</div>
+                                <div className="text-xs text-slate-500 dark:text-yellow-100">{item.tcKimlikNo}</div>
                               </div>
                             </div>
                           </TableCell>
-                          <TableCell className="dark:text-gray-200">{formatDate(item.kayıtTarihi)}</TableCell>
+                          <TableCell className="dark:text-yellow-50">{formatDate(item.kayıtTarihi)}</TableCell>
                           <TableCell>
-                            <div className="font-medium dark:text-gray-200">{item.courses.length} Kurs</div>
+                            <div className="font-medium dark:text-yellow-50">{item.courses.length} Kurs</div>
                           </TableCell>
-                          <TableCell className="text-right font-semibold dark:text-gray-200">
+                          <TableCell className="text-right font-semibold dark:text-yellow-50">
                             ₺{item.totalPrice.toLocaleString('tr-TR')}
                           </TableCell>
                           <TableCell className="text-right text-red-600 dark:text-red-400 font-semibold">
