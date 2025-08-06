@@ -339,14 +339,22 @@ export class DatabaseStorage implements IStorage {
 
   // Dashboard stats
   async getDashboardStats(): Promise<{
+    totalRegistrations: number;
     totalStudents: number;
     activeCourses: number;
     monthlyRevenue: number;
   }> {
-    const [studentCount] = await db
+    // Total registrations (all student entries including education definitions)
+    const [totalRegistrations] = await db
       .select({ count: count() })
       .from(users)
       .where(eq(users.role, 'student'));
+
+    // Total real students (only those with actual data like adı, firstName, or tcKimlikNo)
+    const allStudents = await db.select().from(users).where(eq(users.role, 'student'));
+    const realStudents = allStudents.filter(student => 
+      student.adı || student.firstName || student.tcKimlikNo
+    );
 
     const [courseCount] = await db
       .select({ count: count() })
@@ -371,7 +379,8 @@ export class DatabaseStorage implements IStorage {
     }, 0);
 
     return {
-      totalStudents: studentCount.count,
+      totalRegistrations: totalRegistrations.count,
+      totalStudents: realStudents.length,
       activeCourses: courseCount.count,
       monthlyRevenue,
     };

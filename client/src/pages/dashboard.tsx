@@ -62,7 +62,7 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatsCard
             title="Toplam Kayıt"
-            value={`${(stats as any)?.totalStudents || 0}`}
+            value={`${(stats as any)?.totalRegistrations || 0}`}
             change="+12%"
             icon={Users}
             gradient="bg-gradient-to-br from-blue-500 to-blue-600"
