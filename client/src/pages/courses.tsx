@@ -474,8 +474,8 @@ export default function CoursesPage() {
                         </div>
                       </TableCell>
                       <TableCell>
-                        <div className="font-semibold">
-                          {course.price ? `₺${course.price.toLocaleString()}` : 'Ücretsiz'}
+                        <div className="font-semibold text-green-600">
+                          {course.price ? `${parseFloat(course.price).toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}` : 'Ücretsiz'}
                         </div>
                       </TableCell>
                       <TableCell>
