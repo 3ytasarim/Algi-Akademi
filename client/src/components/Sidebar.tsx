@@ -58,18 +58,13 @@ export default function Sidebar({
         { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
         { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
         { icon: BarChart3, label: "Kursiyer İstatistik", href: "/student-statistics" },
-        { icon: TrendingUp, label: "Kursiyer Maliyet Raporu", href: "/cost-report" },
       ]
     },
     {
       id: "reports", 
       icon: TrendingUp,
       label: "Raporlar",
-      hasSubmenu: true,
-      submenuItems: [
-        { icon: PieChart, label: "Danışman Satış Raporu", href: "/reports" },
-        { icon: AreaChart, label: "Kurs Satış Raporu", href: "/reports" },
-      ]
+      href: "/reports"
     },
     {
       id: "system",
