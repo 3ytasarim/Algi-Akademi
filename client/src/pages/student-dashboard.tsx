@@ -48,9 +48,9 @@ export default function StudentDashboard() {
     retry: false,
   });
 
-  // Fetch courses
+  // Fetch student courses (only enrolled courses)
   const { data: courses, isLoading: coursesLoading } = useQuery({
-    queryKey: ["/api/courses"],
+    queryKey: ["/api/student/courses"],
     retry: false,
   });
 
@@ -65,10 +65,8 @@ export default function StudentDashboard() {
     );
   }
 
-  // Filter user's assigned courses based on categories
-  const userCourses = courses?.filter((course: any) => 
-    user?.assignedCategories?.includes(course.category)
-  ) || [];
+  // Use all student courses since they're already filtered by enrollment
+  const userCourses = courses || [];
 
   const handleLogout = async () => {
     if (user?.isManualStudent) {

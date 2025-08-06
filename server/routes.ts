@@ -262,11 +262,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
         meslek: req.body.meslek,
         kayıtTarihi: req.body.kayıtTarihi,
         bitişTarihi: req.body.bitişTarihi,
-        isMernisOnaylı: req.body.isMernisOnaylı === 'true',
-        isÜniversiteOnaylı: req.body.isÜniversiteOnaylı === 'true',
-        isEDevletOnaylı: req.body.isEDevletOnaylı === 'true',
-        isUluslararasıSertifikasyon: req.body.isUluslararasıSertifikasyon === 'true',
-        selectedCourses: req.body.selectedCourses ? JSON.parse(req.body.selectedCourses) : [],
+        isMernisOnaylı: req.body.isMernisOnaylı === true || req.body.isMernisOnaylı === 'true',
+        isÜniversiteOnaylı: req.body.isÜniversiteOnaylı === true || req.body.isÜniversiteOnaylı === 'true',
+        isEDevletOnaylı: req.body.isEDevletOnaylı === true || req.body.isEDevletOnaylı === 'true',
+        isUluslararasıSertifikasyon: req.body.isUluslararasıSertifikasyon === true || req.body.isUluslararasıSertifikasyon === 'true',
+        selectedCourses: Array.isArray(req.body.selectedCourses) ? req.body.selectedCourses : [],
         totalPrice: req.body.totalPrice || '0',
         discountAmount: req.body.discountAmount || '0',
         finalPrice: req.body.finalPrice || '0',
@@ -287,6 +287,78 @@ export async function registerRoutes(app: Express): Promise<Server> {
         success: false,
         message: "Kursiyer kaydı sırasında bir hata oluştu" 
       });
+    }
+  });
+
+  // Student login route
+  app.post('/api/auth/student-login', async (req: any, res) => {
+    try {
+      const { tcKimlikNo, password } = req.body;
+      
+      if (password === '112233') {
+        // Find student by TC kimlik no
+        const students = await storage.getStudents();
+        const student = students.find(s => s.tcKimlikNo === tcKimlikNo);
+        
+        if (student) {
+          req.session.auth = {
+            user: { 
+              id: student.id, 
+              tcKimlikNo: student.tcKimlikNo, 
+              firstName: student.firstName || student.adı,
+              lastName: student.lastName || student.soyadı,
+              role: 'student' 
+            },
+            isAuthenticated: true
+          };
+          
+          res.json({ 
+            message: 'Giriş başarılı',
+            user: { 
+              id: student.id, 
+              tcKimlikNo: student.tcKimlikNo,
+              firstName: student.firstName || student.adı,
+              lastName: student.lastName || student.soyadı,
+              role: 'student'
+            }
+          });
+        } else {
+          res.status(401).json({ message: 'Bu T.C. kimlik no ile kayıtlı kullanıcı bulunamadı' });
+        }
+      } else {
+        res.status(401).json({ message: 'Geçersiz şifre' });
+      }
+    } catch (error) {
+      console.error("Student login error:", error);
+      res.status(500).json({ message: 'Giriş sırasında bir hata oluştu' });
+    }
+  });
+
+  // Get student courses (for student dashboard)
+  app.get('/api/student/courses', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated || req.session.auth.user.role !== 'student') {
+        return res.status(401).json({ message: 'Öğrenci girişi gerekli' });
+      }
+
+      const studentId = req.session.auth.user.id;
+      const students = await storage.getStudents();
+      const student = students.find(s => s.id === studentId);
+      
+      if (!student) {
+        return res.status(404).json({ message: 'Öğrenci bulunamadı' });
+      }
+
+      // Get all courses and filter by selected courses
+      const allCourses = await storage.getCourses();
+      const studentCourses = allCourses.filter(course => 
+        student.selectedCourses && student.selectedCourses.includes(course.id)
+      );
+
+      res.json(studentCourses);
+    } catch (error) {
+      console.error("Error fetching student courses:", error);
+      res.status(500).json({ message: "Failed to fetch student courses" });
     }
   });
 

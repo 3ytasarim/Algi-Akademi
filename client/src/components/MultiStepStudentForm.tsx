@@ -64,26 +64,22 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
   const createStudentMutation = useMutation({
     mutationFn: async (data: any) => {
       const prices = calculateTotalPrice();
-      const formDataToSend = new FormData();
       
-      // Add all form data
-      Object.keys(data).forEach(key => {
-        if (data[key] !== null && data[key] !== undefined) {
-          if (key === 'selectedCourses') {
-            formDataToSend.append(key, JSON.stringify(data[key]));
-          } else {
-            formDataToSend.append(key, data[key]);
-          }
-        }
-      });
+      const submitData = {
+        ...data,
+        totalPrice: prices.total.toString(),
+        finalPrice: prices.final.toString(),
+        discountAmount: data.discountAmount || "0"
+      };
       
-      // Add calculated prices
-      formDataToSend.append('totalPrice', prices.total.toString());
-      formDataToSend.append('finalPrice', prices.final.toString());
+      console.log("Sending student data:", submitData);
       
       return fetch("/api/students", {
         method: "POST",
-        body: formDataToSend,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
       }).then(res => {
         if (!res.ok) {
           throw new Error(`HTTP ${res.status}`);
