@@ -8,14 +8,15 @@ import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import MultiStepStudentForm from "@/components/MultiStepStudentForm";
+import EditStudentDialog from "@/components/EditStudentDialog";
 import { User, UserPlus, Search, Mail, Phone, Users } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
-import { apiRequest } from "@/lib/queryClient";
 
 export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
-  const [editingStudent, setEditingStudent] = useState(null);
+  const [editingStudent, setEditingStudent] = useState<any>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -67,54 +68,11 @@ export default function StudentList() {
     student.tcKimlikNo?.includes(searchTerm)
   );
 
-  // Update student mutation
-  const updateStudentMutation = useMutation({
-    mutationFn: async ({ studentId, data }: { studentId: string; data: any }) => {
-      const response = await fetch(`/api/students/${studentId}`, {
-        method: "PUT",
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include',
-        body: JSON.stringify(data),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}`);
-      }
-      
-      return response.json();
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/students"] });
-      toast({
-        title: "Başarılı",
-        description: "Kursiyer başarıyla güncellendi.",
-      });
-    },
-    onError: () => {
-      toast({
-        title: "Hata",
-        description: "Kursiyer güncellenirken bir hata oluştu.",
-        variant: "destructive",
-      });
-    },
-  });
+
 
   const handleEditStudent = (student: any) => {
-    // Simple inline edit example - toggle bitiş tarihi için 1 yıl ekleme
-    const currentDate = new Date();
-    const oneYearLater = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1));
-    
-    if (confirm(`${student.firstName || student.adı} ${student.lastName || student.soyadı} adlı kursiyerin bitiş tarihini 1 yıl uzatmak istiyor musunuz?`)) {
-      updateStudentMutation.mutate({
-        studentId: student.id,
-        data: {
-          ...student,
-          bitişTarihi: oneYearLater.toISOString().split('T')[0]
-        }
-      });
-    }
+    setEditingStudent(student);
+    setIsEditDialogOpen(true);
   };
 
   const handleDeleteStudent = (student: any) => {
@@ -291,6 +249,16 @@ export default function StudentList() {
           )}
         </CardContent>
       </Card>
+
+      {/* Edit Student Dialog */}
+      <EditStudentDialog
+        isOpen={isEditDialogOpen}
+        onClose={() => {
+          setIsEditDialogOpen(false);
+          setEditingStudent(null);
+        }}
+        student={editingStudent}
+      />
     </LayoutWrapper>
   );
 }
