@@ -302,7 +302,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
           </div>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit} className="space-y-6 p-6">
+        <div className="space-y-6 p-6">
           {/* Step 1: Kişisel Bilgiler */}
           {currentStep === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300">
@@ -721,7 +721,10 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               <Button 
                 type="button"
                 variant="outline"
-                onClick={prevStep}
+                onClick={(e) => {
+                  e.preventDefault();
+                  prevStep();
+                }}
                 className="flex items-center gap-2"
               >
                 <ChevronLeft size={16} />
@@ -732,7 +735,10 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
             {currentStep < 3 ? (
               <Button 
                 type="button"
-                onClick={nextStep}
+                onClick={(e) => {
+                  e.preventDefault();
+                  nextStep();
+                }}
                 className="ml-auto flex items-center gap-2 bg-gradient-to-r from-blue-500 to-purple-600 hover:from-blue-600 hover:to-purple-700"
                 disabled={
                   (currentStep === 1 && (!formData.adı || !formData.soyadı || !formData.email || !formData.tcKimlikNo || !formData.doğumTarihi || !formData.telefon || tcValidation.isValid !== true)) ||
@@ -744,7 +750,12 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               </Button>
             ) : (
               <Button 
-                type="submit" 
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  console.log("Final submit - Form data:", formData);
+                  createStudentMutation.mutate(formData);
+                }}
                 className="ml-auto bg-gradient-to-r from-green-500 to-blue-600 hover:from-green-600 hover:to-blue-700"
                 disabled={createStudentMutation.isPending}
               >
@@ -752,7 +763,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               </Button>
             )}
           </div>
-        </form>
+        </div>
       </DialogContent>
     </Dialog>
   );
