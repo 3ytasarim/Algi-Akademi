@@ -20,6 +20,7 @@ import CoursesPage from "@/pages/courses";
 import EmailIntegrationPage from "@/pages/integrations/email";
 import SMSIntegrationPage from "@/pages/integrations/sms";
 import StudentStatistics from "@/pages/student-statistics";
+import CostReport from "@/pages/cost-report";
 
 
 function Router() {
@@ -55,6 +56,7 @@ function Router() {
               <Route path="/integrations/email" component={EmailIntegrationPage} />
               <Route path="/integrations/sms" component={SMSIntegrationPage} />
               <Route path="/student-statistics" component={StudentStatistics} />
+              <Route path="/cost-report" component={CostReport} />
             </>
           )}
         </>

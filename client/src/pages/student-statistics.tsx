@@ -42,7 +42,7 @@ export default function StudentStatistics() {
         tcKimlikNo: student.tcKimlikNo,
         adı: student.adı || student.firstName || '',
         soyadı: student.soyadı || student.lastName || '',
-        danışman: 'SAFİYE HANIM', // Admin kullanıcısı tarafından kaydedildiği için
+        danışman: student.createdBy || 'ADMIN', // Kursiyeri kim oluşturdu
         kurs: course?.title || 'Kurs bulunamadı',
         coursePrice: course?.price || '0',
         studentId: student.id,
@@ -72,7 +72,6 @@ export default function StudentStatistics() {
   const totalRecords = filteredStatistics.length;
   const uniqueStudents = new Set(filteredStatistics.map(item => item.studentId)).size;
   const uniqueCourses = new Set(filteredStatistics.map(item => item.courseId)).size;
-  const totalRevenue = filteredStatistics.reduce((sum, item) => sum + parseFloat(item.coursePrice || '0'), 0);
 
   const formatDate = (dateString: string) => {
     if (!dateString) return 'Belirtilmemiş';
@@ -103,7 +102,7 @@ export default function StudentStatistics() {
         </div>
 
         {/* Summary Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
           <Card className="bg-gradient-to-br from-blue-500/10 to-blue-600/5 border-blue-200/50">
             <CardContent className="p-4">
               <div className="flex items-center justify-between">
@@ -146,19 +145,7 @@ export default function StudentStatistics() {
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-orange-500/10 to-orange-600/5 border-orange-200/50">
-            <CardContent className="p-4">
-              <div className="flex items-center justify-between">
-                <div>
-                  <h3 className="text-2xl font-bold text-slate-900">₺{totalRevenue.toLocaleString('tr-TR')}</h3>
-                  <p className="text-slate-600 text-sm font-medium">Toplam Gelir</p>
-                </div>
-                <div className="w-10 h-10 bg-orange-500/20 rounded-lg flex items-center justify-center">
-                  <Calendar size={20} className="text-orange-600" />
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+
         </div>
 
         {/* Filters */}
@@ -245,13 +232,12 @@ export default function StudentStatistics() {
                       <TableHead className="font-semibold text-slate-700">ADI SOYADI</TableHead>
                       <TableHead className="font-semibold text-slate-700">DANIŞMAN</TableHead>
                       <TableHead className="font-semibold text-slate-700">KURS</TableHead>
-                      <TableHead className="font-semibold text-slate-700 text-right">KURS ÜCRETİ</TableHead>
                     </TableRow>
                   </TableHeader>
                   <TableBody>
                     {filteredStatistics.length === 0 ? (
                       <TableRow>
-                        <TableCell colSpan={6} className="text-center py-8 text-slate-500">
+                        <TableCell colSpan={5} className="text-center py-8 text-slate-500">
                           {searchTerm || dateRange.startDate || dateRange.endDate 
                             ? "Arama kriterlerinize uygun kayıt bulunamadı." 
                             : "Henüz kursiyer kaydı bulunmuyor."
@@ -282,9 +268,6 @@ export default function StudentStatistics() {
                           </TableCell>
                           <TableCell>
                             <div className="font-medium text-slate-900">{item.kurs}</div>
-                          </TableCell>
-                          <TableCell className="text-right font-semibold">
-                            ₺{parseFloat(item.coursePrice || '0').toLocaleString('tr-TR')}
                           </TableCell>
                         </TableRow>
                       ))

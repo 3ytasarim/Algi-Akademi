@@ -54,6 +54,7 @@ export default function Sidebar({
         { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
         { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
         { icon: BarChart3, label: "Kursiyer İstatistik", href: "/student-statistics" },
+        { icon: TrendingUp, label: "Kursiyer Maliyet Raporu", href: "/cost-report" },
       ]
     },
     {

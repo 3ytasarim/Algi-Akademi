@@ -56,6 +56,7 @@ export const users = pgTable("users", {
   discountAmount: decimal("discount_amount", { precision: 10, scale: 2 }).default('0'),
   finalPrice: decimal("final_price", { precision: 10, scale: 2 }).default('0'),
   isManualStudent: boolean("is_manual_student").default(false),
+  createdBy: varchar("created_by"), // Kursiyeri kim oluşturdu
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
