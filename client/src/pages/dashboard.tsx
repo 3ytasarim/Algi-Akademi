@@ -59,7 +59,7 @@ export default function Dashboard() {
     <LayoutWrapper title="Dashboard" subtitle="Sistem durumu ve genel bakış" activeHref="/">
       <div className="space-y-6">
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           <StatsCard
             title="Toplam Öğrenci"
             value={`${stats?.totalStudents || 0}`}
@@ -76,17 +76,10 @@ export default function Dashboard() {
           />
           <StatsCard
             title="Aylık Gelir"
-            value={`₺${stats?.monthlyRevenue || 0}`}
+            value={`₺${stats?.monthlyRevenue ? stats.monthlyRevenue.toLocaleString('tr-TR') : '0'}`}
             change="+8%"
             icon={TrendingUp}
             gradient="bg-gradient-to-br from-purple-500 to-purple-600"
-          />
-          <StatsCard
-            title="Tamamlanan Dersler"
-            value={`${stats?.completedLessons || 0}`}
-            change="+15%"
-            icon={CheckCircle}
-            gradient="bg-gradient-to-br from-orange-500 to-orange-600"
           />
         </div>
 

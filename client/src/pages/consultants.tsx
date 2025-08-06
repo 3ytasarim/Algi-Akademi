@@ -17,6 +17,7 @@ import {
   Search,
   Download
 } from "lucide-react";
+import LayoutWrapper from "@/components/LayoutWrapper";
 
 export default function Consultants() {
   const { toast } = useToast();
@@ -116,7 +117,8 @@ export default function Consultants() {
   );
 
   return (
-    <div className="p-6">
+    <LayoutWrapper>
+      <div className="p-6">
       {/* Page Header */}
       <div className="flex items-center justify-between mb-8">
         <div>
@@ -346,6 +348,7 @@ export default function Consultants() {
           </div>
         </CardContent>
       </Card>
-    </div>
+      </div>
+    </LayoutWrapper>
   );
 }

@@ -75,7 +75,6 @@ export interface IStorage {
     totalStudents: number;
     activeCourses: number;
     monthlyRevenue: number;
-    completionRate: number;
   }>;
 
   // Consultant operations
@@ -342,7 +341,6 @@ export class DatabaseStorage implements IStorage {
     totalStudents: number;
     activeCourses: number;
     monthlyRevenue: number;
-    completionRate: number;
   }> {
     const [studentCount] = await db
       .select({ count: count() })
@@ -354,28 +352,27 @@ export class DatabaseStorage implements IStorage {
       .from(courses)
       .where(eq(courses.status, 'active'));
 
-    // Calculate monthly revenue (mock calculation for now)
-    const monthlyRevenue = 87340;
-
-    // Calculate completion rate
-    const [completedEnrollments] = await db
-      .select({ count: count() })
-      .from(enrollments)
-      .where(eq(enrollments.status, 'completed'));
-
-    const [totalEnrollments] = await db
-      .select({ count: count() })
-      .from(enrollments);
-
-    const completionRate = totalEnrollments.count > 0 
-      ? Math.round((completedEnrollments.count / totalEnrollments.count) * 100)
-      : 0;
+    // Calculate real monthly revenue from student registrations
+    const currentMonth = new Date().getMonth();
+    const currentYear = new Date().getFullYear();
+    
+    const monthlyStudents = await db.select().from(users).where(
+      and(
+        eq(users.role, 'student'),
+        sql`EXTRACT(MONTH FROM ${users.createdAt}) = ${currentMonth + 1}`,
+        sql`EXTRACT(YEAR FROM ${users.createdAt}) = ${currentYear}`
+      )
+    );
+    
+    const monthlyRevenue = monthlyStudents.reduce((total, student) => {
+      const finalPrice = parseFloat(student.finalPrice || '0');
+      return total + finalPrice;
+    }, 0);
 
     return {
       totalStudents: studentCount.count,
       activeCourses: courseCount.count,
       monthlyRevenue,
-      completionRate,
     };
   }
 
