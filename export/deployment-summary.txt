@@ -13,8 +13,13 @@ Admin Login:
 
 Database Setup:
 1. PostgreSQL database oluştur
-2. database-schema.sql dosyasını çalıştır
-3. Environment variables ayarla (.env.example'dan .env oluştur)
+2. database-schema.sql dosyasını çalıştır (table'ları oluşturur)
+3. database-data.sql dosyasını çalıştır (sample data)
+4. Environment variables ayarla (.env.example'dan .env oluştur)
+
+Database Files:
+✓ database-schema.sql - Tüm table'lar ve structure
+✓ database-data.sql - Sample data ve admin user
 
 Deployment:
 1. npm install
