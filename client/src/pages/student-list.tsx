@@ -27,9 +27,19 @@ export default function StudentList() {
   // Delete student mutation
   const deleteStudentMutation = useMutation({
     mutationFn: async (studentId: string) => {
-      return await apiRequest(`/api/students/${studentId}`, {
+      const response = await fetch(`/api/students/${studentId}`, {
         method: "DELETE",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
       });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
@@ -48,7 +58,7 @@ export default function StudentList() {
   });
 
   // Filter students based on search term
-  const filteredStudents = students.filter((student: any) =>
+  const filteredStudents = (students as any[]).filter((student: any) =>
     student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.adı?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -57,13 +67,54 @@ export default function StudentList() {
     student.tcKimlikNo?.includes(searchTerm)
   );
 
+  // Update student mutation
+  const updateStudentMutation = useMutation({
+    mutationFn: async ({ studentId, data }: { studentId: string; data: any }) => {
+      const response = await fetch(`/api/students/${studentId}`, {
+        method: "PUT",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(data),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`HTTP ${response.status}`);
+      }
+      
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/students"] });
+      toast({
+        title: "Başarılı",
+        description: "Kursiyer başarıyla güncellendi.",
+      });
+    },
+    onError: () => {
+      toast({
+        title: "Hata",
+        description: "Kursiyer güncellenirken bir hata oluştu.",
+        variant: "destructive",
+      });
+    },
+  });
+
   const handleEditStudent = (student: any) => {
-    setEditingStudent(student);
-    // Could open a modal or navigate to edit page
-    toast({
-      title: "Düzenleme",
-      description: "Kursiyer düzenleme özelliği yakında eklenecek.",
-    });
+    // Simple inline edit example - toggle bitiş tarihi için 1 yıl ekleme
+    const currentDate = new Date();
+    const oneYearLater = new Date(currentDate.setFullYear(currentDate.getFullYear() + 1));
+    
+    if (confirm(`${student.firstName || student.adı} ${student.lastName || student.soyadı} adlı kursiyerin bitiş tarihini 1 yıl uzatmak istiyor musunuz?`)) {
+      updateStudentMutation.mutate({
+        studentId: student.id,
+        data: {
+          ...student,
+          bitişTarihi: oneYearLater.toISOString().split('T')[0]
+        }
+      });
+    }
   };
 
   const handleDeleteStudent = (student: any) => {
@@ -87,7 +138,7 @@ export default function StudentList() {
               <Users className="text-white" size={24} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Toplam {students.length} Kursiyer</p>
+              <p className="text-sm text-gray-500 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
             </div>
           </div>
         </div>
