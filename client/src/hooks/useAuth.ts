@@ -9,14 +9,20 @@ export function useAuth() {
 
   // Check localStorage for client-side auth on mount
   useEffect(() => {
+    console.log('useAuth: Checking localStorage...');
     const storedUser = localStorage.getItem('auth_user');
     const isAuthenticated = localStorage.getItem('auth_authenticated');
+    
+    console.log('useAuth: storedUser:', storedUser);
+    console.log('useAuth: isAuthenticated:', isAuthenticated);
     
     if (storedUser && isAuthenticated === 'true') {
       try {
         const user = JSON.parse(storedUser);
+        console.log('useAuth: Parsed user:', user);
         setLocalAuth(user);
       } catch (error) {
+        console.log('useAuth: Error parsing stored user:', error);
         localStorage.removeItem('auth_user');
         localStorage.removeItem('auth_authenticated');
       }

@@ -22,8 +22,12 @@ export default function Landing() {
     if (selectedRole === 'admin') {
       setIsLoading(true);
       
-      // Client-side authentication fallback for static deployment
+      console.log('Admin login attempt:', loginData.username, loginData.password);
+      
+      // Direct client-side authentication - skip backend entirely for now
       if (loginData.username === 'admin' && loginData.password === '112233') {
+        console.log('Valid admin credentials detected');
+        
         const adminUser = {
           id: 'admin',
           username: 'admin',
@@ -33,85 +37,30 @@ export default function Landing() {
           isAuthenticated: true
         };
         
-        // Store user in localStorage for client-side auth
+        // Store user in localStorage
         localStorage.setItem('auth_user', JSON.stringify(adminUser));
         localStorage.setItem('auth_authenticated', 'true');
+        console.log('Admin user stored in localStorage');
         
         toast({
           title: "Giriş Başarılı",
           description: "Admin paneline yönlendiriliyorsunuz...",
         });
         
-        setTimeout(() => {
-          window.location.href = "/dashboard";
-        }, 1000);
-        
         setIsLoading(false);
+        
+        // Force page reload to trigger authentication hooks
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
         return;
-      }
-      
-      // Try backend API first, fallback to client-side auth
-      try {
-        const response = await fetch('/api/auth/admin-login', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          credentials: 'include',
-          body: JSON.stringify({
-            username: loginData.username,
-            password: loginData.password
-          }),
+      } else {
+        console.log('Invalid admin credentials');
+        toast({
+          title: "Giriş Başarısız",
+          description: "Kullanıcı adı veya şifre hatalı",
+          variant: "destructive",
         });
-
-        const data = await response.json();
-
-        if (response.ok) {
-          toast({
-            title: "Giriş Başarılı",
-            description: "Admin paneline yönlendiriliyorsunuz...",
-          });
-          setTimeout(() => {
-            window.location.href = "/dashboard";
-          }, 1000);
-        } else {
-          toast({
-            title: "Giriş Başarısız",
-            description: data.message || "Kullanıcı adı veya şifre hatalı",
-            variant: "destructive",
-          });
-        }
-      } catch (error) {
-        // Backend not available - check credentials for client-side fallback
-        if (loginData.username === 'admin' && loginData.password === '112233') {
-          const adminUser = {
-            id: 'admin',
-            username: 'admin',
-            role: 'admin',
-            firstName: 'Admin',
-            lastName: 'User',
-            isAuthenticated: true
-          };
-          
-          localStorage.setItem('auth_user', JSON.stringify(adminUser));
-          localStorage.setItem('auth_authenticated', 'true');
-          
-          toast({
-            title: "Giriş Başarılı",
-            description: "Admin paneline yönlendiriliyorsunuz...",
-          });
-          
-          setTimeout(() => {
-            window.location.href = "/dashboard";
-          }, 1000);
-        } else {
-          toast({
-            title: "Giriş Başarısız",
-            description: "Kullanıcı adı veya şifre hatalı",
-            variant: "destructive",
-          });
-        }
-      } finally {
         setIsLoading(false);
       }
     }
