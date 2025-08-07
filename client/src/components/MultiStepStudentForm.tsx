@@ -300,7 +300,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               {/* Profile Image Upload */}
               <div className="flex flex-col items-center space-y-4">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full border-4 border-dashed border-slate-300 flex items-center justify-center bg-slate-50 overflow-hidden">
+                  <div className="w-24 h-24 rounded-full border-4 border-dashed border-slate-300 dark:border-gray-600 flex items-center justify-center bg-slate-50 dark:bg-gray-700 overflow-hidden">
                     {previewImage ? (
                       <img 
                         src={previewImage} 
@@ -308,7 +308,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                         className="w-full h-full object-cover"
                       />
                     ) : (
-                      <Camera size={32} className="text-slate-400" />
+                      <Camera size={32} className="text-slate-400 dark:text-gray-400" />
                     )}
                   </div>
                   <label 
@@ -325,7 +325,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     className="hidden"
                   />
                 </div>
-                <p className="text-xs text-slate-500">Profil fotoğrafı (opsiyonel)</p>
+                <p className="text-xs text-slate-500 dark:text-gray-400">Profil fotoğrafı (opsiyonel)</p>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
@@ -383,7 +383,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
               {/* T.C. Kimlik No */}
               <div className="space-y-2">
-                <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium flex items-center gap-2">
+                <Label htmlFor="tcKimlikNo" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                   <CreditCard size={16} />
                   T.C. Kimlik No *
                 </Label>
@@ -397,9 +397,9 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                       const value = e.target.value.replace(/\D/g, '').slice(0, 11);
                       handleInputChange('tcKimlikNo', value);
                     }}
-                    className={`h-11 rounded-xl border-2 pr-12 transition-colors ${
+                    className={`h-11 rounded-xl border-2 pr-12 transition-colors bg-white dark:bg-gray-700 text-gray-900 dark:text-white ${
                       tcValidation.isValid === null 
-                        ? 'border-slate-200 focus:border-blue-400' 
+                        ? 'border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500' 
                         : tcValidation.isValid 
                           ? 'border-green-400 focus:border-green-500' 
                           : 'border-red-400 focus:border-red-500'
@@ -418,7 +418,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                 </div>
                 {tcValidation.message && (
                   <p className={`text-xs flex items-center gap-1 ${
-                    tcValidation.isValid ? 'text-green-600' : 'text-red-600'
+                    tcValidation.isValid ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                   }`}>
                     {tcValidation.isValid ? (
                       <CheckCircle size={12} />
@@ -433,7 +433,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               {/* Doğum Tarihi ve Telefon */}
               <div className="grid grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label htmlFor="doğumTarihi" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Calendar size={16} />
                     Doğum Tarihi *
                   </Label>
@@ -442,13 +442,13 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     type="date"
                     value={formData.doğumTarihi}
                     onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="telefon" className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label htmlFor="telefon" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Phone size={16} />
                     Cep Telefonu *
                   </Label>
@@ -477,7 +477,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                       }
                       handleInputChange('telefon', value);
                     }}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     maxLength={14}
                     required
                   />
@@ -485,8 +485,8 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               </div>
 
               {/* Info */}
-              <div className="p-3 bg-blue-50 rounded-xl border border-blue-200">
-                <p className="text-sm text-blue-700">
+              <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-xl border border-blue-200 dark:border-blue-800">
+                <p className="text-sm text-blue-700 dark:text-blue-300">
                   Varsayılan şifre: <span className="font-mono font-bold">112233</span>
                 </p>
               </div>
@@ -499,12 +499,12 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               <div className="grid grid-cols-2 gap-4">
                 {/* Cinsiyet */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <User size={16} />
                     Cinsiyet *
                   </Label>
                   <Select value={formData.cinsiyet} onValueChange={(value) => handleInputChange('cinsiyet', value)}>
-                    <SelectTrigger className="h-11 rounded-xl border-2 border-slate-200">
+                    <SelectTrigger className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                       <SelectValue placeholder="Cinsiyet seçin" />
                     </SelectTrigger>
                     <SelectContent>
@@ -516,12 +516,12 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
                 {/* Meslek */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Briefcase size={16} />
                     Meslek *
                   </Label>
                   <Select value={formData.meslek} onValueChange={(value) => handleInputChange('meslek', value)}>
-                    <SelectTrigger className="h-11 rounded-xl border-2 border-slate-200">
+                    <SelectTrigger className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white">
                       <SelectValue placeholder="Meslek seçin" />
                     </SelectTrigger>
                     <SelectContent>
@@ -540,7 +540,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               <div className="grid grid-cols-2 gap-4">
                 {/* Kayıt Tarihi */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Calendar size={16} />
                     Panele Giriş Tarihi *
                   </Label>
@@ -548,14 +548,14 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     type="date"
                     value={formData.kayıtTarihi}
                     onChange={(e) => handleInputChange('kayıtTarihi', e.target.value)}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
 
                 {/* Bitiş Tarihi */}
                 <div className="space-y-2">
-                  <Label className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <Clock size={16} />
                     Bitiş Tarihi *
                   </Label>
@@ -563,7 +563,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     type="date"
                     value={formData.bitişTarihi}
                     onChange={(e) => handleInputChange('bitişTarihi', e.target.value)}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
