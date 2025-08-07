@@ -28,7 +28,6 @@ export async function apiRequest(
       const { localDataManager } = await import('./api-fallback');
       const newCourse = localDataManager.addCourse(data);
       
-      // Return a mock response object
       return {
         ok: true,
         status: 201,
@@ -64,6 +63,47 @@ export async function apiRequest(
         text: async () => JSON.stringify(result)
       } as Response;
     }
+
+    // Fallback for student CRUD operations
+    if (method === 'POST' && url.includes('/api/students') && data) {
+      const { localDataManager } = await import('./api-fallback');
+      const newStudent = (localDataManager as any).addStudent(data);
+      
+      return {
+        ok: true,
+        status: 201,
+        json: async () => newStudent,
+        text: async () => JSON.stringify(newStudent)
+      } as Response;
+    }
+    
+    // Fallback for PUT requests (like updating students)
+    if (method === 'PUT' && url.includes('/api/students/') && data) {
+      const { localDataManager } = await import('./api-fallback');
+      const studentId = url.split('/api/students/')[1];
+      const updatedStudent = (localDataManager as any).updateStudent(studentId, data);
+      
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true, message: "Kursiyer başarıyla güncellendi", student: updatedStudent }),
+        text: async () => JSON.stringify({ success: true, message: "Kursiyer başarıyla güncellendi", student: updatedStudent })
+      } as Response;
+    }
+    
+    // Fallback for DELETE requests (like deleting students)
+    if (method === 'DELETE' && url.includes('/api/students/')) {
+      const { localDataManager } = await import('./api-fallback');
+      const studentId = url.split('/api/students/')[1];
+      const result = (localDataManager as any).deleteStudent(studentId);
+      
+      return {
+        ok: true,
+        status: 200,
+        json: async () => ({ success: true, message: "Kursiyer başarıyla silindi" }),
+        text: async () => JSON.stringify({ success: true, message: "Kursiyer başarıyla silindi" })
+      } as Response;
+    }
     
     throw error;
   }
@@ -93,6 +133,9 @@ export const getQueryFn: <T>(options: {
       if (endpoint.includes('/api/courses')) {
         const { localDataManager } = await import('./api-fallback');
         return localDataManager.getCourses();
+      } else if (endpoint.includes('/api/students')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getStudents();
       } else if (endpoint.includes('/api/users')) {
         const { localDataManager } = await import('./api-fallback');
         return localDataManager.getStudents();

@@ -302,6 +302,50 @@ export const localDataManager = {
     const stored = localStorage.getItem('students_data');
     return stored ? JSON.parse(stored) : mockStudents;
   },
+
+  setStudents: (students: any[]) => {
+    localStorage.setItem('students_data', JSON.stringify(students));
+  },
+
+  addStudent: (student: any) => {
+    const students = localDataManager.getStudents();
+    const newStudent = {
+      ...student,
+      id: 'student-' + Date.now(),
+      role: 'student',
+      isManualStudent: true,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString()
+    };
+    students.push(newStudent);
+    localDataManager.setStudents(students);
+    return newStudent;
+  },
+
+  updateStudent: (id: string, updatedData: any) => {
+    const students = localDataManager.getStudents();
+    const studentIndex = students.findIndex((student: any) => student.id === id);
+    if (studentIndex !== -1) {
+      students[studentIndex] = {
+        ...students[studentIndex],
+        ...updatedData,
+        updatedAt: new Date().toISOString()
+      };
+      localDataManager.setStudents(students);
+      return students[studentIndex];
+    }
+    throw new Error('Student not found');
+  },
+
+  deleteStudent: (id: string) => {
+    const students = localDataManager.getStudents();
+    const filteredStudents = students.filter((student: any) => student.id !== id);
+    if (filteredStudents.length === students.length) {
+      throw new Error('Student not found');
+    }
+    localDataManager.setStudents(filteredStudents);
+    return { success: true, message: 'Student deleted successfully' };
+  },
   
   getConsultants: () => {
     const stored = localStorage.getItem('consultants_data');
