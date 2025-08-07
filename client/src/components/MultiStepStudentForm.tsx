@@ -75,7 +75,6 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       
       console.log("Sending student data:", submitData);
       
-      // Production fallback for INSERT operations
       try {
         const response = await fetch("/api/students", {
           method: "POST",
@@ -93,7 +92,6 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       } catch (apiError) {
         console.log('API failed, using localStorage fallback for production:', apiError);
         
-        // Production fallback to localStorage
         const existingStudents = JSON.parse(localStorage.getItem('students') || '[]');
         const newStudent = {
           id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
@@ -108,10 +106,10 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         existingStudents.push(newStudent);
         localStorage.setItem('students', JSON.stringify(existingStudents));
         
-        console.log('Student created with production fallback:', newStudent.id);
+        console.log('Student created with localStorage fallback:', newStudent.id);
         return {
           success: true,
-          message: 'Kursiyer başarıyla kaydedildi',
+          message: 'Kursiyer başarıyla kaydedildi (Yerel olarak)',
           student: newStudent
         };
       }

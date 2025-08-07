@@ -23,6 +23,19 @@ export default function StudentList() {
   // Fetch students
   const { data: students = [], isLoading } = useQuery({
     queryKey: ["/api/students"],
+    queryFn: async () => {
+      try {
+        const response = await fetch("/api/students");
+        if (!response.ok) {
+          throw new Error("Failed to fetch students");
+        }
+        return response.json();
+      } catch (error) {
+        console.log('API failed, using localStorage data:', error);
+        const localStudents = JSON.parse(localStorage.getItem('students') || '[]');
+        return localStudents;
+      }
+    },
   });
 
   // Delete student mutation

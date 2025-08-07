@@ -1,2 +1,5 @@
 [deployment]
 publicDir = "algi-akademi"
+
+[agent]
+integrations = ["javascript_mem_db==1.0.0"]
