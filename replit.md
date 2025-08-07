@@ -123,5 +123,7 @@ Preferred communication style: Simple, everyday language.
 - **Deployment Fix**: Corrected .replit configuration to use Autoscale deployment target instead of static
 - **Build Command Update**: Updated deployment scripts to use "npm install && npm run build" for proper dependency installation
 - **Directory Structure Fix**: Removed references to cd algi-akademi from deployment commands for direct project deployment
+- **Export Directory Cleanup**: Removed problematic export/algi-akademi directory that was causing deployment to look in wrong location
+- **Deployment Scripts Updated**: Fixed all deployment scripts to work with current project structure
 - **DOM Fix**: Resolved nested anchor tag validation warnings in Sidebar component
 - **Deployment Issue**: Changed from Static to Autoscale to support Node.js runtime and backend functionality

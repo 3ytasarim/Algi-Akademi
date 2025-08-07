@@ -5,21 +5,23 @@ Your deployment is failing with "Build Failed" error because the build environme
 
 ## IMMEDIATE SOLUTION (Ready to Deploy)
 
-Your build files are now ready in the `algi-akademi/` directory. Use one of these configurations:
+The project is configured for direct deployment from the root directory. No additional setup needed.
 
 ## Solution Options
 
-### Option 1: Autoscale with Pre-built Files (RECOMMENDED)
-Replace your `.replit` file content with:
+### Option 1: Autoscale Deployment (RECOMMENDED)
+The current `.replit` file is already correctly configured:
 
 ```
+modules = ["nodejs-20", "postgresql-16"]
+
 [deployment]
-build = ""
-run = "cd algi-akademi && npm install && npm start"
-publicDir = "algi-akademi"
+deploymentTarget = "autoscale"
+build = "npm install && npm run build"
+run = "npm start"
 
 [nix]
-channel = "stable-23.05"
+channel = "stable-24_05"
 
 [[ports]]
 localPort = 3000
@@ -29,23 +31,13 @@ externalPort = 80
 integrations = ["javascript_mem_db==1.0.0"]
 ```
 
-### Option 2: Static Deployment (Simple)
-Replace your `.replit` file content with:
+### Option 2: Manual Verification (If needed)
+Verify the current configuration is correct:
 
-```
-[deployment]
-publicDir = "algi-akademi"
-
-[nix]
-channel = "stable-23.05"
-
-[[ports]]
-localPort = 3000
-externalPort = 80
-
-[agent]
-integrations = ["javascript_mem_db==1.0.0"]
-```
+1. Deployment type should be "Autoscale" (not Static)
+2. Build command: `npm install && npm run build`
+3. Run command: `npm start`
+4. No publicDir setting needed
 
 ### Step 2: Change Deployment Type in Replit
 1. Go to your Replit deployment settings
