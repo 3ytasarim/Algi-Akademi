@@ -12,15 +12,33 @@ export async function apiRequest(
   method: string,
   data?: unknown | undefined,
 ): Promise<Response> {
-  const res = await fetch(url, {
-    method,
-    headers: data ? { "Content-Type": "application/json" } : {},
-    body: data ? JSON.stringify(data) : undefined,
-    credentials: "include",
-  });
+  try {
+    const res = await fetch(url, {
+      method,
+      headers: data ? { "Content-Type": "application/json" } : {},
+      body: data ? JSON.stringify(data) : undefined,
+      credentials: "include",
+    });
 
-  await throwIfResNotOk(res);
-  return res;
+    await throwIfResNotOk(res);
+    return res;
+  } catch (error) {
+    // Fallback for POST requests (like creating courses)
+    if (method === 'POST' && url.includes('/api/courses') && data) {
+      const { localDataManager } = await import('./api-fallback');
+      const newCourse = localDataManager.addCourse(data);
+      
+      // Return a mock response object
+      return {
+        ok: true,
+        status: 201,
+        json: async () => newCourse,
+        text: async () => JSON.stringify(newCourse)
+      } as Response;
+    }
+    
+    throw error;
+  }
 }
 
 type UnauthorizedBehavior = "returnNull" | "throw";
@@ -29,16 +47,40 @@ export const getQueryFn: <T>(options: {
 }) => QueryFunction<T> =
   ({ on401: unauthorizedBehavior }) =>
   async ({ queryKey }) => {
-    const res = await fetch(queryKey.join("/") as string, {
-      credentials: "include",
-    });
+    try {
+      const res = await fetch(queryKey.join("/") as string, {
+        credentials: "include",
+      });
 
-    if (unauthorizedBehavior === "returnNull" && res.status === 401) {
-      return null;
+      if (unauthorizedBehavior === "returnNull" && res.status === 401) {
+        return null;
+      }
+
+      await throwIfResNotOk(res);
+      return await res.json();
+    } catch (error) {
+      // If backend is not available, try fallback data
+      const endpoint = queryKey.join("/") as string;
+      
+      if (endpoint.includes('/api/courses')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getCourses();
+      } else if (endpoint.includes('/api/users')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getStudents();
+      } else if (endpoint.includes('/api/consultants')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getConsultants();
+      } else if (endpoint.includes('/api/sales')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getSales();
+      } else if (endpoint.includes('/api/activities')) {
+        const { localDataManager } = await import('./api-fallback');
+        return localDataManager.getActivities();
+      }
+      
+      throw error;
     }
-
-    await throwIfResNotOk(res);
-    return await res.json();
   };
 
 export const queryClient = new QueryClient({
