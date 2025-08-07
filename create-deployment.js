@@ -1,24 +1,34 @@
 import fs from 'fs';
 import path from 'path';
 
-console.log('🚀 Configuring Autoscale deployment...');
+import { exec } from 'child_process';
+import { promisify } from 'util';
 
-// Autoscale deployments don't need separate directory structure
-// The server serves static files from dist/public directory
-console.log('📦 Static files ready in dist/public...');
+const execAsync = promisify(exec);
 
-// Verify build files exist
-if (!fs.existsSync('./dist/public')) {
-  console.error('❌ Build files not found. Run npm run build first.');
+console.log('🚀 Preparing Autoscale deployment...');
+
+// Build the application with proper static file handling
+try {
+  console.log('🏗️  Building application...');
+  await execAsync('node scripts/build-production.js');
+} catch (error) {
+  console.error('❌ Build failed:', error.message);
   process.exit(1);
 }
 
+// Verify all build files exist
 if (!fs.existsSync('./dist/index.js')) {
-  console.error('❌ Server file not found. Run npm run build first.');
+  console.error('❌ Server file not found.');
   process.exit(1);
 }
 
-console.log('✅ All build files ready for Autoscale deployment');
+if (!fs.existsSync('./server/public/index.html')) {
+  console.error('❌ Static files not found in server/public.');
+  process.exit(1);
+}
+
+console.log('✅ All files ready for Autoscale deployment');
 
 // Create .replit file for proper Autoscale deployment
 const replitConfig = `
