@@ -71,7 +71,7 @@ export default function AddStudent() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900/20">
       <div className="container mx-auto px-4 py-8">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">
@@ -79,23 +79,23 @@ export default function AddStudent() {
             <ArrowLeft size={24} />
           </Link>
           <div>
-            <h1 className="text-3xl font-bold text-slate-900">Yeni Kursiyer Kaydı</h1>
-            <p className="text-slate-600 mt-1">Sisteme yeni kursiyer tanımlayın</p>
+            <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Yeni Kursiyer Kaydı</h1>
+            <p className="text-slate-600 dark:text-gray-300 mt-1">Sisteme yeni kursiyer tanımlayın</p>
           </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-8">
           {/* Form Card */}
           <div className="lg:col-span-2">
-            <Card className="glass-effect border-0 shadow-xl">
+            <Card className="glass-effect border-0 shadow-xl dark:bg-gray-800/50 dark:border-gray-700">
               <CardHeader className="pb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center">
                     <UserPlus className="text-white" size={28} />
                   </div>
                   <div>
-                    <CardTitle className="text-xl text-slate-900">Kursiyer Bilgileri</CardTitle>
-                    <p className="text-slate-600 text-sm">Aşağıdaki formu doldurun</p>
+                    <CardTitle className="text-xl text-slate-900 dark:text-white">Kursiyer Bilgileri</CardTitle>
+                    <p className="text-slate-600 dark:text-gray-300 text-sm">Aşağıdaki formu doldurun</p>
                   </div>
                 </div>
               </CardHeader>
@@ -104,7 +104,7 @@ export default function AddStudent() {
                 <form onSubmit={handleSubmit} className="space-y-6">
                   {/* TC Kimlik No */}
                   <div className="space-y-2">
-                    <Label htmlFor="tcKimlikNo" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Label htmlFor="tcKimlikNo" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                       <CreditCard size={16} />
                       T.C. Kimlik No
                     </Label>
@@ -114,7 +114,7 @@ export default function AddStudent() {
                       placeholder="T.C. Kimlik Numarası"
                       value={formData.tcKimlikNo}
                       onChange={(e) => handleInputChange('tcKimlikNo', e.target.value)}
-                      className="h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                       required
                     />
                   </div>

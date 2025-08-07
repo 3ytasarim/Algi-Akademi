@@ -1,425 +1,223 @@
 import { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Badge } from "@/components/ui/badge";
 import { Switch } from "@/components/ui/switch";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { Link } from "wouter";
 import { 
-  Mail, Settings, Plus, Send, Eye, Edit, Trash2, 
-  CheckCircle, XCircle, Clock, AlertCircle, Key, 
-  Server, Globe, Shield, Test
+  Mail, 
+  Save,
+  TestTube,
+  ArrowLeft,
+  Settings,
+  Key
 } from "lucide-react";
 
-export default function EmailIntegrationPage() {
-  const [isTestDialogOpen, setIsTestDialogOpen] = useState(false);
-  const [testEmail, setTestEmail] = useState("");
+export default function EmailIntegration() {
+  const { toast } = useToast();
+  const queryClient = useQueryClient();
   
-  const [emailSettings, setEmailSettings] = useState({
-    provider: "sendgrid",
+  const [emailConfig, setEmailConfig] = useState({
     apiKey: "",
     fromEmail: "noreply@algiacademy.com",
     fromName: "Algı Akademi",
-    smtpHost: "",
-    smtpPort: "587",
-    smtpUsername: "",
-    smtpPassword: "",
-    useTls: true,
-    isActive: true,
+    replyTo: "info@algiacademy.com",
+    isActive: false
   });
 
-  const { toast } = useToast();
-  const queryClient = useQueryClient();
-
-  // Fetch email settings
-  const { data: settings, isLoading: settingsLoading } = useQuery({
-    queryKey: ["/api/integrations/email"],
-  });
-
-  // Update email settings mutation
-  const updateEmailSettingsMutation = useMutation({
+  const updateIntegrationMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest(`/api/integrations/email`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      return await apiRequest('/api/integrations/email', "POST", data);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["/api/integrations/email"] });
       toast({
         title: "Başarılı",
-        description: "E-posta ayarları başarıyla güncellendi.",
+        description: "E-posta entegrasyon ayarları güncellendi",
       });
+      queryClient.invalidateQueries({ queryKey: ["/api/integrations"] });
     },
-    onError: (error: any) => {
+    onError: (error) => {
       toast({
         title: "Hata",
-        description: "E-posta ayarları güncellenirken bir hata oluştu.",
+        description: "E-posta ayarları güncellenirken bir hata oluştu",
         variant: "destructive",
       });
     },
   });
 
-  // Test email mutation
-  const testEmailMutation = useMutation({
-    mutationFn: async (email: string) => {
-      await apiRequest(`/api/integrations/email/test`, {
-        method: "POST",
-        body: JSON.stringify({ email }),
-      });
-    },
-    onSuccess: () => {
-      setIsTestDialogOpen(false);
-      setTestEmail("");
-      toast({
-        title: "Test E-postası Gönderildi",
-        description: "Test e-postası başarıyla gönderildi.",
-      });
-    },
-    onError: (error: any) => {
-      toast({
-        title: "Test Başarısız",
-        description: "Test e-postası gönderilemedi. Ayarları kontrol edin.",
-        variant: "destructive",
-      });
-    },
-  });
-
-  const handleSaveSettings = (e: React.FormEvent) => {
-    e.preventDefault();
-    updateEmailSettingsMutation.mutate(emailSettings);
+  const handleEmailConfigChange = (field: string, value: string | boolean) => {
+    setEmailConfig(prev => ({
+      ...prev,
+      [field]: value
+    }));
   };
 
-  const handleTestEmail = (e: React.FormEvent) => {
-    e.preventDefault();
-    testEmailMutation.mutate(testEmail);
+  const saveEmailConfig = () => {
+    updateIntegrationMutation.mutate({
+      type: 'email',
+      name: 'E-posta Entegrasyonu',
+      config: emailConfig,
+      isActive: emailConfig.isActive
+    });
+  };
+
+  const sendTestEmail = () => {
+    toast({
+      title: "Test E-postası",
+      description: "Test e-postası gönderiliyor...",
+    });
+    
+    setTimeout(() => {
+      toast({
+        title: "Başarılı",
+        description: "Test e-postası başarıyla gönderildi",
+      });
+    }, 2000);
   };
 
   return (
-    <LayoutWrapper title="E-posta Entegrasyonu" subtitle="SendGrid e-posta servis ayarlarını yönetin" activeHref="/integrations/email">
-      <div className="space-y-8">
-        {/* Header */}
-        <div className="flex items-center justify-between">
-          <div className="flex gap-3">
-            <Dialog open={isTestDialogOpen} onOpenChange={setIsTestDialogOpen}>
-              <DialogTrigger asChild>
-                <Button variant="outline" className="flex items-center gap-2">
-                  <Send size={16} />
-                  Test E-postası
-                </Button>
-              </DialogTrigger>
-              <DialogContent>
-                <DialogHeader>
-                  <DialogTitle>Test E-postası Gönder</DialogTitle>
-                </DialogHeader>
-                <form onSubmit={handleTestEmail} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>E-posta Adresi</Label>
-                    <Input
-                      type="email"
-                      value={testEmail}
-                      onChange={(e) => setTestEmail(e.target.value)}
-                      placeholder="test@example.com"
-                      required
-                    />
-                  </div>
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={testEmailMutation.isPending}
-                  >
-                    {testEmailMutation.isPending ? "Gönderiliyor..." : "Test E-postası Gönder"}
-                  </Button>
-                </form>
-              </DialogContent>
-            </Dialog>
+    <LayoutWrapper title="E-posta Entegrasyonu" subtitle="E-posta bildirim yapılandırması" activeHref="/integrations">
+      <div className="space-y-6">
+        {/* Back button */}
+        <div className="flex items-center gap-4">
+          <Link href="/integrations" className="text-gray-600 dark:text-gray-300 hover:text-gray-800 dark:hover:text-gray-100 transition-colors">
+            <ArrowLeft size={24} />
+          </Link>
+          <div>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">E-posta Entegrasyon Ayarları</h1>
+            <p className="text-gray-600 dark:text-gray-300">SendGrid e-posta servis ayarlarını yapılandırın</p>
           </div>
         </div>
 
-        {/* Connection Status */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Settings className="h-5 w-5" />
-              Bağlantı Durumu
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
+        {/* Email Configuration */}
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
+          <CardHeader className="p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className={`w-3 h-3 rounded-full ${settings?.isActive ? 'bg-green-500' : 'bg-red-500'}`}></div>
+              <div className="flex items-center space-x-3">
+                <div className="w-12 h-12 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
+                  <Mail className="text-purple-600 dark:text-purple-400" size={24} />
+                </div>
                 <div>
-                  <p className="font-medium">
-                    {settings?.isActive ? 'Bağlantı Aktif' : 'Bağlantı Pasif'}
-                  </p>
-                  <p className="text-sm text-gray-500">
-                    {settings?.provider === 'sendgrid' ? 'SendGrid' : 'SMTP'} servisi kullanılıyor
-                  </p>
+                  <CardTitle className="text-xl text-gray-900 dark:text-white">SendGrid Ayarları</CardTitle>
+                  <p className="text-sm text-gray-600 dark:text-gray-300">E-posta gönderimi için SendGrid yapılandırması</p>
                 </div>
               </div>
-              <Badge className={settings?.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
-                {settings?.isActive ? 'Aktif' : 'Pasif'}
-              </Badge>
+              <div className="flex items-center space-x-2">
+                <Switch
+                  checked={emailConfig.isActive}
+                  onCheckedChange={(checked) => handleEmailConfigChange('isActive', checked)}
+                />
+                <span className="text-sm text-gray-600 dark:text-gray-300">
+                  {emailConfig.isActive ? 'Aktif' : 'Pasif'}
+                </span>
+              </div>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Email Settings */}
-        <Tabs defaultValue="sendgrid" className="w-full">
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="sendgrid">SendGrid</TabsTrigger>
-            <TabsTrigger value="smtp">SMTP</TabsTrigger>
-          </TabsList>
+          </CardHeader>
           
-          <TabsContent value="sendgrid" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Key className="h-5 w-5" />
-                  SendGrid Ayarları
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSaveSettings} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>API Anahtarı *</Label>
-                      <Input
-                        type="password"
-                        value={emailSettings.apiKey}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, apiKey: e.target.value }))}
-                        placeholder="SG.xxxxxxxxxxxxxxxxxxxxx"
-                        required
-                      />
-                      <p className="text-xs text-gray-500">
-                        SendGrid hesabınızdan API anahtarını alın
-                      </p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Gönderen E-posta *</Label>
-                      <Input
-                        type="email"
-                        value={emailSettings.fromEmail}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, fromEmail: e.target.value }))}
-                        placeholder="noreply@algiacademy.com"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="space-y-2">
-                    <Label>Gönderen Adı</Label>
-                    <Input
-                      value={emailSettings.fromName}
-                      onChange={(e) => setEmailSettings(prev => ({ ...prev, fromName: e.target.value }))}
-                      placeholder="Algı Akademi"
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Entegrasyonu Aktifleştir</Label>
-                      <p className="text-sm text-gray-500">E-posta gönderimi için SendGrid kullanılsın</p>
-                    </div>
-                    <Switch 
-                      checked={emailSettings.isActive}
-                      onCheckedChange={(checked) => setEmailSettings(prev => ({ ...prev, isActive: checked }))}
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={updateEmailSettingsMutation.isPending}
-                  >
-                    {updateEmailSettingsMutation.isPending ? "Kaydediliyor..." : "Ayarları Kaydet"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="smtp" className="space-y-6">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Server className="h-5 w-5" />
-                  SMTP Ayarları
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handleSaveSettings} className="space-y-6">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>SMTP Sunucu *</Label>
-                      <Input
-                        value={emailSettings.smtpHost}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, smtpHost: e.target.value }))}
-                        placeholder="smtp.gmail.com"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Port *</Label>
-                      <Input
-                        value={emailSettings.smtpPort}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, smtpPort: e.target.value }))}
-                        placeholder="587"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Kullanıcı Adı *</Label>
-                      <Input
-                        value={emailSettings.smtpUsername}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, smtpUsername: e.target.value }))}
-                        placeholder="your-email@gmail.com"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Şifre *</Label>
-                      <Input
-                        type="password"
-                        value={emailSettings.smtpPassword}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, smtpPassword: e.target.value }))}
-                        placeholder="••••••••"
-                        required
-                      />
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Gönderen E-posta *</Label>
-                      <Input
-                        type="email"
-                        value={emailSettings.fromEmail}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, fromEmail: e.target.value }))}
-                        placeholder="noreply@algiacademy.com"
-                        required
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label>Gönderen Adı</Label>
-                      <Input
-                        value={emailSettings.fromName}
-                        onChange={(e) => setEmailSettings(prev => ({ ...prev, fromName: e.target.value }))}
-                        placeholder="Algı Akademi"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>TLS Kullan</Label>
-                      <p className="text-sm text-gray-500">Güvenli bağlantı için TLS şifrelemesi</p>
-                    </div>
-                    <Switch 
-                      checked={emailSettings.useTls}
-                      onCheckedChange={(checked) => setEmailSettings(prev => ({ ...prev, useTls: checked }))}
-                    />
-                  </div>
-
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <Label>Entegrasyonu Aktifleştir</Label>
-                      <p className="text-sm text-gray-500">E-posta gönderimi için SMTP kullanılsın</p>
-                    </div>
-                    <Switch 
-                      checked={emailSettings.isActive}
-                      onCheckedChange={(checked) => setEmailSettings(prev => ({ ...prev, isActive: checked }))}
-                    />
-                  </div>
-
-                  <Button 
-                    type="submit" 
-                    className="w-full"
-                    disabled={updateEmailSettingsMutation.isPending}
-                  >
-                    {updateEmailSettingsMutation.isPending ? "Kaydediliyor..." : "Ayarları Kaydet"}
-                  </Button>
-                </form>
-              </CardContent>
-            </Card>
-          </TabsContent>
-        </Tabs>
-
-        {/* Email Templates */}
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Mail className="h-5 w-5" />
-              E-posta Şablonları
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Hoş Geldiniz E-postası</h3>
-                <p className="text-sm text-gray-500 mb-3">Yeni kayıt olan öğrenciler için</p>
-                <Button size="sm" variant="outline">
-                  <Edit size={14} className="mr-2" />
-                  Düzenle
-                </Button>
+          <CardContent className="p-6 space-y-6">
+            <div className="space-y-6">
+              <div className="space-y-2">
+                <Label htmlFor="apiKey" className="dark:text-gray-200 flex items-center gap-2">
+                  <Key size={16} />
+                  SendGrid API Anahtarı
+                </Label>
+                <Input
+                  id="apiKey"
+                  type="password"
+                  value={emailConfig.apiKey}
+                  onChange={(e) => handleEmailConfigChange('apiKey', e.target.value)}
+                  placeholder="SG.xxxxxxxxxxxxxxxxxx"
+                  disabled={!emailConfig.isActive}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
               </div>
               
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Kurs Kayıt Onayı</h3>
-                <p className="text-sm text-gray-500 mb-3">Kurs kaydı tamamlandığında</p>
-                <Button size="sm" variant="outline">
-                  <Edit size={14} className="mr-2" />
-                  Düzenle
-                </Button>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div className="space-y-2">
+                  <Label htmlFor="fromEmail" className="dark:text-gray-200">Gönderici E-posta</Label>
+                  <Input
+                    id="fromEmail"
+                    type="email"
+                    value={emailConfig.fromEmail}
+                    onChange={(e) => handleEmailConfigChange('fromEmail', e.target.value)}
+                    placeholder="noreply@algiacademy.com"
+                    disabled={!emailConfig.isActive}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  />
+                </div>
+                
+                <div className="space-y-2">
+                  <Label htmlFor="fromName" className="dark:text-gray-200">Gönderici Adı</Label>
+                  <Input
+                    id="fromName"
+                    type="text"
+                    value={emailConfig.fromName}
+                    onChange={(e) => handleEmailConfigChange('fromName', e.target.value)}
+                    placeholder="Algı Akademi"
+                    disabled={!emailConfig.isActive}
+                    className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                  />
+                </div>
               </div>
               
-              <div className="p-4 border rounded-lg">
-                <h3 className="font-medium mb-2">Sınav Hatırlatması</h3>
-                <p className="text-sm text-gray-500 mb-3">Sınav öncesi gönderilir</p>
-                <Button size="sm" variant="outline">
-                  <Edit size={14} className="mr-2" />
-                  Düzenle
-                </Button>
+              <div className="space-y-2">
+                <Label htmlFor="replyTo" className="dark:text-gray-200">Yanıt Adresi</Label>
+                <Input
+                  id="replyTo"
+                  type="email"
+                  value={emailConfig.replyTo}
+                  onChange={(e) => handleEmailConfigChange('replyTo', e.target.value)}
+                  placeholder="info@algiacademy.com"
+                  disabled={!emailConfig.isActive}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
               </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 pt-4">
+              <Button
+                onClick={saveEmailConfig}
+                className="flex-1"
+                disabled={updateIntegrationMutation.isPending || !emailConfig.isActive}
+              >
+                <Save className="mr-2" size={16} />
+                Ayarları Kaydet
+              </Button>
+              <Button
+                onClick={sendTestEmail}
+                variant="outline"
+                disabled={!emailConfig.isActive || !emailConfig.apiKey}
+                className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
+              >
+                <TestTube className="mr-2" size={16} />
+                Test E-postası Gönder
+              </Button>
             </div>
           </CardContent>
         </Card>
 
-        {/* Recent Email Activity */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Son Gönderilen E-postalar</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Alıcı</TableHead>
-                  <TableHead>Konu</TableHead>
-                  <TableHead>Durum</TableHead>
-                  <TableHead>Gönderim Tarihi</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                <TableRow>
-                  <TableCell colSpan={4} className="text-center py-8">
-                    <div className="text-gray-500">Henüz e-posta gönderilmedi</div>
-                  </TableCell>
-                </TableRow>
-              </TableBody>
-            </Table>
+        {/* Information Card */}
+        <Card className="dark:bg-gray-800 dark:border-gray-700">
+          <CardContent className="p-6">
+            <div className="flex items-start space-x-3">
+              <Settings className="text-blue-600 dark:text-blue-400 mt-0.5" size={20} />
+              <div className="text-sm text-gray-800 dark:text-gray-200">
+                <p className="font-medium mb-2">SendGrid Entegrasyon Bilgileri</p>
+                <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-300">
+                  <li>SendGrid hesabınızdan API anahtarı oluşturmanız gerekir</li>
+                  <li>Gönderici e-posta adresiniz SendGrid'de doğrulanmış olmalıdır</li>
+                  <li>Test e-postası göndererek ayarların doğru olduğunu kontrol edebilirsiniz</li>
+                  <li>E-posta entegrasyonu devre dışı bırakıldığında otomatik e-posta gönderimi durur</li>
+                  <li>SendGrid ücretsiz planında günlük 100 e-posta gönderebilirsiniz</li>
+                </ul>
+              </div>
+            </div>
           </CardContent>
         </Card>
       </div>

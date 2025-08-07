@@ -16,10 +16,10 @@ import StudentList from "@/pages/student-list";
 import ExamResults from "@/pages/exam-results";
 import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
+import SmsIntegration from "@/pages/integrations/sms";
+import EmailIntegration from "@/pages/integrations/email";
 import NotificationsPage from "@/pages/notifications";
 import CoursesPage from "@/pages/courses";
-import EmailIntegrationPage from "@/pages/integrations/email";
-import SMSIntegrationPage from "@/pages/integrations/sms";
 import StudentStatistics from "@/pages/student-statistics";
 import CostReport from "@/pages/cost-report";
 
@@ -52,10 +52,10 @@ function Router() {
               <Route path="/exam-results" component={ExamResults} />
               <Route path="/consultants" component={Consultants} />
               <Route path="/integrations" component={Integrations} />
+              <Route path="/integrations/sms" component={SmsIntegration} />
+              <Route path="/integrations/email" component={EmailIntegration} />
               <Route path="/notifications" component={NotificationsPage} />
               <Route path="/courses" component={CoursesPage} />
-              <Route path="/integrations/email" component={EmailIntegrationPage} />
-              <Route path="/integrations/sms" component={SMSIntegrationPage} />
               <Route path="/student-statistics" component={StudentStatistics} />
               <Route path="/cost-report" component={CostReport} />
             </>

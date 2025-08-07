@@ -235,9 +235,9 @@ export default function CoursesPage() {
                 Yeni Kurs
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+            <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto dark:bg-gray-800 dark:border-gray-700">
               <DialogHeader>
-                <DialogTitle>
+                <DialogTitle className="dark:text-white">
                   {editingCourse ? "Kurs Düzenle" : "Yeni Kurs Oluştur"}
                 </DialogTitle>
               </DialogHeader>
@@ -245,21 +245,23 @@ export default function CoursesPage() {
                 {/* Kurs Bilgileri */}
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <Label>Kurs İsmi *</Label>
+                    <Label className="dark:text-gray-200">Kurs İsmi *</Label>
                     <Input
                       value={courseForm.title}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, title: e.target.value }))}
                       placeholder="Kurs ismini giriniz"
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       required
                     />
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Kurs Açıklama</Label>
+                    <Label className="dark:text-gray-200">Kurs Açıklama</Label>
                     <Textarea
                       value={courseForm.description}
                       onChange={(e) => setCourseForm(prev => ({ ...prev, description: e.target.value }))}
                       placeholder="Kurs ile ilgili kısa açıklama yazın"
+                      className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                       rows={3}
                     />
                   </div>
