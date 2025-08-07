@@ -128,6 +128,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/courses/:id', async (req: any, res) => {
     try {
+      // Simple authentication check
+      if (!req.session.auth || !req.session.auth.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
       const validatedData = insertCourseSchema.parse(req.body);
       const course = await storage.updateCourse(req.params.id, validatedData);
       

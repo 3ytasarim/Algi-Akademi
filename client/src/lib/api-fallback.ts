@@ -187,6 +187,31 @@ export const localDataManager = {
     return newCourse;
   },
   
+  updateCourse: (id: string, updatedData: any) => {
+    const courses = localDataManager.getCourses();
+    const courseIndex = courses.findIndex(course => course.id === id);
+    if (courseIndex !== -1) {
+      courses[courseIndex] = {
+        ...courses[courseIndex],
+        ...updatedData,
+        updatedAt: new Date().toISOString()
+      };
+      localDataManager.setCourses(courses);
+      return courses[courseIndex];
+    }
+    throw new Error('Course not found');
+  },
+  
+  deleteCourse: (id: string) => {
+    const courses = localDataManager.getCourses();
+    const filteredCourses = courses.filter(course => course.id !== id);
+    if (filteredCourses.length === courses.length) {
+      throw new Error('Course not found');
+    }
+    localDataManager.setCourses(filteredCourses);
+    return { success: true, message: 'Course deleted successfully' };
+  },
+  
   getStudents: () => {
     const stored = localStorage.getItem('students_data');
     return stored ? JSON.parse(stored) : mockStudents;
