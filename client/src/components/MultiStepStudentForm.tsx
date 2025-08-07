@@ -38,7 +38,6 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
     kayıtTarihi: new Date().toISOString().split('T')[0],
     bitişTarihi: "",
     // Step 3 - Onaylar ve Kurslar
-    isMernisOnaylı: false,
     isÜniversiteOnaylı: false,
     isEDevletOnaylı: false,
     isUluslararasıSertifikasyon: false,
@@ -123,7 +122,6 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       kayıtTarihi: new Date().toISOString().split('T')[0],
       bitişTarihi: "",
       // Step 3 - Onaylar ve Kurslar
-      isMernisOnaylı: false,
       isÜniversiteOnaylı: false,
       isEDevletOnaylı: false,
       isUluslararasıSertifikasyon: false,
@@ -185,10 +183,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
           isValid,
           message: isValid ? "Geçerli T.C. Kimlik No (Mernis onaylı)" : "Geçersiz T.C. Kimlik No"
         });
-        // Auto-check Mernis if TC is valid
-        if (isValid) {
-          setFormData(prev => ({ ...prev, isMernisOnaylı: true }));
-        }
+        // TC validation completed - no auto-check needed
       } else {
         setTcValidation({ isValid: false, message: "T.C. Kimlik No 11 haneli olmalıdır" });
       }
@@ -247,9 +242,9 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         {children}
       </DialogTrigger>
       
-      <DialogContent className="max-w-2xl mx-auto bg-white rounded-2xl shadow-2xl border-0 max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center pb-4 border-b border-gray-100">
-          <DialogTitle className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-3">
+      <DialogContent className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="text-center pb-4 border-b border-gray-100 dark:border-gray-700">
+          <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-white flex items-center justify-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
               <UserPlus className="text-white" size={20} />
             </div>
@@ -259,7 +254,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
           {/* Step Progress - Professional with animations */}
           <div className="relative mt-6 px-4">
             {/* Progress line background */}
-            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 transform -translate-y-1/2 z-0"></div>
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-gray-200 dark:bg-gray-600 transform -translate-y-1/2 z-0"></div>
             {/* Active progress line */}
             <div 
               className="absolute top-1/2 left-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-600 transform -translate-y-1/2 z-0 transition-all duration-500 ease-in-out"
@@ -278,16 +273,16 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                 const isCurrent = currentStep === step.num;
                 
                 return (
-                  <div key={step.num} className="flex flex-col items-center bg-white">
+                  <div key={step.num} className="flex flex-col items-center bg-white dark:bg-gray-800">
                     <div className={`w-12 h-12 rounded-full flex items-center justify-center text-sm font-semibold transition-all duration-300 transform ${
                       isActive 
                         ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg scale-110' 
-                        : 'bg-white border-2 border-gray-200 text-gray-500 shadow-sm'
-                    } ${isCurrent ? 'ring-4 ring-blue-200' : ''}`}>
+                        : 'bg-white dark:bg-gray-700 border-2 border-gray-200 dark:border-gray-600 text-gray-500 dark:text-gray-400 shadow-sm'
+                    } ${isCurrent ? 'ring-4 ring-blue-200 dark:ring-blue-800' : ''}`}>
                       {isActive ? <StepIcon size={18} /> : step.num}
                     </div>
                     <div className={`mt-2 text-xs font-medium transition-colors duration-300 text-center ${
-                      isActive ? 'text-blue-600' : 'text-gray-500'
+                      isActive ? 'text-blue-600 dark:text-blue-400' : 'text-gray-500 dark:text-gray-400'
                     }`}>
                       {step.title}
                     </div>
@@ -336,7 +331,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
               <div className="grid grid-cols-2 gap-4">
                 {/* Ad */}
                 <div className="space-y-2">
-                  <Label htmlFor="adı" className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label htmlFor="adı" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <User size={16} />
                     Adı *
                   </Label>
@@ -346,14 +341,14 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     placeholder="Adı"
                     value={formData.adı}
                     onChange={(e) => handleInputChange('adı', e.target.value)}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
 
                 {/* Soyadı */}
                 <div className="space-y-2">
-                  <Label htmlFor="soyadı" className="text-slate-700 font-medium flex items-center gap-2">
+                  <Label htmlFor="soyadı" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                     <User size={16} />
                     Soyadı *
                   </Label>
@@ -363,7 +358,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                     placeholder="Soyadı"
                     value={formData.soyadı}
                     onChange={(e) => handleInputChange('soyadı', e.target.value)}
-                    className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                    className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                     required
                   />
                 </div>
@@ -371,7 +366,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
               {/* Email */}
               <div className="space-y-2">
-                <Label htmlFor="email" className="text-slate-700 font-medium flex items-center gap-2">
+                <Label htmlFor="email" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                   <Mail size={16} />
                   E-posta Adresi *
                 </Label>
@@ -381,7 +376,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                   placeholder="ornek@email.com"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className="h-11 rounded-xl border-2 border-slate-200 focus:border-blue-400"
+                  className="h-11 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
                   required
                 />
               </div>
@@ -581,7 +576,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
             <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300">
               {/* Onaylar */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                   <Shield size={20} />
                   Onaylar ve Sertifikasyonlar
                 </h3>
@@ -589,22 +584,11 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                 <div className="grid grid-cols-2 gap-4">
                   <div className="flex items-center space-x-2">
                     <Checkbox 
-                      id="mernis" 
-                      checked={formData.isMernisOnaylı}
-                      onCheckedChange={(checked) => handleInputChange('isMernisOnaylı', !!checked)}
-                    />
-                    <Label htmlFor="mernis" className="text-sm font-medium">
-                      T.C. Mernis Onaylı
-                    </Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Checkbox 
                       id="universite" 
                       checked={formData.isÜniversiteOnaylı}
                       onCheckedChange={(checked) => handleInputChange('isÜniversiteOnaylı', !!checked)}
                     />
-                    <Label htmlFor="universite" className="text-sm font-medium">
+                    <Label htmlFor="universite" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Üniversite Onaylı
                     </Label>
                   </div>
@@ -615,7 +599,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                       checked={formData.isEDevletOnaylı}
                       onCheckedChange={(checked) => handleInputChange('isEDevletOnaylı', !!checked)}
                     />
-                    <Label htmlFor="edevlet" className="text-sm font-medium">
+                    <Label htmlFor="edevlet" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       E-Devlet Onaylı
                     </Label>
                   </div>
@@ -626,7 +610,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                       checked={formData.isUluslararasıSertifikasyon}
                       onCheckedChange={(checked) => handleInputChange('isUluslararasıSertifikasyon', !!checked)}
                     />
-                    <Label htmlFor="uluslararasi" className="text-sm font-medium">
+                    <Label htmlFor="uluslararasi" className="text-sm font-medium text-gray-700 dark:text-gray-300">
                       Uluslararası Sertifikasyon
                     </Label>
                   </div>
@@ -635,7 +619,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
               {/* Kurs Seçimi */}
               <div className="space-y-4">
-                <h3 className="text-lg font-semibold text-slate-800 flex items-center gap-2">
+                <h3 className="text-lg font-semibold text-slate-800 dark:text-white flex items-center gap-2">
                   <GraduationCap size={20} />
                   Eğitim Seçimi
                 </h3>

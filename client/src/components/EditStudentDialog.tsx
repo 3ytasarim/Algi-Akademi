@@ -32,7 +32,6 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
     kayıtTarihi: "",
     bitişTarihi: "",
     // Step 3 - Onaylar ve Kurslar
-    isMernisOnaylı: false,
     isÜniversiteOnaylı: false,
     isEDevletOnaylı: false,
     isUluslararasıSertifikasyon: false,
@@ -62,7 +61,6 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
         meslek: student.meslek || "",
         kayıtTarihi: student.kayıtTarihi || "",
         bitişTarihi: student.bitişTarihi || "",
-        isMernisOnaylı: student.isMernisOnaylı || false,
         isÜniversiteOnaylı: student.isÜniversiteOnaylı || false,
         isEDevletOnaylı: student.isEDevletOnaylı || false,
         isUluslararasıSertifikasyon: student.isUluslararasıSertifikasyon || false,
@@ -307,15 +305,6 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
           <h4 className="font-medium text-slate-700">Belge Onayları</h4>
           
           <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="mernis"
-                checked={formData.isMernisOnaylı}
-                onCheckedChange={(checked) => handleInputChange('isMernisOnaylı', checked)}
-              />
-              <Label htmlFor="mernis" className="text-sm">Mernis Onaylı</Label>
-            </div>
-            
             <div className="flex items-center space-x-2">
               <Checkbox
                 id="universite"
