@@ -397,13 +397,13 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto [&>button]:hidden [&>[data-radix-dialog-close]]:hidden">
         <DialogHeader>
-          <DialogTitle className="flex items-center justify-between">
+          <DialogTitle className="flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center mr-3">
+              <User className="text-white" size={16} />
+            </div>
             <span>Kursiyer Düzenle - {student?.adı} {student?.soyadı}</span>
-            <Button variant="ghost" size="sm" onClick={onClose}>
-              <X size={16} />
-            </Button>
           </DialogTitle>
         </DialogHeader>
 

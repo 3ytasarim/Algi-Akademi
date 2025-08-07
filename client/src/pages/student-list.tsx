@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import LayoutWrapper from "@/components/LayoutWrapper";
 import MultiStepStudentForm from "@/components/MultiStepStudentForm";
 import EditStudentDialog from "@/components/EditStudentDialog";
+import ConfirmDialog from "@/components/ConfirmDialog";
 import { User, UserPlus, Search, Mail, Phone, Users } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
@@ -17,6 +18,10 @@ export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingStudent, setEditingStudent] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState<{
+    isOpen: boolean;
+    student: any | null;
+  }>({ isOpen: false, student: null });
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -94,9 +99,13 @@ export default function StudentList() {
   };
 
   const handleDeleteStudent = (student: any) => {
-    const studentName = `${student.firstName || student.adı} ${student.lastName || student.soyadı}`;
-    if (confirm(`${studentName} adlı kursiyeri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`)) {
-      deleteStudentMutation.mutate(student.id);
+    setDeleteConfirm({ isOpen: true, student });
+  };
+
+  const confirmDelete = () => {
+    if (deleteConfirm.student) {
+      deleteStudentMutation.mutate(deleteConfirm.student.id);
+      setDeleteConfirm({ isOpen: false, student: null });
     }
   };
 
@@ -276,6 +285,18 @@ export default function StudentList() {
           setEditingStudent(null);
         }}
         student={editingStudent}
+      />
+
+      {/* Delete Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={deleteConfirm.isOpen}
+        onClose={() => setDeleteConfirm({ isOpen: false, student: null })}
+        onConfirm={confirmDelete}
+        title="Kursiyer Silme Onayı"
+        message={`${deleteConfirm.student?.firstName || deleteConfirm.student?.adı} ${deleteConfirm.student?.lastName || deleteConfirm.student?.soyadı} adlı kursiyeri silmek istediğinizden emin misiniz? Bu işlem geri alınamaz.`}
+        confirmText="Sil"
+        cancelText="İptal"
+        destructive={true}
       />
     </LayoutWrapper>
   );
