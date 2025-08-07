@@ -1,5 +1,14 @@
 [deployment]
 publicDir = "algi-akademi"
+build = "cd algi-akademi && npm install"
+run = "cd algi-akademi && npm start"
+
+[nix]
+channel = "stable-23.05"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
 
 [agent]
 integrations = ["javascript_mem_db==1.0.0"]

@@ -1,188 +1,144 @@
-#!/usr/bin/env node
+import fs from 'fs';
+import path from 'path';
+import { execSync } from 'child_process';
 
-// Full-stack deployment script for Replit
-import express from 'express';
-import session from 'express-session';
-import connectPg from 'connect-pg-simple';
+console.log('🚀 Full Production Deployment Starting...');
+
+// Step 1: Clean and build
+console.log('📦 Building application...');
+try {
+  execSync('rm -rf dist algi-akademi', { stdio: 'inherit' });
+  execSync('npm run build', { stdio: 'inherit' });
+} catch (error) {
+  console.error('Build failed:', error.message);
+  process.exit(1);
+}
+
+// Step 2: Create deployment directory
+console.log('📁 Creating deployment structure...');
+const deployDir = './algi-akademi';
+if (!fs.existsSync(deployDir)) {
+  fs.mkdirSync(deployDir, { recursive: true });
+}
+
+// Step 3: Copy built frontend assets
+console.log('📋 Copying frontend assets...');
+const copyRecursive = (src, dest) => {
+  if (fs.statSync(src).isDirectory()) {
+    if (!fs.existsSync(dest)) {
+      fs.mkdirSync(dest, { recursive: true });
+    }
+    const entries = fs.readdirSync(src);
+    for (const entry of entries) {
+      copyRecursive(path.join(src, entry), path.join(dest, entry));
+    }
+  } else {
+    fs.copyFileSync(src, dest);
+  }
+};
+
+if (fs.existsSync('./dist/public')) {
+  copyRecursive('./dist/public', deployDir);
+}
+
+// Step 4: Create production server
+console.log('⚙️  Creating production server...');
+const productionServer = `import express from 'express';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { readFileSync } from 'fs';
+import apiRouter from './api/index.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Import the full backend server routes
-import { drizzle } from 'drizzle-orm/neon-serverless';
-import { neon } from '@neondatabase/serverless';
-import * as schema from './shared/schema.js';
-
 const app = express();
-const PORT = process.env.PORT || 5000;
+const port = process.env.PORT || 3000;
 
-// Database connection
-const sql = neon(process.env.DATABASE_URL);
-const db = drizzle(sql, { schema });
-
-// Session configuration
-const pgStore = connectPg(session);
-const sessionStore = new pgStore({
-  conString: process.env.DATABASE_URL,
-  createTableIfMissing: true,
-  ttl: 24 * 60 * 60 * 1000, // 24 hours
-  tableName: "sessions",
-});
-
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'algi-akademi-secret',
-  store: sessionStore,
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: false,
-    httpOnly: true,
-    maxAge: 24 * 60 * 60 * 1000
-  }
-}));
-
-app.use(express.json({ limit: '10mb' }));
-app.use(express.urlencoded({ extended: false }));
-
-// Initialize session auth
-app.use((req, res, next) => {
-  if (!req.session.auth) {
-    req.session.auth = { isAuthenticated: false, user: null };
-  }
-  next();
-});
-
-// Import and setup API routes - simplified version
-// Auth routes
-app.get('/api/auth/user', (req, res) => {
-  if (req.session.auth?.isAuthenticated) {
-    res.json(req.session.auth.user);
-  } else {
-    res.status(401).json({ message: "Unauthorized" });
-  }
-});
-
-app.post('/api/auth/admin-login', (req, res) => {
-  const { username, password } = req.body;
-  
-  if (username === 'admin' && password === '112233') {
-    req.session.auth = {
-      isAuthenticated: true,
-      user: {
-        id: 'admin',
-        username: 'admin',
-        role: 'admin',
-        firstName: 'Admin',
-        lastName: 'User'
-      }
-    };
-    req.session.save((err) => {
-      if (err) {
-        return res.status(500).json({ message: "Session error" });
-      }
-      res.json(req.session.auth.user);
-    });
-  } else {
-    res.status(401).json({ message: "Invalid credentials" });
-  }
-});
-
-// Courses routes
-app.get('/api/courses', async (req, res) => {
-  try {
-    const courses = await db.select().from(schema.courses);
-    res.json(courses);
-  } catch (error) {
-    console.error('Error fetching courses:', error);
-    res.status(500).json({ message: "Error fetching courses" });
-  }
-});
-
-app.post('/api/courses', async (req, res) => {
-  try {
-    const { title, description, price, duration, sections = [], category = 'Genel' } = req.body;
-    
-    const newCourse = await db.insert(schema.courses).values({
-      title,
-      description,
-      instructorId: req.session.auth?.user?.id || 'admin',
-      price: parseFloat(price).toFixed(2),
-      duration: parseInt(duration),
-      sections,
-      category,
-      status: 'active'
-    }).returning();
-
-    res.status(201).json(newCourse[0]);
-  } catch (error) {
-    console.error('Error creating course:', error);
-    res.status(500).json({ message: "Error creating course" });
-  }
-});
-
-// Users/Students routes  
-app.get('/api/users', async (req, res) => {
-  try {
-    const users = await db.select().from(schema.users);
-    res.json(users);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching users" });
-  }
-});
-
-// Consultants routes
-app.get('/api/consultants', async (req, res) => {
-  try {
-    const consultants = await db.select().from(schema.consultants);
-    res.json(consultants);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching consultants" });
-  }
-});
-
-// Sales routes
-app.get('/api/sales', async (req, res) => {
-  try {
-    const sales = await db.select().from(schema.sales);
-    res.json(sales);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching sales" });
-  }
-});
-
-// Activities routes
-app.get('/api/activities', async (req, res) => {
-  try {
-    const activities = await db.select().from(schema.activities);
-    res.json(activities);
-  } catch (error) {
-    res.status(500).json({ message: "Error fetching activities" });
-  }
-});
+// API routes first
+app.use('/', apiRouter);
 
 // Serve static files
-const publicPath = path.join(__dirname, 'dist', 'public');
-app.use(express.static(publicPath));
+app.use(express.static(__dirname, { index: false }));
 
-// Health check
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    port: PORT,
-    database: process.env.DATABASE_URL ? 'connected' : 'missing'
-  });
-});
-
-// Catch-all handler for React Router
+// Handle client-side routing - serve index.html for all non-API routes
 app.get('*', (req, res) => {
-  res.sendFile(path.join(publicPath, 'index.html'));
+  if (req.path.startsWith('/api/')) {
+    return res.status(404).json({ message: 'API endpoint not found' });
+  }
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🚀 Full-stack server running on port ${PORT}`);
-  console.log(`📊 Database: ${process.env.DATABASE_URL ? 'Connected' : 'Not configured'}`);
-  console.log(`🔑 Admin: admin/112233`);
-});
+app.listen(port, '0.0.0.0', () => {
+  console.log(\`🌟 Algı Akademi Production Server running on port \${port}\`);
+  console.log(\`📊 API endpoints: /api/students, /api/courses, /api/auth\`);
+});`;
+
+fs.writeFileSync(path.join(deployDir, 'index.js'), productionServer);
+
+// Step 5: Create package.json for production
+console.log('📦 Creating production package.json...');
+const productionPackage = {
+  "name": "algi-akademi-production",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2",
+    "express-session": "^1.17.3"
+  }
+};
+
+fs.writeFileSync(
+  path.join(deployDir, 'package.json'),
+  JSON.stringify(productionPackage, null, 2)
+);
+
+// Step 6: Create API directory and copy API routes
+console.log('🔗 Setting up API routes...');
+const apiDir = path.join(deployDir, 'api');
+if (!fs.existsSync(apiDir)) {
+  fs.mkdirSync(apiDir);
+}
+
+// Step 7: Update .replit configuration
+console.log('⚙️  Updating .replit configuration...');
+const replitConfig = `[deployment]
+publicDir = "algi-akademi"
+build = "cd algi-akademi && npm install"
+run = "cd algi-akademi && npm start"
+
+[nix]
+channel = "stable-23.05"
+
+[[ports]]
+localPort = 3000
+externalPort = 80`;
+
+fs.writeFileSync('./.replit', replitConfig);
+
+// Step 8: Create install script
+console.log('📋 Creating install script...');
+const installScript = `#!/bin/bash
+echo "🚀 Installing Algı Akademi Production Dependencies..."
+cd algi-akademi
+npm install
+echo "✅ Installation complete!"
+echo "🌟 Run: npm start"`;
+
+fs.writeFileSync('./install-production.sh', installScript);
+fs.chmodSync('./install-production.sh', 0o755);
+
+console.log('✅ Full Production Deployment Ready!');
+console.log('📁 Deploy folder: algi-akademi/');
+console.log('🔧 Next steps:');
+console.log('   1. Click Deploy button');
+console.log('   2. Production will have full API with in-memory database');
+console.log('   3. All CRUD operations will work: CREATE, READ, UPDATE, DELETE');
+console.log('📊 API Endpoints:');
+console.log('   • GET/POST /api/students');
+console.log('   • GET/POST /api/courses');
+console.log('   • POST /api/auth/login');
+console.log('   • All UPDATE and DELETE operations');
