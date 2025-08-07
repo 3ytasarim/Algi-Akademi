@@ -1,76 +1,63 @@
-#!/usr/bin/env node
-
 import fs from 'fs';
 import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+console.log('🚀 Creating production deployment...');
 
-async function createDeploymentStructure() {
-  console.log('Setting up deployment structure...');
-  
-  const sourceDir = path.join(__dirname, 'dist', 'public');
-  const targetDir = path.join(__dirname, 'algi-akademi');
-  
-  // Check if source directory exists
-  if (!fs.existsSync(sourceDir)) {
-    console.error('Source directory dist/public does not exist. Please build the project first.');
-    process.exit(1);
-  }
-  
-  // Create target directory if it doesn't exist
-  if (!fs.existsSync(targetDir)) {
-    fs.mkdirSync(targetDir, { recursive: true });
-  }
-  
-  // Copy files recursively
-  function copyRecursive(src, dest) {
-    const stats = fs.statSync(src);
-    
-    if (stats.isDirectory()) {
+// Ensure algi-akademi directory exists and is current
+const deployDir = './algi-akademi';
+if (!fs.existsSync(deployDir)) {
+  fs.mkdirSync(deployDir, { recursive: true });
+}
+
+// Copy all built assets
+console.log('📦 Copying built assets...');
+if (fs.existsSync('./dist/public')) {
+  // Copy everything from dist/public to algi-akademi
+  const copyRecursive = (src, dest) => {
+    if (fs.statSync(src).isDirectory()) {
       if (!fs.existsSync(dest)) {
         fs.mkdirSync(dest, { recursive: true });
       }
-      
-      const files = fs.readdirSync(src);
-      files.forEach(file => {
-        const srcPath = path.join(src, file);
-        const destPath = path.join(dest, file);
-        copyRecursive(srcPath, destPath);
-      });
+      const entries = fs.readdirSync(src);
+      for (const entry of entries) {
+        copyRecursive(path.join(src, entry), path.join(dest, entry));
+      }
     } else {
       fs.copyFileSync(src, dest);
     }
-  }
+  };
   
-  try {
-    // Clear target directory first
-    if (fs.existsSync(targetDir)) {
-      fs.rmSync(targetDir, { recursive: true, force: true });
-    }
-    fs.mkdirSync(targetDir, { recursive: true });
-    
-    // Copy all files from source to target
-    copyRecursive(sourceDir, targetDir);
-    
-    // Also ensure backend can serve static files from server/public
-    const serverPublicDir = path.join(__dirname, 'server', 'public');
-    if (!fs.existsSync(serverPublicDir)) {
-      fs.mkdirSync(serverPublicDir, { recursive: true });
-    }
-    copyRecursive(sourceDir, serverPublicDir);
-    
-    console.log('✅ Deployment structure created successfully!');
-    console.log(`📁 Frontend files available in: ${targetDir}`);
-    console.log(`📁 Server static files available in: ${serverPublicDir}`);
-    console.log(`📁 Backend files available in: ${path.join(__dirname, 'dist')}`);
-    
-  } catch (error) {
-    console.error('❌ Error creating deployment structure:', error.message);
-    process.exit(1);
-  }
+  copyRecursive('./dist/public', deployDir);
 }
 
-// Run the script
-createDeploymentStructure();
+// Copy server file
+if (fs.existsSync('./dist/index.js')) {
+  fs.copyFileSync('./dist/index.js', path.join(deployDir, 'index.js'));
+}
+
+// Update algi-akademi/index.html with correct asset paths
+const indexPath = path.join(deployDir, 'index.html');
+if (fs.existsSync(indexPath)) {
+  let html = fs.readFileSync(indexPath, 'utf8');
+  
+  // Ensure proper asset loading with correct paths
+  html = html.replace(/href="\/assets\//g, 'href="./assets/');
+  html = html.replace(/src="\/assets\//g, 'src="./assets/');
+  
+  fs.writeFileSync(indexPath, html);
+  
+  // Create 404.html for client-side routing
+  fs.writeFileSync(path.join(deployDir, '404.html'), html);
+}
+
+// Create .replit file for proper deployment
+const replitConfig = `
+[deployment]
+publicDir = "algi-akademi"
+`;
+
+fs.writeFileSync('./.replit', replitConfig.trim());
+
+console.log('✅ Production deployment ready!');
+console.log('📁 Deploy the algi-akademi/ folder');
+console.log('🌐 All routes will work with client-side routing');
