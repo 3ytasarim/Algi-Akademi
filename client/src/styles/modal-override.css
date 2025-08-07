@@ -1,0 +1,33 @@
+/* Critical Modal Dark Mode Override - Maximum Priority */
+[data-radix-dialog-content] {
+  background-color: white !important;
+  color: #111827 !important;
+  border-color: #e5e7eb !important;
+}
+
+.dark [data-radix-dialog-content] {
+  background-color: #1f2937 !important;  
+  color: white !important;
+  border-color: #4b5563 !important;
+}
+
+.dark [data-radix-dialog-content] *,
+.dark [data-radix-dialog-content] label,
+.dark [data-radix-dialog-content] span,  
+.dark [data-radix-dialog-content] p,
+.dark [data-radix-dialog-content] h1,
+.dark [data-radix-dialog-content] h2,
+.dark [data-radix-dialog-content] h3,
+.dark [data-radix-dialog-content] input,
+.dark [data-radix-dialog-content] button {
+  color: white !important;
+}
+
+.dark [data-radix-dialog-content] input {
+  background-color: #374151 !important;
+  border-color: #4b5563 !important;
+}
+
+.dark [data-radix-dialog-content] .bg-white {
+  background-color: #1f2937 !important;
+}

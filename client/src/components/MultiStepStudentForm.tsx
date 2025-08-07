@@ -4,6 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { ForceDialogStyles } from "./ForceDialog";
+import { ModalFix } from "./ModalFix";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -89,7 +90,8 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         return res.json();
       }).catch(error => {
         console.error('Student creation error:', error);
-        throw new Error('Kursiyer kaydı sırasında hata oluştu');
+        console.error('Student creation failed:', error);
+        throw error;
       });
     },
     onSuccess: () => {
@@ -238,6 +240,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
   return (
     <>
+      <ModalFix />
       <ForceDialogStyles />
       <Dialog open={isDialogOpen} onOpenChange={(open) => {
       setIsDialogOpen(open);
