@@ -101,8 +101,14 @@ Preferred communication style: Simple, everyday language.
 - **ESBuild**: Fast bundling for server-side code
 - **Vite Build**: Optimized frontend production builds to `dist/public`
 - **Static Assets**: Served through Express with proper routing fallback
-- **Deployment Structure**: 
-  - Frontend builds to `dist/public` 
-  - Deployment expects files in `algi-akademi` directory
-  - Use `node create-deployment.js` or `./deploy-setup.sh` to prepare deployment
-  - Server files built to `dist/index.js` for production
+- **Deployment Configuration**: 
+  - **Type**: Autoscale (required for Node.js runtime and backend API)
+  - **Build Command**: `npm run build`
+  - **Run Command**: `npm start`
+  - Frontend builds to `dist/public`, server builds to `dist/index.js`
+  - Full-stack deployment with PostgreSQL database support
+
+## Recent Updates
+- **January 2025**: Fixed deployment configuration for Autoscale deployment
+- **DOM Fix**: Resolved nested anchor tag validation warnings in Sidebar component
+- **Deployment Issue**: Changed from Static to Autoscale to support Node.js runtime and backend functionality

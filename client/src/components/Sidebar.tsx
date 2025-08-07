@@ -209,7 +209,7 @@ export default function Sidebar({
                 ) : (
                   <div className="relative group">
                     <Link href={item.href || '#'}>
-                      <a className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group ${
+                      <div className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group cursor-pointer ${
                         item.active 
                           ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
                           : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
@@ -220,7 +220,7 @@ export default function Sidebar({
                           }`} />
                         </div>
                         {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
-                      </a>
+                      </div>
                     </Link>
                     {sidebarCollapsed && (
                       <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
