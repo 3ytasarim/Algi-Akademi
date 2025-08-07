@@ -55,10 +55,7 @@ export default function NotificationsPage() {
   // Create notification mutation
   const createNotificationMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest(`/api/notifications`, {
-        method: "POST",
-        body: JSON.stringify(data),
-      });
+      await apiRequest(`/api/notifications`, "POST", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/notifications"] });
@@ -136,7 +133,7 @@ export default function NotificationsPage() {
     }
   };
 
-  const filteredNotifications = notifications?.filter((notification: any) => {
+  const filteredNotifications = (notifications as any[])?.filter((notification: any) => {
     const matchesSearch = notification.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          notification.message?.toLowerCase().includes(searchTerm.toLowerCase());
     const matchesType = filterType === "all" || notification.type === filterType;
@@ -299,7 +296,7 @@ export default function NotificationsPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Toplam Bildirim</p>
-                  <p className="text-2xl font-bold text-gray-900">{notifications?.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{(notifications as any[])?.length || 0}</p>
                 </div>
                 <Bell className="h-8 w-8 text-blue-500" />
               </div>
@@ -312,7 +309,7 @@ export default function NotificationsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-500">Gönderilen</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {notifications?.filter((n: any) => n.status === 'sent').length || 0}
+                    {(notifications as any[])?.filter((n: any) => n.status === 'sent').length || 0}
                   </p>
                 </div>
                 <CheckCircle className="h-8 w-8 text-green-500" />
@@ -326,7 +323,7 @@ export default function NotificationsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-500">Zamanlanmış</p>
                   <p className="text-2xl font-bold text-blue-600">
-                    {notifications?.filter((n: any) => n.status === 'scheduled').length || 0}
+                    {(notifications as any[])?.filter((n: any) => n.status === 'scheduled').length || 0}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-blue-500" />
@@ -340,7 +337,7 @@ export default function NotificationsPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-500">Başarısız</p>
                   <p className="text-2xl font-bold text-red-600">
-                    {notifications?.filter((n: any) => n.status === 'failed').length || 0}
+                    {(notifications as any[])?.filter((n: any) => n.status === 'failed').length || 0}
                   </p>
                 </div>
                 <XCircle className="h-8 w-8 text-red-500" />

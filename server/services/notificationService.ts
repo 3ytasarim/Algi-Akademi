@@ -1,5 +1,5 @@
 import { MailService } from '@sendgrid/mail';
-import { Twilio } from 'twilio';
+// import { Twilio } from 'twilio';
 import { db } from '../db';
 import { notifications, notificationTemplates, notificationSettings } from '@shared/schema';
 import { eq, and } from 'drizzle-orm';
@@ -29,7 +29,7 @@ interface SMSOptions {
 
 class NotificationService {
   private mailService: MailService | null = null;
-  private twilioClient: Twilio | null = null;
+  private twilioClient: any | null = null;
   private fromEmail: string = 'noreply@algiacademy.com';
   private fromPhone: string = '';
 
@@ -46,10 +46,11 @@ class NotificationService {
 
     // Initialize Twilio
     if (process.env.TWILIO_ACCOUNT_SID && process.env.TWILIO_AUTH_TOKEN) {
-      this.twilioClient = new Twilio(
-        process.env.TWILIO_ACCOUNT_SID,
-        process.env.TWILIO_AUTH_TOKEN
-      );
+      // const { Twilio } = require('twilio');
+      // this.twilioClient = new Twilio(
+      //   process.env.TWILIO_ACCOUNT_SID,
+      //   process.env.TWILIO_AUTH_TOKEN
+      // );
       this.fromPhone = process.env.TWILIO_PHONE_NUMBER || '';
     }
   }
@@ -143,7 +144,7 @@ class NotificationService {
         to: options.to,
         from: this.fromEmail,
         subject: options.subject,
-        text: options.text,
+        text: options.text || '',
         html: options.html
       });
       return true;

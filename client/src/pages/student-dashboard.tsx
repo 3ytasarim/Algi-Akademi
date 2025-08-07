@@ -163,7 +163,7 @@ export default function StudentDashboard() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <h3 className="text-3xl font-black text-slate-900">{userCourses.length}</h3>
+                  <h3 className="text-3xl font-black text-slate-900">{(userCourses as any[]).length}</h3>
                   <p className="text-slate-600 font-medium">Kayıtlı Kurslarım</p>
                 </div>
                 <div className="w-12 h-12 bg-blue-500/20 rounded-2xl flex items-center justify-center">
@@ -214,8 +214,8 @@ export default function StudentDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {userCourses.length > 0 ? (
-                userCourses.map((course: any) => (
+              {(userCourses as any[]).length > 0 ? (
+                (userCourses as any[]).map((course: any) => (
                   <div key={course.id} className="glass-effect p-6 rounded-2xl border border-white/20 hover:shadow-lg transition-all duration-300">
                     <div className="flex items-start justify-between mb-4">
                       <div className="flex-1">

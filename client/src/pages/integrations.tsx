@@ -8,6 +8,7 @@ import { useToast } from "@/hooks/use-toast";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
 import LayoutWrapper from "@/components/LayoutWrapper";
+import { Link } from "wouter";
 import { 
   Smartphone, 
   Settings, 
@@ -38,10 +39,7 @@ export default function Integrations() {
 
   const updateIntegrationMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest('/api/integrations', {
-        method: 'POST',
-        body: data
-      });
+      return await apiRequest('/api/integrations', 'POST', data);
     },
     onSuccess: () => {
       toast({

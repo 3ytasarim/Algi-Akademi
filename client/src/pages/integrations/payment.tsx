@@ -49,10 +49,7 @@ export default function PaymentIntegrationPage() {
   // Update payment settings mutation
   const updatePaymentSettingsMutation = useMutation({
     mutationFn: async (data: any) => {
-      await apiRequest(`/api/integrations/payment`, {
-        method: "PUT",
-        body: JSON.stringify(data),
-      });
+      await apiRequest(`/api/integrations/payment`, "PUT", data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/integrations/payment"] });
@@ -97,14 +94,14 @@ export default function PaymentIntegrationPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Durum</span>
-                  <Badge className={settings?.paytrIsActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                    {settings?.paytrIsActive ? 'Aktif' : 'Pasif'}
+                  <Badge className={(settings as any)?.paytrIsActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    {(settings as any)?.paytrIsActive ? 'Aktif' : 'Pasif'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Mod</span>
                   <Badge variant="outline">
-                    {settings?.testMode ? 'Test' : 'Canlı'}
+                    {(settings as any)?.testMode ? 'Test' : 'Canlı'}
                   </Badge>
                 </div>
                 <div className="text-sm text-gray-500">
@@ -127,14 +124,14 @@ export default function PaymentIntegrationPage() {
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Durum</span>
-                  <Badge className={settings?.iyzicoIsActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
-                    {settings?.iyzicoIsActive ? 'Aktif' : 'Pasif'}
+                  <Badge className={(settings as any)?.iyzicoIsActive ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'}>
+                    {(settings as any)?.iyzicoIsActive ? 'Aktif' : 'Pasif'}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="text-sm">Mod</span>
                   <Badge variant="outline">
-                    {settings?.testMode ? 'Sandbox' : 'Production'}
+                    {(settings as any)?.testMode ? 'Sandbox' : 'Production'}
                   </Badge>
                 </div>
                 <div className="text-sm text-gray-500">

@@ -205,7 +205,7 @@ export default function CoursesPage() {
     }
   };
 
-  const filteredCourses = courses.filter((course: any) => {
+  const filteredCourses = (courses as any[]).filter((course: any) => {
     const matchesSearch = course.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          course.instructorName?.toLowerCase().includes(searchTerm.toLowerCase());
@@ -214,7 +214,7 @@ export default function CoursesPage() {
     return matchesSearch && matchesCategory && matchesStatus;
   });
 
-  const categories = Array.from(new Set(courses.map((c: any) => c.category).filter(Boolean)));
+  const categories = Array.from(new Set((courses as any[]).map((c: any) => c.category).filter(Boolean)));
 
   return (
     <LayoutWrapper title="Kurs Yönetimi" subtitle="Kursları yönetin ve düzenleyin" activeHref="/courses">
@@ -362,7 +362,7 @@ export default function CoursesPage() {
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-gray-500">Toplam Kurs</p>
-                  <p className="text-2xl font-bold text-gray-900">{courses.length || 0}</p>
+                  <p className="text-2xl font-bold text-gray-900">{(courses as any[]).length || 0}</p>
                 </div>
                 <BookOpen className="h-8 w-8 text-blue-500" />
               </div>
@@ -375,7 +375,7 @@ export default function CoursesPage() {
                 <div>
                   <p className="text-sm font-medium text-gray-500">Aktif Kurs</p>
                   <p className="text-2xl font-bold text-green-600">
-                    {courses.filter((c: any) => c.status === 'active').length || 0}
+                    {(courses as any[]).filter((c: any) => c.status === 'active').length || 0}
                   </p>
                 </div>
                 <Clock className="h-8 w-8 text-green-500" />

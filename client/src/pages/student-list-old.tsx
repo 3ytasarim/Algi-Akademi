@@ -75,10 +75,7 @@ export default function StudentList() {
           formDataToSend.append(key, data[key]);
         }
       });
-      return apiRequest("/api/students", {
-        method: "POST",
-        body: formDataToSend,
-      });
+      return apiRequest("/api/students", "POST", formDataToSend);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
@@ -149,7 +146,7 @@ export default function StudentList() {
 
   const calculateTotalPrice = () => {
     const selectedCoursePrices = formData.selectedCourses.map(courseId => {
-      const course = courses.find((c: any) => c.id === courseId);
+      const course = (courses as any[]).find((c: any) => c.id === courseId);
       return course ? parseFloat(course.price || '0') : 0;
     });
     const total = selectedCoursePrices.reduce((sum, price) => sum + price, 0);
@@ -183,7 +180,7 @@ export default function StudentList() {
   };
 
   // Filter students based on search term
-  const filteredStudents = students.filter((student: any) =>
+  const filteredStudents = (students as any[]).filter((student: any) =>
     student.firstName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.lastName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     student.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -204,7 +201,7 @@ export default function StudentList() {
               <Users className="text-white" size={24} />
             </div>
             <div>
-              <p className="text-sm text-gray-500 font-medium">Toplam {students.length} Kursiyer</p>
+              <p className="text-sm text-gray-500 font-medium">Toplam {(students as any[]).length} Kursiyer</p>
             </div>
           </div>
         </div>
