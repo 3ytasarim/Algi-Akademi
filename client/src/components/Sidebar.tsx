@@ -188,17 +188,19 @@ export default function Sidebar({
                     {expandedMenus.includes(item.id) && !sidebarCollapsed && (
                       <div className="mt-1 ml-6 space-y-1">
                         {item.submenuItems?.map((subItem, subIndex) => (
-                          <Link key={subIndex} href={subItem.href} className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group cursor-pointer ${
-                            subItem.href === activeHref 
-                              ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
-                              : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
-                          }`}>
-                            <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
-                              <subItem.icon className={`${sidebarCollapsed ? 'w-5 h-5' : 'w-4 h-4'} transition-colors ${
-                                subItem.href === activeHref ? 'text-white' : 'text-gray-500 group-hover:text-primary'
-                              }`} />
+                          <Link key={subIndex} href={subItem.href}>
+                            <div className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group cursor-pointer ${
+                              subItem.href === activeHref 
+                                ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                                : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
+                            }`}>
+                              <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                                <subItem.icon className={`${sidebarCollapsed ? 'w-5 h-5' : 'w-4 h-4'} transition-colors ${
+                                  subItem.href === activeHref ? 'text-white' : 'text-gray-500 group-hover:text-primary'
+                                }`} />
+                              </div>
+                              <span>{subItem.label}</span>
                             </div>
-                            <span>{subItem.label}</span>
                           </Link>
                         ))}
                       </div>
@@ -206,17 +208,19 @@ export default function Sidebar({
                   </div>
                 ) : (
                   <div className="relative group">
-                    <Link href={item.href || '#'} className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group cursor-pointer ${
-                      item.active 
-                        ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
-                        : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
-                    }`}>
-                      <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
-                        <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} transition-colors ${
-                          item.active ? 'text-white' : 'text-primary group-hover:text-accent'
-                        }`} />
+                    <Link href={item.href || '#'}>
+                      <div className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group cursor-pointer ${
+                        item.active 
+                          ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                          : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                      }`}>
+                        <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} transition-colors ${
+                            item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                          }`} />
+                        </div>
+                        {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                       </div>
-                      {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
                     </Link>
                     {sidebarCollapsed && (
                       <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
