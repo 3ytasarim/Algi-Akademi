@@ -288,8 +288,8 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         {children}
       </DialogTrigger>
       
-      <DialogContent className="max-w-2xl mx-auto bg-white dark:bg-gray-800 rounded-2xl shadow-2xl border-0 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
-        <DialogHeader className="text-center pb-4 border-b border-gray-100 dark:border-gray-700">
+      <DialogContent className="max-w-2xl mx-auto bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-2xl shadow-2xl border-0 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+        <DialogHeader className="text-center pb-4 border-b border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800">
           <DialogTitle className="text-2xl font-bold text-gray-800 dark:text-white flex items-center justify-center gap-3">
             <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-purple-600 rounded-full flex items-center justify-center">
               <UserPlus className="text-white" size={20} />
