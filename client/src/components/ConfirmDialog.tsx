@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { AlertTriangle } from "lucide-react";
 
 interface ConfirmDialogProps {
@@ -37,11 +37,10 @@ export default function ConfirmDialog({
             {destructive && <AlertTriangle className="w-5 h-5 text-red-500" />}
             {title}
           </DialogTitle>
+          <DialogDescription className="text-gray-600 dark:text-gray-300">
+            {message}
+          </DialogDescription>
         </DialogHeader>
-        
-        <div className="py-4">
-          <p className="text-gray-600 dark:text-gray-300">{message}</p>
-        </div>
         
         <DialogFooter>
           <Button variant="outline" onClick={onClose}>
