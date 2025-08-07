@@ -1,0 +1,26 @@
+/* Force dialog background colors in dark mode */
+[data-state="open"][data-radix-dialog-content] {
+  background-color: white !important;
+}
+
+.dark [data-state="open"][data-radix-dialog-content] {
+  background-color: rgb(31, 41, 55) !important;
+  color: white !important;
+}
+
+.dark [data-radix-dialog-content] {
+  background-color: rgb(31, 41, 55) !important;
+  color: white !important;
+}
+
+.dark [data-radix-dialog-content] * {
+  color: inherit !important;
+}
+
+[data-radix-dialog-overlay] {
+  background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.dark [data-radix-dialog-overlay] {
+  background-color: rgba(0, 0, 0, 0.9) !important;
+}
