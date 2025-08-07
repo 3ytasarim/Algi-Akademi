@@ -35,7 +35,7 @@ const replitConfig = `
 modules = ["nodejs-20", "postgresql-16"]
 [deployment]
 deploymentTarget = "autoscale"
-build = "npm run build"
+build = "npm install && npm run build"
 run = "npm start"
 
 [nix]

@@ -121,5 +121,7 @@ Preferred communication style: Simple, everyday language.
 - **January 2025**: Fixed deployment configuration for Autoscale deployment
 - **Package Update**: Updated @neondatabase/serverless from v0.10.4 to v1.0.1 for compatibility
 - **Deployment Fix**: Corrected .replit configuration to use Autoscale deployment target instead of static
+- **Build Command Update**: Updated deployment scripts to use "npm install && npm run build" for proper dependency installation
+- **Directory Structure Fix**: Removed references to cd algi-akademi from deployment commands for direct project deployment
 - **DOM Fix**: Resolved nested anchor tag validation warnings in Sidebar component
 - **Deployment Issue**: Changed from Static to Autoscale to support Node.js runtime and backend functionality

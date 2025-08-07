@@ -14,8 +14,8 @@ This application requires **server-side runtime** and cannot be deployed as stat
 - ✅ Select **"Autoscale Deployment"** for Node.js runtime
 
 ### 3. Configuration:
-- **Build Command:** `cd algi-akademi && npm install`
-- **Start Command:** `cd algi-akademi && npm start`
+- **Build Command:** `npm install && npm run build`
+- **Start Command:** `npm start`
 - **Port:** 3000
 
 ### 4. Machine Settings:
