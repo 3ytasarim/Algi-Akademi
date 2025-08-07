@@ -1,54 +1,24 @@
 import fs from 'fs';
 import path from 'path';
 
-console.log('🚀 Creating production deployment...');
+console.log('🚀 Configuring Autoscale deployment...');
 
-// Ensure algi-akademi directory exists and is current
-const deployDir = './algi-akademi';
-if (!fs.existsSync(deployDir)) {
-  fs.mkdirSync(deployDir, { recursive: true });
+// Autoscale deployments don't need separate directory structure
+// The server serves static files from dist/public directory
+console.log('📦 Static files ready in dist/public...');
+
+// Verify build files exist
+if (!fs.existsSync('./dist/public')) {
+  console.error('❌ Build files not found. Run npm run build first.');
+  process.exit(1);
 }
 
-// Copy all built assets
-console.log('📦 Copying built assets...');
-if (fs.existsSync('./dist/public')) {
-  // Copy everything from dist/public to algi-akademi
-  const copyRecursive = (src, dest) => {
-    if (fs.statSync(src).isDirectory()) {
-      if (!fs.existsSync(dest)) {
-        fs.mkdirSync(dest, { recursive: true });
-      }
-      const entries = fs.readdirSync(src);
-      for (const entry of entries) {
-        copyRecursive(path.join(src, entry), path.join(dest, entry));
-      }
-    } else {
-      fs.copyFileSync(src, dest);
-    }
-  };
-  
-  copyRecursive('./dist/public', deployDir);
+if (!fs.existsSync('./dist/index.js')) {
+  console.error('❌ Server file not found. Run npm run build first.');
+  process.exit(1);
 }
 
-// Copy server file
-if (fs.existsSync('./dist/index.js')) {
-  fs.copyFileSync('./dist/index.js', path.join(deployDir, 'index.js'));
-}
-
-// Update algi-akademi/index.html with correct asset paths
-const indexPath = path.join(deployDir, 'index.html');
-if (fs.existsSync(indexPath)) {
-  let html = fs.readFileSync(indexPath, 'utf8');
-  
-  // Ensure proper asset loading with correct paths
-  html = html.replace(/href="\/assets\//g, 'href="./assets/');
-  html = html.replace(/src="\/assets\//g, 'src="./assets/');
-  
-  fs.writeFileSync(indexPath, html);
-  
-  // Create 404.html for client-side routing
-  fs.writeFileSync(path.join(deployDir, '404.html'), html);
-}
+console.log('✅ All build files ready for Autoscale deployment');
 
 // Create .replit file for proper Autoscale deployment
 const replitConfig = `
