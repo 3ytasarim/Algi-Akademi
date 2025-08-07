@@ -339,7 +339,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
           </div>
         </DialogHeader>
 
-        <div className="space-y-6 p-6">
+        <div className="space-y-6 p-6 bg-white dark:bg-gray-800">
           {/* Step 1: Kişisel Bilgiler */}
           {currentStep === 1 && (
             <div className="space-y-6 animate-in fade-in slide-in-from-right-5 duration-300">
@@ -702,36 +702,36 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
 
               {/* Fiyat Hesaplama */}
               {formData.selectedCourses.length > 0 && (
-                <div className="space-y-4 p-4 bg-slate-50 rounded-xl">
-                  <h4 className="font-semibold flex items-center gap-2">
+                <div className="space-y-4 p-4 bg-slate-50 dark:bg-gray-700 rounded-xl border border-gray-200 dark:border-gray-600">
+                  <h4 className="font-semibold flex items-center gap-2 text-gray-800 dark:text-white">
                     <TrendingUp size={16} />
                     Fiyat Hesaplama
                   </h4>
                   
                   <div className="space-y-2">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-gray-700 dark:text-gray-300">
                       <span>Toplam Tutar:</span>
                       <span className="font-semibold">
                         {calculateTotalPrice().total.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
                       </span>
                     </div>
                     
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between text-gray-700 dark:text-gray-300">
                       <span>İndirim Tutarı:</span>
                       <Input
                         type="number"
                         value={formData.discountAmount}
                         onChange={(e) => handleInputChange('discountAmount', e.target.value)}
-                        className="w-32 h-8 text-right"
+                        className="w-32 h-8 text-right bg-white dark:bg-gray-600 border-gray-300 dark:border-gray-500 text-gray-900 dark:text-white"
                         placeholder="0"
                         min="0"
                         step="0.01"
                       />
                     </div>
                     
-                    <div className="flex justify-between text-lg font-bold border-t pt-2">
+                    <div className="flex justify-between text-lg font-bold border-t border-gray-200 dark:border-gray-600 pt-2 text-gray-800 dark:text-white">
                       <span>Net Tutar:</span>
-                      <span className="text-green-600">
+                      <span className="text-green-600 dark:text-green-400">
                         {calculateTotalPrice().final.toLocaleString('tr-TR', { style: 'currency', currency: 'TRY' })}
                       </span>
                     </div>
@@ -742,7 +742,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
           )}
 
           {/* Navigation Buttons */}
-          <div className="flex justify-between pt-4">
+          <div className="flex justify-between pt-4 border-t border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800">
             {currentStep > 1 && (
               <Button 
                 type="button"
@@ -751,7 +751,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                   e.preventDefault();
                   prevStep();
                 }}
-                className="flex items-center gap-2"
+                className="flex items-center gap-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-white border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 <ChevronLeft size={16} />
                 Önceki
