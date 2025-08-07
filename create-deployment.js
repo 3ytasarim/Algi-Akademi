@@ -50,10 +50,23 @@ if (fs.existsSync(indexPath)) {
   fs.writeFileSync(path.join(deployDir, '404.html'), html);
 }
 
-// Create .replit file for proper deployment
+// Create .replit file for proper Autoscale deployment
 const replitConfig = `
+modules = ["nodejs-20", "postgresql-16"]
 [deployment]
-publicDir = "algi-akademi"
+deploymentTarget = "autoscale"
+build = "npm run build"
+run = "npm start"
+
+[nix]
+channel = "stable-24_05"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[agent]
+integrations = ["javascript_mem_db==1.0.0"]
 `;
 
 fs.writeFileSync('./.replit', replitConfig.trim());

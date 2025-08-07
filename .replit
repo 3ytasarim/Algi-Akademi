@@ -1,11 +1,11 @@
 modules = ["nodejs-20", "postgresql-16"]
 [deployment]
-publicDir = "algi-akademi"
-build = "cd algi-akademi && npm install"
-run = "cd algi-akademi && npm start"
+deploymentTarget = "autoscale"
+build = "npm run build"
+run = "npm start"
 
 [nix]
-channel = "stable-23.05"
+channel = "stable-24_05"
 
 [[ports]]
 localPort = 3000
