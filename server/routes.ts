@@ -112,7 +112,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createActivity({
           userId: req.session.auth.user.id,
           type: 'course_created',
-          description: `Yeni kurs oluşturuldu: ${course.title}`,
+          description: `${req.session.auth.user.firstName || 'Admin'} yeni kurs oluşturdu: ${course.title}`,
+          entityId: course.id,
+          entityType: 'course',
+          metadata: { courseTitle: course.title, price: course.price }
         });
       }
       
@@ -140,8 +143,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
       if (req.session.auth?.isAuthenticated) {
         await storage.createActivity({
           userId: req.session.auth.user.id,
-          type: 'course_updated',
-          description: `Kurs güncellendi: ${course.title}`,
+          type: 'course_updated', 
+          description: `${req.session.auth.user.firstName || 'Admin'} kursu güncelledi: ${course.title}`,
+          entityId: course.id,
+          entityType: 'course',
+          metadata: { courseTitle: course.title, price: course.price }
         });
       }
       
@@ -174,7 +180,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         await storage.createActivity({
           userId: req.session.auth.user.id,
           type: 'course_deleted',
-          description: `Kurs silindi: ${course.title}`,
+          description: `${req.session.auth.user.firstName || 'Admin'} kursu sildi: ${course.title}`,
+          entityId: req.params.id,
+          entityType: 'course',
+          metadata: { courseTitle: course.title, deletedAt: new Date().toISOString() }
         });
       } catch (error) {
         console.log("Skipping activity creation for non-existent user:", req.session.auth.user.id);
@@ -271,6 +280,37 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  app.post("/api/integrations", async (req: any, res) => {
+    try {
+      const integration = await storage.createIntegration(req.body);
+      
+      // Create activity for integration update
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'integration_updated',
+            description: `${req.session.auth.user.firstName || 'Admin'} entegrasyon ayarlarını güncelledi: ${integration.name}`,
+            entityId: integration.id,
+            entityType: 'integration',
+            metadata: { 
+              integrationType: integration.type,
+              integrationName: integration.name,
+              isActive: integration.isActive
+            }
+          });
+        } catch (error) {
+          console.log("Skipping activity creation:", error);
+        }
+      }
+      
+      res.status(201).json(integration);
+    } catch (error) {
+      console.error("Error creating integration:", error);
+      res.status(500).json({ message: "Failed to create integration" });
+    }
+  });
+
   app.get('/api/students', async (req: any, res) => {
     try {
       const students = await storage.getStudents();
@@ -310,6 +350,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
 
       console.log("Student created successfully:", student.id);
+      
+      // Create activity for student addition
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'student_added',
+            description: `${req.session.auth.user.firstName || 'Admin'} yeni kursiyer ekledi: ${student.adı} ${student.soyadı}`,
+            entityId: student.id,
+            entityType: 'student',
+            metadata: { 
+              studentName: `${student.adı} ${student.soyadı}`,
+              selectedCourses: student.selectedCourses,
+              finalPrice: student.finalPrice
+            }
+          });
+        } catch (error) {
+          console.log("Skipping activity creation:", error);
+        }
+      }
       
       res.status(200).json({ 
         success: true,
@@ -354,6 +414,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Student updated successfully:", updatedStudent.id);
       
+      // Create activity for student update
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'student_updated',
+            description: `${req.session.auth.user.firstName || 'Admin'} kursiyer bilgilerini güncelledi: ${updatedStudent.adı} ${updatedStudent.soyadı}`,
+            entityId: updatedStudent.id,
+            entityType: 'student',
+            metadata: { 
+              studentName: `${updatedStudent.adı} ${updatedStudent.soyadı}`,
+              updatedAt: new Date().toISOString()
+            }
+          });
+        } catch (error) {
+          console.log("Skipping activity creation:", error);
+        }
+      }
+      
       res.status(200).json({ 
         success: true,
         message: "Kursiyer başarıyla güncellendi",
@@ -374,7 +453,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const studentId = req.params.id;
       console.log("Deleting student with ID:", studentId);
       
+      // Get student info before deletion for activity log
+      const students = await storage.getStudents();
+      const student = students.find(s => s.id === studentId);
+      
       await storage.deleteStudent(studentId);
+      
+      // Create activity for student deletion
+      if (req.session.auth?.isAuthenticated && student) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'student_deleted',
+            description: `${req.session.auth.user.firstName || 'Admin'} kursiyer kaydını sildi: ${student.adı} ${student.soyadı}`,
+            entityId: studentId,
+            entityType: 'student',
+            metadata: { 
+              studentName: `${student.adı} ${student.soyadı}`,
+              deletedAt: new Date().toISOString()
+            }
+          });
+        } catch (error) {
+          console.log("Skipping activity creation:", error);
+        }
+      }
       
       console.log("Student deleted successfully:", studentId);
       

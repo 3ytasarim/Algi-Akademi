@@ -106,8 +106,11 @@ export const examResults = pgTable("exam_results", {
 export const activities = pgTable("activities", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   userId: varchar("user_id").references(() => users.id),
-  type: varchar("type").notNull(), // 'enrollment', 'completion', 'exam_created', etc.
+  type: varchar("type").notNull(), // 'course_created', 'course_updated', 'course_deleted', 'student_added', etc.
   description: text("description").notNull(),
+  entityId: varchar("entity_id"), // ID of affected entity (course id, student id, etc.)
+  entityType: varchar("entity_type"), // 'course', 'student', 'integration', etc.
+  metadata: jsonb("metadata"), // Additional data like old/new values
   createdAt: timestamp("created_at").defaultNow(),
 });
 
