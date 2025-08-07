@@ -1,3 +1,4 @@
+modules = ["nodejs-20"]
 [deployment]
 publicDir = "algi-akademi"
 build = "cd algi-akademi && npm install"

@@ -1,17 +1,40 @@
 # Deployment Fix Instructions
 
 ## Problem
-Your deployment is currently configured as **Static** but trying to run Node.js/npm commands, which requires **Autoscale** deployment.
+Your deployment is failing with "Build Failed" error because the build environment lacks Node.js runtime or build dependencies.
 
-## Solution: Change to Autoscale Deployment
+## IMMEDIATE SOLUTION (Ready to Deploy)
 
-### Step 1: Update .replit File
-Replace the entire content of your `.replit` file with:
+Your build files are now ready in the `algi-akademi/` directory. Use one of these configurations:
+
+## Solution Options
+
+### Option 1: Autoscale with Pre-built Files (RECOMMENDED)
+Replace your `.replit` file content with:
 
 ```
 [deployment]
-build = "npm run build"
-run = "npm start"
+build = ""
+run = "cd algi-akademi && npm install && npm start"
+publicDir = "algi-akademi"
+
+[nix]
+channel = "stable-23.05"
+
+[[ports]]
+localPort = 3000
+externalPort = 80
+
+[agent]
+integrations = ["javascript_mem_db==1.0.0"]
+```
+
+### Option 2: Static Deployment (Simple)
+Replace your `.replit` file content with:
+
+```
+[deployment]
+publicDir = "algi-akademi"
 
 [nix]
 channel = "stable-23.05"
