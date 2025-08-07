@@ -1,26 +1,30 @@
-/* Force dialog background colors in dark mode */
-[data-state="open"][data-radix-dialog-content] {
+/* Ultimate force dialog styling - highest specificity */
+[data-radix-dialog-content],
+[data-radix-dialog-content] * {
   background-color: white !important;
+  color: rgb(17, 24, 39) !important;
 }
 
-.dark [data-state="open"][data-radix-dialog-content] {
+html.dark [data-radix-dialog-content],
+html.dark [data-radix-dialog-content] *,
+.dark [data-radix-dialog-content],
+.dark [data-radix-dialog-content] * {
   background-color: rgb(31, 41, 55) !important;
   color: white !important;
+}
+
+/* Override any shadcn variables */
+[data-radix-dialog-content] {
+  --background: white !important;
+  --foreground: rgb(17, 24, 39) !important;
 }
 
 .dark [data-radix-dialog-content] {
-  background-color: rgb(31, 41, 55) !important;
-  color: white !important;
+  --background: rgb(31, 41, 55) !important;
+  --foreground: white !important;
 }
 
-.dark [data-radix-dialog-content] * {
-  color: inherit !important;
-}
-
+/* Force overlay colors */
 [data-radix-dialog-overlay] {
   background-color: rgba(0, 0, 0, 0.8) !important;
-}
-
-.dark [data-radix-dialog-overlay] {
-  background-color: rgba(0, 0, 0, 0.9) !important;
 }
