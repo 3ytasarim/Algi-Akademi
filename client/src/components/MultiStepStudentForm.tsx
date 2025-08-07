@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { ForceDialogStyles } from "./ForceDialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -73,63 +74,22 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       
       console.log("Sending student data:", submitData);
       
-      // Production-safe API request with fallback
-      const apiRequest = async (url: string, options: RequestInit = {}) => {
-        const baseUrl = import.meta.env.PROD ? '' : 'http://localhost:5000';
-        const fullUrl = `${baseUrl}${url}`;
-        
-        try {
-          console.log(`Making API request to: ${fullUrl}`);
-          const response = await fetch(fullUrl, {
-            ...options,
-            headers: {
-              'Content-Type': 'application/json',
-              ...options.headers,
-            },
-          });
-          
-          if (!response.ok) {
-            throw new Error(`API Error: ${response.status} ${response.statusText}`);
-          }
-          
-          return await response.json();
-        } catch (error) {
-          console.error(`API request failed for ${url}:`, error);
-          
-          // Fallback to localStorage for production
-          if (url === '/api/students' && options.method === 'POST') {
-            const studentData = JSON.parse(options.body as string);
-            const existingStudents = JSON.parse(localStorage.getItem('students') || '[]');
-            const newStudent = {
-              id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-              ...studentData,
-              role: 'student',
-              isManualStudent: true,
-              createdAt: new Date().toISOString(),
-              updatedAt: new Date().toISOString(),
-              password: '112233',
-              totalPrice: (studentData.selectedCourses?.length || 0) * 5000,
-              finalPrice: Math.max(0, ((studentData.selectedCourses?.length || 0) * 5000) - parseFloat(studentData.discountAmount || '0')),
-            };
-            
-            existingStudents.push(newStudent);
-            localStorage.setItem('students', JSON.stringify(existingStudents));
-            
-            console.log('Student created with fallback system:', newStudent.id);
-            return {
-              success: true,
-              message: 'Kursiyer başarıyla kaydedildi',
-              student: newStudent
-            };
-          }
-          
-          throw error;
-        }
-      };
-
-      return apiRequest("/api/students", {
+      return fetch("/api/students", {
         method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
         body: JSON.stringify(submitData),
+      }).then(async res => {
+        if (!res.ok) {
+          const errorText = await res.text();
+          console.error(`HTTP ${res.status}: ${errorText}`);
+          throw new Error(`Sunucu hatası: ${res.status}`);
+        }
+        return res.json();
+      }).catch(error => {
+        console.error('Student creation error:', error);
+        throw new Error('Kursiyer kaydı sırasında hata oluştu');
       });
     },
     onSuccess: () => {
@@ -277,7 +237,9 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
   };
 
   return (
-    <Dialog open={isDialogOpen} onOpenChange={(open) => {
+    <>
+      <ForceDialogStyles />
+      <Dialog open={isDialogOpen} onOpenChange={(open) => {
       setIsDialogOpen(open);
       if (!open) {
         setCurrentStep(1);
@@ -792,5 +754,6 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         </div>
       </DialogContent>
     </Dialog>
+    </>
   );
 }
