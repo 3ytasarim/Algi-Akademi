@@ -68,5 +68,26 @@ export function useAuth() {
     };
   }, [backendUser, localAuth, localLoading, backendLoading]);
 
-  return authState;
+  const logout = () => {
+    // Clear localStorage
+    localStorage.removeItem('auth_user');
+    localStorage.removeItem('auth_authenticated');
+    
+    // Clear local state
+    setLocalAuth(null);
+    
+    // Call backend logout
+    fetch('/api/logout', {
+      method: 'POST',
+      credentials: 'include'
+    }).finally(() => {
+      // Force reload to landing page
+      window.location.href = '/';
+    });
+  };
+
+  return {
+    ...authState,
+    logout
+  };
 }

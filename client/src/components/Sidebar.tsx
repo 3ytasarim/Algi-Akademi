@@ -29,10 +29,10 @@ export default function Sidebar({
 }: SidebarProps) {
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
   
   const handleLogout = () => {
-    window.location.href = "/api/logout";
+    logout();
   };
 
   const toggleMenu = (menuId: string) => {
