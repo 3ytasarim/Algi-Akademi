@@ -177,8 +177,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       console.log("Deleting course:", req.params.id);
-      await storage.deleteCourse(req.params.id);
-      console.log("Course deleted successfully from database");
+      console.log("Course to delete:", course);
+      
+      try {
+        await storage.deleteCourse(req.params.id);
+        console.log("Course deleted successfully from database");
+      } catch (dbError) {
+        console.error("Database deletion error:", dbError);
+        throw dbError;
+      }
       
       // Skip activity creation for now due to authentication issues
       console.log("Skipping activity creation due to auth bypass");
