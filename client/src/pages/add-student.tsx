@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { apiRequest } from "@/lib/queryClient";
-import { ArrowLeft, UserPlus, User, Calendar, CreditCard, Mail } from "lucide-react";
+import { ArrowLeft, UserPlus, User, Calendar, CreditCard, Mail, Phone, Briefcase } from "lucide-react";
 import { Link } from "wouter";
 
 export default function AddStudent() {
@@ -16,6 +16,19 @@ export default function AddStudent() {
     adı: "",
     soyadı: "",
     doğumTarihi: "",
+    telefon: "",
+    cinsiyet: "",
+    meslek: "",
+    kayıtTarihi: new Date().toISOString().split('T')[0], // Today's date
+    bitişTarihi: "",
+    isMernisOnaylı: false,
+    isÜniversiteOnaylı: false,
+    isEDevletOnaylı: false,
+    isUluslararasıSertifikasyon: false,
+    selectedCourses: [] as string[],
+    totalPrice: "0",
+    discountAmount: "0",
+    finalPrice: "0",
   });
 
   const { toast } = useToast();
@@ -31,6 +44,19 @@ export default function AddStudent() {
         adı: data.adı,
         soyadı: data.soyadı,
         doğumTarihi: data.doğumTarihi,
+        telefon: data.telefon,
+        cinsiyet: data.cinsiyet,
+        meslek: data.meslek,
+        kayıtTarihi: data.kayıtTarihi,
+        bitişTarihi: data.bitişTarihi,
+        isMernisOnaylı: data.isMernisOnaylı,
+        isÜniversiteOnaylı: data.isÜniversiteOnaylı,
+        isEDevletOnaylı: data.isEDevletOnaylı,
+        isUluslararasıSertifikasyon: data.isUluslararasıSertifikasyon,
+        selectedCourses: data.selectedCourses,
+        totalPrice: data.totalPrice,
+        discountAmount: data.discountAmount,
+        finalPrice: data.finalPrice,
         password: "112233", // Default password
         role: "student",
         isManualStudent: true,
@@ -50,6 +76,19 @@ export default function AddStudent() {
         adı: "",
         soyadı: "",
         doğumTarihi: "",
+        telefon: "",
+        cinsiyet: "",
+        meslek: "",
+        kayıtTarihi: new Date().toISOString().split('T')[0],
+        bitişTarihi: "",
+        isMernisOnaylı: false,
+        isÜniversiteOnaylı: false,
+        isEDevletOnaylı: false,
+        isUluslararasıSertifikasyon: false,
+        selectedCourses: [] as string[],
+        totalPrice: "0",
+        discountAmount: "0",
+        finalPrice: "0",
       });
     },
     onError: (error) => {
@@ -61,7 +100,7 @@ export default function AddStudent() {
     },
   });
 
-  const handleInputChange = (field: string, value: string) => {
+  const handleInputChange = (field: string, value: string | boolean | string[]) => {
     setFormData(prev => ({ ...prev, [field]: value }));
   };
 
@@ -121,7 +160,7 @@ export default function AddStudent() {
 
                   {/* Ad */}
                   <div className="space-y-2">
-                    <Label htmlFor="adı" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Label htmlFor="adı" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                       <User size={16} />
                       Adı
                     </Label>
@@ -131,14 +170,14 @@ export default function AddStudent() {
                       placeholder="Adı"
                       value={formData.adı}
                       onChange={(e) => handleInputChange('adı', e.target.value)}
-                      className="h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                       required
                     />
                   </div>
 
                   {/* Soyadı */}
                   <div className="space-y-2">
-                    <Label htmlFor="soyadı" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Label htmlFor="soyadı" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                       <User size={16} />
                       Soyadı
                     </Label>
@@ -148,14 +187,14 @@ export default function AddStudent() {
                       placeholder="Soyadı"
                       value={formData.soyadı}
                       onChange={(e) => handleInputChange('soyadı', e.target.value)}
-                      className="h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                       required
                     />
                   </div>
 
                   {/* Email */}
                   <div className="space-y-2">
-                    <Label htmlFor="email" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Label htmlFor="email" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                       <Mail size={16} />
                       E-posta Adresi
                     </Label>
@@ -165,14 +204,14 @@ export default function AddStudent() {
                       placeholder="ornek@email.com"
                       value={formData.email}
                       onChange={(e) => handleInputChange('email', e.target.value)}
-                      className="h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                       required
                     />
                   </div>
 
                   {/* Doğum Tarihi */}
                   <div className="space-y-2">
-                    <Label htmlFor="doğumTarihi" className="text-slate-700 font-medium flex items-center gap-2">
+                    <Label htmlFor="doğumTarihi" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
                       <Calendar size={16} />
                       Doğum Tarihi
                     </Label>
@@ -181,8 +220,58 @@ export default function AddStudent() {
                       type="date"
                       value={formData.doğumTarihi}
                       onChange={(e) => handleInputChange('doğumTarihi', e.target.value)}
-                      className="h-12 rounded-xl border-2 border-slate-200 focus:border-blue-400 bg-white/80 backdrop-blur-sm transition-all duration-300"
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                       required
+                    />
+                  </div>
+
+                  {/* Telefon */}
+                  <div className="space-y-2">
+                    <Label htmlFor="telefon" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
+                      <Phone size={16} />
+                      Telefon
+                    </Label>
+                    <Input
+                      id="telefon"
+                      type="text"
+                      placeholder="0555 123 45 67"
+                      value={formData.telefon}
+                      onChange={(e) => handleInputChange('telefon', e.target.value)}
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
+                    />
+                  </div>
+
+                  {/* Cinsiyet */}
+                  <div className="space-y-2">
+                    <Label htmlFor="cinsiyet" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
+                      <User size={16} />
+                      Cinsiyet
+                    </Label>
+                    <select
+                      id="cinsiyet"
+                      value={formData.cinsiyet}
+                      onChange={(e) => handleInputChange('cinsiyet', e.target.value)}
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white w-full px-3"
+                    >
+                      <option value="">Seçiniz</option>
+                      <option value="Erkek">Erkek</option>
+                      <option value="Kadın">Kadın</option>
+                    </select>
+                  </div>
+
+                  {/* Meslek */}
+                  <div className="space-y-2">
+                    <Label htmlFor="meslek" className="text-slate-700 dark:text-gray-300 font-medium flex items-center gap-2">
+                      <Briefcase size={16} />
+                      Meslek
+                    </Label>
+                    <Input
+                      id="meslek"
+                      type="text"
+                      placeholder="Meslek"
+                      value={formData.meslek}
+                      onChange={(e) => handleInputChange('meslek', e.target.value)}
+                      className="h-12 rounded-xl border-2 border-slate-200 dark:border-gray-600 focus:border-blue-400 dark:focus:border-blue-500 bg-white/80 dark:bg-gray-700/80 backdrop-blur-sm transition-all duration-300 dark:text-white"
                     />
                   </div>
 
