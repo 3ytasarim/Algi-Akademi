@@ -41,18 +41,8 @@ export default function Consultants() {
     retry: false,
   });
 
-  // Mock consultants data
-  const mockConsultants = [
-    {
-      id: 1,
-      tcNo: "21478858647",
-      firstName: "SAFİYE",
-      lastName: "HANIM",
-      title: "Danışman",
-      email: "safiye@arkakademi.com",
-      phone: "0555 123 4567"
-    }
-  ];
+  // Use real consultant data
+  const displayConsultants = consultants || [];
 
   const createConsultantMutation = useMutation({
     mutationFn: async (data: any) => {
@@ -175,10 +165,10 @@ export default function Consultants() {
     }));
   };
 
-  const filteredConsultants = mockConsultants.filter(consultant =>
-    consultant.firstName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    consultant.lastName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    consultant.tcNo.includes(searchTerm)
+  const filteredConsultants = displayConsultants.filter((consultant: any) =>
+    (consultant.firstName || consultant.first_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (consultant.lastName || consultant.last_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (consultant.tcNo || consultant.tc_no || '').includes(searchTerm)
   );
 
   return (
@@ -474,11 +464,11 @@ export default function Consultants() {
                   filteredConsultants.map((consultant) => (
                     <tr key={consultant.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
-                        {consultant.tcNo}
+                        {consultant.tcNo || consultant.tc_no}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900 dark:text-white">
-                          {consultant.firstName} {consultant.lastName}
+                          {consultant.firstName || consultant.first_name} {consultant.lastName || consultant.last_name}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
@@ -507,7 +497,7 @@ export default function Consultants() {
                             variant="ghost" 
                             size="sm" 
                             className="text-red-400 hover:text-red-600 p-1"
-                            onClick={() => handleDelete(consultant.id, `${consultant.firstName} ${consultant.lastName}`)}
+                            onClick={() => handleDelete(consultant.id, `${consultant.firstName || consultant.first_name} ${consultant.lastName || consultant.last_name}`)}
                           >
                             <Trash2 size={16} />
                           </Button>
