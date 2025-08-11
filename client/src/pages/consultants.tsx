@@ -46,7 +46,16 @@ export default function Consultants() {
 
   const createConsultantMutation = useMutation({
     mutationFn: async (data: any) => {
-      return await apiRequest('/api/consultants', 'POST', data);
+      // Map frontend fields to backend schema
+      const backendData = {
+        tc_no: data.tcNo,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        title: data.title,
+        email: data.email,
+        phone: data.phone
+      };
+      return await apiRequest('/api/consultants', 'POST', backendData);
     },
     onSuccess: () => {
       toast({
@@ -68,7 +77,16 @@ export default function Consultants() {
 
   const updateConsultantMutation = useMutation({
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
-      return await apiRequest(`/api/consultants/${id}`, 'PUT', data);
+      // Map frontend fields to backend schema
+      const backendData = {
+        tc_no: data.tcNo,
+        first_name: data.firstName,
+        last_name: data.lastName,
+        title: data.title,
+        email: data.email,
+        phone: data.phone
+      };
+      return await apiRequest(`/api/consultants/${id}`, 'PUT', backendData);
     },
     onSuccess: () => {
       toast({
@@ -142,9 +160,9 @@ export default function Consultants() {
   const handleEdit = (consultant: any) => {
     setEditingConsultant(consultant);
     setFormData({
-      tcNo: consultant.tcNo || "",
-      firstName: consultant.firstName || "",
-      lastName: consultant.lastName || "",
+      tcNo: consultant.tcNo || consultant.tc_no || "",
+      firstName: consultant.firstName || consultant.first_name || "",
+      lastName: consultant.lastName || consultant.last_name || "",
       title: consultant.title || "Danışman",
       email: consultant.email || "",
       phone: consultant.phone || ""
