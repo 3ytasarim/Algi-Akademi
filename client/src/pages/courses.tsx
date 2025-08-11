@@ -110,10 +110,27 @@ export default function CoursesPage() {
   // Delete course mutation
   const deleteCourseMutation = useMutation({
     mutationFn: async (id: string) => {
+      console.log("=== COURSE DELETE REQUEST ===");
+      console.log("Deleting course ID:", id);
+      
       const response = await apiRequest(`/api/courses/${id}`, "DELETE");
-      return response.json();
+      
+      console.log("=== DELETE API RESPONSE ===");
+      console.log("Status:", response.status);
+      console.log("OK:", response.ok);
+      
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error("DELETE Error Response:", errorText);
+        throw new Error(`DELETE Error ${response.status}: ${errorText}`);
+      }
+      
+      const result = await response.json();
+      console.log("=== DELETE SUCCESS ===", result);
+      return result;
     },
-    onSuccess: () => {
+    onSuccess: (data) => {
+      console.log("=== DELETE MUTATION SUCCESS ===", data);
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
       toast({
         title: "Başarılı",
@@ -125,10 +142,10 @@ export default function CoursesPage() {
       }, 1000);
     },
     onError: (error: any) => {
-      console.error("Delete error:", error);
+      console.error("=== DELETE MUTATION ERROR ===", error);
       toast({
         title: "Hata",
-        description: "Kurs silinirken bir hata oluştu.",
+        description: `Kurs silinirken bir hata oluştu: ${error.message}`,
         variant: "destructive",
       });
     },

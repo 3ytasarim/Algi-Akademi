@@ -23,46 +23,9 @@ export async function apiRequest(
     await throwIfResNotOk(res);
     return res;
   } catch (error) {
-    // Fallback for POST requests (like creating courses)
-    if (method === 'POST' && url.includes('/api/courses') && data) {
-      const { localDataManager } = await import('./api-fallback');
-      const newCourse = localDataManager.addCourse(data);
-      
-      return {
-        ok: true,
-        status: 201,
-        json: async () => newCourse,
-        text: async () => JSON.stringify(newCourse)
-      } as Response;
-    }
+    // No localStorage fallback for course operations - use production API only
     
-    // Fallback for PUT requests (like updating courses)
-    if (method === 'PUT' && url.includes('/api/courses/') && data) {
-      const { localDataManager } = await import('./api-fallback');
-      const courseId = url.split('/api/courses/')[1];
-      const updatedCourse = localDataManager.updateCourse(courseId, data);
-      
-      return {
-        ok: true,
-        status: 200,
-        json: async () => updatedCourse,
-        text: async () => JSON.stringify(updatedCourse)
-      } as Response;
-    }
-    
-    // Fallback for DELETE requests (like deleting courses)
-    if (method === 'DELETE' && url.includes('/api/courses/')) {
-      const { localDataManager } = await import('./api-fallback');
-      const courseId = url.split('/api/courses/')[1];
-      const result = localDataManager.deleteCourse(courseId);
-      
-      return {
-        ok: true,
-        status: 200,
-        json: async () => result,
-        text: async () => JSON.stringify(result)
-      } as Response;
-    }
+    // No localStorage fallback for course deletion - use production API only
 
     // For students, always use real API - no localStorage fallback
     
