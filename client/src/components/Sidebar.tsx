@@ -9,6 +9,7 @@ import {
   Moon, Sun
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
+import { useAuth } from "@/hooks/useAuth";
 import logoUrl from "@assets/algi_akademi_logo_1754502318927.png";
 
 interface SidebarProps {
@@ -28,6 +29,7 @@ export default function Sidebar({
 }: SidebarProps) {
   const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
+  const { user } = useAuth();
   
   const handleLogout = () => {
     window.location.href = "/api/logout";
@@ -98,6 +100,27 @@ export default function Sidebar({
     }
   ];
 
+  // Filter menu items based on user role
+  const getFilteredMenuItems = () => {
+    if (user?.role === 'consultant') {
+      // Consultant can only see "Kursiyer Tanımlama" under "Kurs Yönetimi"
+      return [{
+        id: "courses", 
+        icon: Book,
+        label: "Kurs Yönetimi",
+        hasSubmenu: true,
+        submenuItems: [
+          { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
+        ]
+      }];
+    }
+    
+    // Admin and Müdür (role === 'admin') get full access
+    return menuItems;
+  };
+
+  const filteredMenuItems = getFilteredMenuItems();
+
   return (
     <>
       {/* Sidebar */}
@@ -155,7 +178,7 @@ export default function Sidebar({
         {/* Navigation Menu */}
         <nav className="flex-1 overflow-y-auto px-3 pb-4">
           <div className="space-y-2">
-            {menuItems.map((item) => (
+            {filteredMenuItems.map((item) => (
               <div key={item.id}>
                 {item.hasSubmenu ? (
                   <div className="relative group">

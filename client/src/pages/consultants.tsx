@@ -260,8 +260,6 @@ export default function Consultants() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Danışman">Danışman</SelectItem>
-                    <SelectItem value="Uzman">Uzman</SelectItem>
-                    <SelectItem value="Koordinatör">Koordinatör</SelectItem>
                     <SelectItem value="Müdür">Müdür</SelectItem>
                   </SelectContent>
                 </Select>
@@ -365,8 +363,6 @@ export default function Consultants() {
                   </SelectTrigger>
                   <SelectContent>
                     <SelectItem value="Danışman">Danışman</SelectItem>
-                    <SelectItem value="Uzman">Uzman</SelectItem>
-                    <SelectItem value="Koordinatör">Koordinatör</SelectItem>
                     <SelectItem value="Müdür">Müdür</SelectItem>
                   </SelectContent>
                 </Select>

@@ -7,7 +7,7 @@ import { GraduationCap, Shield, ArrowRight, UserCog, Eye, EyeOff, Mail, Lock, Cr
 import logoUrl from "@assets/algi_akademi_logo_1754502318927.png";
 
 export default function Landing() {
-  const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | null>(null);
+  const [selectedRole, setSelectedRole] = useState<'student' | 'admin' | 'consultant' | null>(null);
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(false);
   const [loginData, setLoginData] = useState({
@@ -107,7 +107,56 @@ export default function Landing() {
     }
   };
 
-  const handleLogin = selectedRole === 'admin' ? handleAdminLogin : handleStudentLogin;
+  const handleConsultantLogin = async () => {
+    if (selectedRole === 'consultant') {
+      setIsLoading(true);
+      try {
+        const response = await fetch('/api/auth/consultant-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            tcKimlikNo: loginData.tcKimlikNo,
+            password: loginData.password
+          }),
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          toast({
+            title: "Giriş Başarılı",
+            description: "Personel paneline yönlendiriliyorsunuz...",
+          });
+          
+          // Store user data in localStorage for client-side auth
+          localStorage.setItem('auth_user', JSON.stringify(data.user));
+          localStorage.setItem('auth_authenticated', 'true');
+          
+          // Force a page refresh to clear all cached queries
+          window.location.href = window.location.origin;
+        } else {
+          toast({
+            title: "Giriş Hatası",
+            description: data.message || "Giriş yapılamadı",
+            variant: "destructive",
+          });
+        }
+      } catch (error) {
+        toast({
+          title: "Bağlantı Hatası",
+          description: "Sunucuya bağlanılamadı",
+          variant: "destructive",
+        });
+      } finally {
+        setIsLoading(false);
+      }
+    }
+  };
+
+  const handleLogin = selectedRole === 'admin' ? handleAdminLogin : selectedRole === 'consultant' ? handleConsultantLogin : handleStudentLogin;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-black via-gray-900 to-red-900 flex items-center justify-center p-4 relative overflow-hidden">
@@ -161,6 +210,15 @@ export default function Landing() {
               
               <Button
                 variant="outline"
+                className="w-full py-4 px-6 rounded-2xl border-2 border-blue-500/50 bg-blue-950/50 hover:bg-blue-900/50 text-blue-400 hover:text-blue-300 font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-blue-500/25"
+                onClick={() => setSelectedRole('consultant')}
+              >
+                <Shield className="mr-3" size={20} />
+                Personel
+              </Button>
+              
+              <Button
+                variant="outline"
                 className="w-full py-4 px-6 rounded-2xl border-2 border-gray-500/50 bg-gray-950/50 hover:bg-gray-800/50 text-gray-400 hover:text-white font-semibold text-lg transition-all duration-300 hover:scale-[1.02] hover:shadow-lg hover:shadow-gray-500/25"
                 onClick={() => setSelectedRole('admin')}
               >
@@ -178,11 +236,13 @@ export default function Landing() {
                 <div className="flex items-center">
                   {selectedRole === 'student' ? (
                     <GraduationCap className="text-red-400 mr-3" size={20} />
+                  ) : selectedRole === 'consultant' ? (
+                    <Shield className="text-blue-400 mr-3" size={20} />
                   ) : (
                     <UserCog className="text-gray-400 mr-3" size={20} />
                   )}
                   <span className="font-semibold text-white">
-                    {selectedRole === 'student' ? 'Kursiyer Girişi' : 'Admin Girişi'}
+                    {selectedRole === 'student' ? 'Kursiyer Girişi' : selectedRole === 'consultant' ? 'Personel Girişi' : 'Admin Girişi'}
                   </span>
                 </div>
                 <Button
@@ -195,7 +255,7 @@ export default function Landing() {
                 </Button>
               </div>
 
-              {/* Login Field - Different for Student vs Admin */}
+              {/* Login Field - Different for Student vs Consultant vs Admin */}
               {selectedRole === 'student' ? (
                 <div className="space-y-2">
                   <Label htmlFor="tcKimlikNo" className="text-gray-300 font-medium">
@@ -214,6 +274,24 @@ export default function Landing() {
                     />
                   </div>
                 </div>
+              ) : selectedRole === 'consultant' ? (
+                <div className="space-y-2">
+                  <Label htmlFor="tcKimlikNo" className="text-gray-300 font-medium">
+                    T.C. Kimlik No
+                  </Label>
+                  <div className="relative">
+                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+                    <Input
+                      id="tcKimlikNo"
+                      type="text"
+                      placeholder="T.C. Kimlik Numaranız"
+                      value={loginData.tcKimlikNo}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
+                      onKeyDown={(e) => e.key === 'Enter' && handleConsultantLogin()}
+                      className="pl-12 h-12 rounded-xl border-2 border-blue-500/30 focus:border-blue-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
+                    />
+                  </div>
+                </div>
               ) : (
                 <div className="space-y-2">
                   <Label htmlFor="username" className="text-gray-300 font-medium">
@@ -224,7 +302,7 @@ export default function Landing() {
                     <Input
                       id="username"
                       type="text"
-                      placeholder="T.C Kimlik Numaranızı Giriniz"
+                      placeholder="Admin"
                       value={loginData.username || ''}
                       onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
                       onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
@@ -237,17 +315,17 @@ export default function Landing() {
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-300 font-medium">
-                  {selectedRole === 'student' ? 'Şifre (Varsayılan: 112233)' : 'Şifre'}
+                  {selectedRole === 'admin' ? 'Şifre' : 'Şifre (Varsayılan: 112233)'}
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                   <Input
                     id="password"
                     type={showPassword ? "text" : "password"}
-                    placeholder={selectedRole === 'student' ? '112233' : 'Şifrenizi girin'}
+                    placeholder={selectedRole === 'admin' ? 'Şifrenizi girin' : '112233'}
                     value={loginData.password || ''}
                     onChange={(e) => setLoginData(prev => ({ ...prev, password: e.target.value }))}
-                    onKeyDown={(e) => e.key === 'Enter' && (selectedRole === 'student' ? handleStudentLogin() : handleAdminLogin())}
+                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
                     className="pl-12 pr-12 h-12 rounded-xl border-2 border-red-500/30 focus:border-red-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                   />
                   <Button
@@ -280,8 +358,11 @@ export default function Landing() {
 
               {/* Login Button */}
               <Button
-                onClick={selectedRole === 'student' ? handleStudentLogin : handleAdminLogin}
-                disabled={isLoading || (selectedRole === 'student' && !loginData.tcKimlikNo) || (selectedRole === 'admin' && (!loginData.username || !loginData.password))}
+                onClick={handleLogin}
+                disabled={isLoading || 
+                  (selectedRole === 'student' && !loginData.tcKimlikNo) || 
+                  (selectedRole === 'consultant' && !loginData.tcKimlikNo) || 
+                  (selectedRole === 'admin' && (!loginData.username || !loginData.password))}
                 className="w-full py-4 px-6 rounded-2xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold text-lg shadow-xl shadow-red-500/25 hover:shadow-2xl hover:shadow-red-500/40 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-1 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
               >
                 {isLoading ? (

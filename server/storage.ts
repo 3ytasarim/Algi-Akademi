@@ -103,6 +103,7 @@ export interface IStorage {
   updateStudent(id: string, student: any): Promise<User>;
   deleteStudent(id: string): Promise<void>;
   getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined>;
+  getUserByTcNo(tcKimlikNo: string): Promise<User | undefined>;
 
   // Notification operations
   getNotifications(): Promise<any[]>;
@@ -407,9 +408,29 @@ export class DatabaseStorage implements IStorage {
   }
 
   async createConsultant(consultant: InsertConsultant): Promise<Consultant> {
+    // First create user account for consultant
+    const consultantRole = consultant.title === 'Müdür' ? 'admin' : 'consultant';
+    const [newUser] = await db
+      .insert(users)
+      .values({
+        tcKimlikNo: consultant.tcNo,
+        firstName: consultant.firstName,
+        lastName: consultant.lastName,
+        email: consultant.email,
+        telefon: consultant.phone,
+        password: '112233', // Default password
+        role: consultantRole,
+        isManualStudent: false,
+      })
+      .returning();
+
+    // Then create consultant record linked to user
     const [newConsultant] = await db
       .insert(consultants)
-      .values(consultant)
+      .values({
+        ...consultant,
+        userId: newUser.id,
+      })
       .returning();
     return newConsultant;
   }
@@ -557,6 +578,14 @@ export class DatabaseStorage implements IStorage {
       .from(users)
       .where(eq(users.tcKimlikNo, tcKimlikNo));
     return student;
+  }
+
+  async getUserByTcNo(tcKimlikNo: string): Promise<User | undefined> {
+    const [user] = await db
+      .select()
+      .from(users)
+      .where(eq(users.tcKimlikNo, tcKimlikNo));
+    return user;
   }
 
   // Notification operations

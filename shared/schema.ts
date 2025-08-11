@@ -120,7 +120,7 @@ export const consultants = pgTable("consultants", {
   tcNo: varchar("tc_no").unique().notNull(),
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
-  title: varchar("title").notNull().default('Danışman'), // 'Danışman', 'Uzman', 'Koordinatör'
+  title: varchar("title").notNull().default('Danışman'), // 'Danışman', 'Müdür'
   email: varchar("email"),
   phone: varchar("phone"),
   userId: varchar("user_id").references(() => users.id),

@@ -272,6 +272,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Consultant login route
+  app.post("/api/auth/consultant-login", async (req: any, res) => {
+    try {
+      const { tcKimlikNo, password } = req.body;
+      
+      if (!tcKimlikNo || !password) {
+        return res.status(400).json({ message: "TC Kimlik No ve şifre gereklidir" });
+      }
+
+      // Find user by TC Kimlik No
+      const user = await storage.getUserByTcNo(tcKimlikNo);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
+      }
+
+      // Check if user is consultant or admin
+      if (user.role !== 'consultant' && user.role !== 'admin') {
+        return res.status(401).json({ message: "Bu giriş sadece personel içindir" });
+      }
+
+      // Verify password (in production, use bcrypt)
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
+      }
+
+      // Store user in session
+      req.session.user = {
+        id: user.id,
+        tcKimlikNo: user.tcKimlikNo,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        role: user.role,
+      };
+
+      res.json({
+        user: req.session.user,
+        message: "Giriş başarılı"
+      });
+    } catch (error) {
+      console.error("Error during consultant login:", error);
+      res.status(500).json({ message: "Giriş işlemi sırasında hata oluştu" });
+    }
+  });
+
   app.get("/api/integrations", async (req: any, res) => {
     try {
       const integrations = await storage.getIntegrations();
