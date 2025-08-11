@@ -26,7 +26,7 @@ export default function Sidebar({
   toggleSidebarCollapse,
   activeHref 
 }: SidebarProps) {
-  const [expandedMenus, setExpandedMenus] = useState<string[]>(['courses', 'system', 'integrations']);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>([]);
   const { theme, toggleTheme } = useTheme();
   
   const handleLogout = () => {
