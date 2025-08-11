@@ -377,22 +377,3 @@ export default function StudentDashboard() {
     </LayoutWrapper>
   );
 }
-
-                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30">
-                  <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">
-                    <Star size={20} className="text-purple-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-slate-900 dark:text-white font-bold">Sertifika kazandınız</p>
-                    <p className="text-slate-600 dark:text-gray-300 text-sm">JavaScript Temelleri</p>
-                    <p className="text-slate-500 dark:text-gray-400 text-xs">3 gün önce</p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
-    </LayoutWrapper>
-  );
-}
