@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
+import { StudentSidebar } from "@/components/StudentSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
@@ -19,13 +20,15 @@ import {
   CheckCircle,
   Star,
   FileText,
-  BarChart3
+  BarChart3,
+  Menu
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 
 export default function StudentDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -89,21 +92,32 @@ export default function StudentDashboard() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900/20">
-      {/* Header */}
-      <header className="glass-effect border-b border-white/20 dark:border-gray-700/20 sticky top-0 z-50 backdrop-blur-xl">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg">
-                <BookOpen className="text-primary" size={24} />
+      <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      
+      <div className="lg:ml-80 min-h-screen">
+        {/* Header */}
+        <header className="glass-effect border-b border-white/20 dark:border-gray-700/20 sticky top-0 z-40 backdrop-blur-xl">
+          <div className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-4">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="lg:hidden p-2"
+                  onClick={() => setSidebarOpen(true)}
+                >
+                  <Menu size={20} />
+                </Button>
+                <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 backdrop-blur-lg rounded-2xl flex items-center justify-center shadow-lg">
+                  <BookOpen className="text-primary" size={24} />
+                </div>
+                <div>
+                  <h1 className="text-2xl font-black text-slate-900 dark:text-white">Öğrenci Paneli</h1>
+                  <p className="text-slate-600 dark:text-gray-300 font-medium">
+                    Hoş geldin, {user?.firstName} {user?.lastName}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h1 className="text-2xl font-black text-slate-900 dark:text-white">Öğrenci Paneli</h1>
-                <p className="text-slate-600 dark:text-gray-300 font-medium">
-                  Hoş geldin, {user?.firstName} {user?.lastName}
-                </p>
-              </div>
-            </div>
             
             <div className="flex items-center space-x-3">
               <Button
@@ -132,12 +146,12 @@ export default function StudentDashboard() {
                 <LogOut className="mr-2" size={16} />
                 Çıkış
               </Button>
+              </div>
             </div>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <div className="container mx-auto px-6 py-8">
+        <div className="container mx-auto px-6 py-8">
         {/* Welcome Card */}
         <Card className="glass-effect border-white/20 dark:border-gray-700/20 mb-8 bg-white/50 dark:bg-gray-800/50">
           <CardContent className="p-8">
@@ -331,6 +345,7 @@ export default function StudentDashboard() {
             </div>
           </CardContent>
         </Card>
+        </div>
       </div>
     </div>
   );
