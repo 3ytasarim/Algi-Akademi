@@ -67,6 +67,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Simple logout redirect endpoint
+  app.get('/api/logout', async (req: any, res) => {
+    try {
+      req.session.auth = { isAuthenticated: false, user: null };
+      res.redirect('/');
+    } catch (error) {
+      console.error("Error in logout:", error);
+      res.redirect('/');
+    }
+  });
+
   // Dashboard stats
   app.get('/api/dashboard/stats', async (req: any, res) => {
     try {

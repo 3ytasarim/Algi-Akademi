@@ -77,7 +77,7 @@ export function useAuth() {
     setLocalAuth(null);
     
     // Call backend logout
-    fetch('/api/logout', {
+    fetch('/api/auth/logout', {
       method: 'POST',
       credentials: 'include'
     }).finally(() => {
