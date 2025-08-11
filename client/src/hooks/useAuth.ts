@@ -69,21 +69,15 @@ export function useAuth() {
   }, [backendUser, localAuth, localLoading, backendLoading]);
 
   const logout = () => {
-    // Clear localStorage
+    // Clear localStorage immediately
     localStorage.removeItem('auth_user');
     localStorage.removeItem('auth_authenticated');
     
-    // Clear local state
+    // Clear local state immediately
     setLocalAuth(null);
     
-    // Call backend logout
-    fetch('/api/auth/logout', {
-      method: 'POST',
-      credentials: 'include'
-    }).finally(() => {
-      // Force reload to landing page
-      window.location.href = '/';
-    });
+    // Force immediate redirect to landing page
+    window.location.href = '/';
   };
 
   return {
