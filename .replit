@@ -1,6 +1,6 @@
 modules = ["nodejs-20", "postgresql-16"]
 [deployment]
-deploymentTarget = "autoscale"
+deploymentTarget = "gce"
 build = "npm run build"
 run = "npm start"
 
