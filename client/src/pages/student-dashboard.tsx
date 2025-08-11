@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/use-toast";
 import LayoutWrapper from "@/components/LayoutWrapper";
@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { 
   BookOpen, 
   Award, 
-  TrendingUp, 
+  Timer, 
   Clock,
   Play,
   CheckCircle,
@@ -45,6 +45,12 @@ export default function StudentDashboard() {
     retry: false,
   });
 
+  // Fetch student activities  
+  const { data: activities = [], isLoading: activitiesLoading } = useQuery({
+    queryKey: ["/api/student/activities"], 
+    retry: false,
+  });
+
   // Type assertion for courses since we know the structure from the API
   const typedCourses = courses as Array<{
     id: string;
@@ -54,6 +60,76 @@ export default function StudentDashboard() {
     price: number;
     duration: number;
   }>;
+
+  // Type assertion for activities
+  const typedActivities = activities as Array<{
+    id: string;
+    type: string;
+    description: string;
+    createdAt: string;
+    entityType: string;
+  }>;
+
+  // Countdown timer state - get course end date from user/student data
+  const [countdown, setCountdown] = useState({
+    days: 0,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  // Calculate countdown based on course end date
+  useEffect(() => {
+    // Mock course end date - in real app this would come from student data
+    const courseEndDate = new Date('2025-12-31T23:59:59');
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = courseEndDate.getTime() - now;
+      
+      if (distance > 0) {
+        setCountdown({
+          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+          seconds: Math.floor((distance % (1000 * 60)) / 1000)
+        });
+      } else {
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+      }
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // Helper function to format time since activity
+  const getTimeAgo = (dateString: string) => {
+    const now = new Date().getTime();
+    const activityTime = new Date(dateString).getTime();
+    const diffInHours = Math.floor((now - activityTime) / (1000 * 60 * 60));
+    
+    if (diffInHours < 1) return "Az önce";
+    if (diffInHours < 24) return `${diffInHours} saat önce`;
+    const diffInDays = Math.floor(diffInHours / 24);
+    return `${diffInDays} gün önce`;
+  };
+
+  // Get activity icon based on type
+  const getActivityIcon = (type: string) => {
+    switch (type) {
+      case 'course_completed':
+        return <CheckCircle size={20} className="text-green-600" />;
+      case 'assignment_assigned':
+        return <FileText size={20} className="text-blue-600" />;
+      case 'certificate_earned':
+        return <Award size={20} className="text-yellow-600" />;
+      default:
+        return <Clock size={20} className="text-gray-600" />;
+    }
+  };
 
   if (isLoading || !isAuthenticated) {
     return (
@@ -120,15 +196,41 @@ export default function StudentDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-gradient-to-br from-purple-500/10 to-purple-600/5 dark:from-purple-500/20 dark:to-purple-600/10">
+          <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-gradient-to-br from-orange-500/10 to-red-600/5 dark:from-orange-500/20 dark:to-red-600/10">
             <CardContent className="p-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h3 className="text-3xl font-black text-slate-900 dark:text-white">%85</h3>
-                  <p className="text-slate-600 dark:text-gray-300 font-medium">Ortalama İlerleme</p>
+                  <p className="text-slate-600 dark:text-gray-300 font-medium mb-1">Kurs Bitiş</p>
+                  <p className="text-lg font-bold text-slate-900 dark:text-white">Geri Sayım</p>
                 </div>
-                <div className="w-12 h-12 bg-purple-500/20 rounded-2xl flex items-center justify-center">
-                  <TrendingUp size={24} className="text-purple-600" />
+                <div className="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center">
+                  <Timer size={24} className="text-orange-600" />
+                </div>
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                <div className="text-center">
+                  <div className="text-2xl font-black text-slate-900 dark:text-white animate-pulse">
+                    {countdown.days}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-gray-300">Gün</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-black text-slate-900 dark:text-white animate-pulse">
+                    {countdown.hours}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-gray-300">Saat</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-black text-slate-900 dark:text-white animate-pulse">
+                    {countdown.minutes}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-gray-300">Dak</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-2xl font-black text-slate-900 dark:text-white animate-pulse">
+                    {countdown.seconds}
+                  </div>
+                  <div className="text-xs text-slate-600 dark:text-gray-300">San</div>
                 </div>
               </div>
             </CardContent>
@@ -202,28 +304,79 @@ export default function StudentDashboard() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="space-y-4">
-                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30">
-                  <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
-                    <CheckCircle size={20} className="text-green-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-slate-900 dark:text-white font-bold">Ders tamamlandı</p>
-                    <p className="text-slate-600 dark:text-gray-300 text-sm">Web Tasarım - HTML Temelleri</p>
-                    <p className="text-slate-500 dark:text-gray-400 text-xs">2 saat önce</p>
-                  </div>
+              {activitiesLoading ? (
+                <div className="text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+                  <p className="text-slate-600 dark:text-gray-300">Aktiviteler yükleniyor...</p>
                 </div>
+              ) : typedActivities.length > 0 ? (
+                <div className="space-y-4">
+                  {typedActivities.map((activity) => (
+                    <div key={activity.id} className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-200">
+                      <div className="w-10 h-10 bg-green-500/20 rounded-xl flex items-center justify-center">
+                        {getActivityIcon(activity.type)}
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-slate-900 dark:text-white font-bold">
+                          {activity.description.split(':')[0]}
+                        </p>
+                        {activity.description.includes(':') && (
+                          <p className="text-slate-600 dark:text-gray-300 text-sm">
+                            {activity.description.split(':')[1]?.trim()}
+                          </p>
+                        )}
+                        <p className="text-slate-500 dark:text-gray-400 text-xs">
+                          {getTimeAgo(activity.createdAt)}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <Clock className="mx-auto text-slate-400 dark:text-gray-500 mb-4" size={48} />
+                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Henüz Aktivite Yok</h3>
+                  <p className="text-slate-600 dark:text-gray-300">
+                    Kurslarda ilerleme kaydedin, aktiviteleriniz burada görünecek.
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+        </div>
 
-                <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30">
-                  <div className="w-10 h-10 bg-blue-500/20 rounded-xl flex items-center justify-center">
-                    <FileText size={20} className="text-blue-600" />
-                  </div>
-                  <div className="flex-1">
-                    <p className="text-slate-900 dark:text-white font-bold">Yeni ödev atandı</p>
-                    <p className="text-slate-600 dark:text-gray-300 text-sm">React Bileşenleri Projesi</p>
-                    <p className="text-slate-500 dark:text-gray-400 text-xs">1 gün önce</p>
-                  </div>
-                </div>
+        {/* Quick Actions */}
+        <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
+          <CardHeader>
+            <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">
+              Hızlı İşlemler
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <Button className="glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
+                <BookOpen size={24} />
+                <span>Kurslara Git</span>
+              </Button>
+              <Button className="glass-effect bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
+                <Award size={24} />
+                <span>Sertifikalar</span>
+              </Button>
+              <Button className="glass-effect bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
+                <FileText size={24} />
+                <span>Ödevler</span>
+              </Button>
+              <Button className="glass-effect bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
+                <Star size={24} />
+                <span>Değerlendirme</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+    </LayoutWrapper>
+  );
+}
 
                 <div className="flex items-center space-x-4 p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30">
                   <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center">

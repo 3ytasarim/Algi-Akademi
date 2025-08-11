@@ -431,6 +431,85 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Student-specific routes
+  app.get('/api/student/courses', async (req: any, res) => {
+    try {
+      // Check if user is authenticated as a student
+      if (!req.session.auth || !req.session.auth.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = req.session.auth.user;
+      if (user.role !== 'student') {
+        return res.status(403).json({ message: "Access denied. Students only." });
+      }
+
+      // Find student record and get their assigned courses
+      const students = await storage.getStudents();
+      const student = students.find(s => s.tcKimlikNo === user.tcKimlikNo || s.id === user.id);
+      
+      if (!student || !student.selectedCourses || student.selectedCourses.length === 0) {
+        return res.json([]); // Return empty array if no courses found
+      }
+
+      // Get course details for assigned courses
+      const allCourses = await storage.getCourses();
+      const assignedCourses = allCourses.filter(course => 
+        (student.selectedCourses || []).includes(course.id) || 
+        (student.selectedCourses || []).includes(course.title)
+      );
+
+      res.json(assignedCourses);
+    } catch (error) {
+      console.error("Error fetching student courses:", error);
+      res.status(500).json({ message: "Failed to fetch student courses" });
+    }
+  });
+
+  app.get('/api/student/activities', async (req: any, res) => {
+    try {
+      // Check if user is authenticated as a student
+      if (!req.session.auth || !req.session.auth.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+      
+      const user = req.session.auth.user;
+      if (user.role !== 'student') {
+        return res.status(403).json({ message: "Access denied. Students only." });
+      }
+
+      // Get recent activities for this student - using mock data since getActivities doesn't exist yet
+      const studentActivities = [
+        {
+          id: '1',
+          type: 'course_completed',
+          description: 'Ders tamamlandı: Web Tasarım - HTML Temelleri',
+          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+          entityType: 'course'
+        },
+        {
+          id: '2', 
+          type: 'assignment_assigned',
+          description: 'Yeni ödev atandı: React Bileşenleri Projesi',
+          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
+          entityType: 'assignment'
+        },
+        {
+          id: '3',
+          type: 'certificate_earned',
+          description: 'Sertifika kazandınız: JavaScript Temelleri',
+          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
+          entityType: 'certificate'
+        }
+      ];
+
+      res.json(studentActivities);
+    } catch (error) {
+      console.error("Error fetching student activities:", error);
+      res.status(500).json({ message: "Failed to fetch student activities" });
+    }
+  });
+
   app.get('/api/students', async (req: any, res) => {
     try {
       const students = await storage.getStudents();
