@@ -29,18 +29,14 @@ export default function StudentList() {
   const { data: students = [], isLoading } = useQuery({
     queryKey: ["/api/students"],
     queryFn: async () => {
-      try {
-        const response = await fetch("/api/students");
-        if (!response.ok) {
-          throw new Error("Failed to fetch students");
-        }
-        return response.json();
-      } catch (error) {
-        console.log('API failed, using localStorage data:', error);
-        const localStudents = JSON.parse(localStorage.getItem('students') || '[]');
-        return localStudents;
+      const response = await fetch("/api/students");
+      if (!response.ok) {
+        throw new Error(`Failed to fetch students: ${response.status}`);
       }
+      return response.json();
     },
+    staleTime: 0, // Always refetch
+    refetchOnWindowFocus: true,
   });
 
   // Delete student mutation

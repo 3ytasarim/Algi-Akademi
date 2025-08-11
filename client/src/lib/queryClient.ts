@@ -64,46 +64,7 @@ export async function apiRequest(
       } as Response;
     }
 
-    // Fallback for student CRUD operations
-    if (method === 'POST' && url.includes('/api/students') && data) {
-      const { localDataManager } = await import('./api-fallback');
-      const newStudent = (localDataManager as any).addStudent(data);
-      
-      return {
-        ok: true,
-        status: 201,
-        json: async () => newStudent,
-        text: async () => JSON.stringify(newStudent)
-      } as Response;
-    }
-    
-    // Fallback for PUT requests (like updating students)
-    if (method === 'PUT' && url.includes('/api/students/') && data) {
-      const { localDataManager } = await import('./api-fallback');
-      const studentId = url.split('/api/students/')[1];
-      const updatedStudent = (localDataManager as any).updateStudent(studentId, data);
-      
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true, message: "Kursiyer başarıyla güncellendi", student: updatedStudent }),
-        text: async () => JSON.stringify({ success: true, message: "Kursiyer başarıyla güncellendi", student: updatedStudent })
-      } as Response;
-    }
-    
-    // Fallback for DELETE requests (like deleting students)
-    if (method === 'DELETE' && url.includes('/api/students/')) {
-      const { localDataManager } = await import('./api-fallback');
-      const studentId = url.split('/api/students/')[1];
-      const result = (localDataManager as any).deleteStudent(studentId);
-      
-      return {
-        ok: true,
-        status: 200,
-        json: async () => ({ success: true, message: "Kursiyer başarıyla silindi" }),
-        text: async () => JSON.stringify({ success: true, message: "Kursiyer başarıyla silindi" })
-      } as Response;
-    }
+    // For students, always use real API - no localStorage fallback
     
     throw error;
   }
@@ -127,29 +88,7 @@ export const getQueryFn: <T>(options: {
       await throwIfResNotOk(res);
       return await res.json();
     } catch (error) {
-      // If backend is not available, try fallback data
-      const endpoint = queryKey.join("/") as string;
-      
-      if (endpoint.includes('/api/courses')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getCourses();
-      } else if (endpoint.includes('/api/students')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getStudents();
-      } else if (endpoint.includes('/api/users')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getStudents();
-      } else if (endpoint.includes('/api/consultants')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getConsultants();
-      } else if (endpoint.includes('/api/sales')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getSales();
-      } else if (endpoint.includes('/api/activities')) {
-        const { localDataManager } = await import('./api-fallback');
-        return localDataManager.getActivities();
-      }
-      
+      // For production, always use real API - no fallback to localStorage
       throw error;
     }
   };
@@ -159,9 +98,9 @@ export const queryClient = new QueryClient({
     queries: {
       queryFn: getQueryFn({ on401: "throw" }),
       refetchInterval: false,
-      refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      retry: false,
+      refetchOnWindowFocus: true, // Refetch when window gains focus
+      staleTime: 0, // Always consider data stale
+      retry: 1,
     },
     mutations: {
       retry: false,
