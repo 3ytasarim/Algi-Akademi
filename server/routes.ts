@@ -36,27 +36,50 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Admin login endpoint
   app.post('/api/auth/admin-login', async (req: any, res) => {
     try {
-      const { username, password } = req.body;
+      const { tcKimlikNo, password } = req.body;
       
-      if (username === 'admin' && password === '112233') {
-        req.session.auth = {
-          isAuthenticated: true,
-          user: {
-            id: 'admin',
-            username: 'admin',
-            role: 'admin',
-            firstName: 'Admin',
-            lastName: 'User'
-          }
-        };
-        
-        res.json({ 
-          message: "Giriş başarılı",
-          user: req.session.auth.user
-        });
-      } else {
-        res.status(401).json({ message: "Geçersiz kullanıcı adı veya şifre" });
+      if (!tcKimlikNo || !password) {
+        return res.status(400).json({ message: "TC Kimlik No ve şifre gereklidir" });
       }
+
+      // Find user by TC Kimlik No
+      const user = await storage.getUserByTcNo(tcKimlikNo);
+      
+      if (!user) {
+        return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
+      }
+
+      // Check if user is admin (Müdür role)
+      if (user.role !== 'admin') {
+        return res.status(401).json({ message: "Bu giriş sadece yöneticiler içindir" });
+      }
+
+      // Verify password
+      if (user.password !== password) {
+        return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
+      }
+
+      // Store user in session
+      req.session.auth = {
+        isAuthenticated: true,
+        user: {
+          id: user.id,
+          tcKimlikNo: user.tcKimlikNo,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        }
+      };
+
+      console.log('=== ADMIN LOGIN SUCCESS ===');
+      console.log('Session ID:', req.sessionID);
+      console.log('Stored session auth:', JSON.stringify(req.session.auth, null, 2));
+
+      res.json({
+        user: req.session.auth.user,
+        message: "Giriş başarılı"
+      });
     } catch (error) {
       console.error("Error in admin login:", error);
       res.status(500).json({ message: "Giriş işlemi başarısız" });

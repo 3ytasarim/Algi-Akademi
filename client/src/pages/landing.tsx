@@ -23,7 +23,7 @@ export default function Landing() {
       setIsLoading(true);
       
       try {
-        console.log('Admin login attempt:', loginData.username, loginData.password);
+        console.log('Admin login attempt:', loginData.tcKimlikNo, loginData.password);
         
         const response = await fetch('/api/auth/admin-login', {
           method: 'POST',
@@ -32,7 +32,7 @@ export default function Landing() {
           },
           credentials: 'include',
           body: JSON.stringify({
-            username: loginData.username,
+            tcKimlikNo: loginData.tcKimlikNo,
             password: loginData.password
           }),
         });
@@ -316,17 +316,17 @@ export default function Landing() {
                 </div>
               ) : (
                 <div className="space-y-2">
-                  <Label htmlFor="username" className="text-gray-300 font-medium">
-                    Kullanıcı Adı
+                  <Label htmlFor="tcKimlikNo" className="text-gray-300 font-medium">
+                    T.C. Kimlik No
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
+                    <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                     <Input
-                      id="username"
+                      id="tcKimlikNo"
                       type="text"
-                      placeholder="Admin"
-                      value={loginData.username || ''}
-                      onChange={(e) => setLoginData(prev => ({ ...prev, username: e.target.value }))}
+                      placeholder="T.C. Kimlik Numaranız"
+                      value={loginData.tcKimlikNo}
+                      onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
                       onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
                       className="pl-12 h-12 rounded-xl border-2 border-gray-500/30 focus:border-gray-400 bg-black/50 text-white placeholder-gray-500 backdrop-blur-sm transition-all duration-300"
                     />
@@ -337,7 +337,7 @@ export default function Landing() {
               {/* Password Field */}
               <div className="space-y-2">
                 <Label htmlFor="password" className="text-gray-300 font-medium">
-                  {selectedRole === 'admin' ? 'Şifre' : 'Şifre (Varsayılan: 112233)'}
+                  Şifrenizi yazınız
                 </Label>
                 <div className="relative">
                   <Lock className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
