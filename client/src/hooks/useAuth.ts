@@ -1,8 +1,9 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import type { User } from "@shared/schema";
 import { useState, useEffect, useMemo } from "react";
 
 export function useAuth() {
+  const queryClient = useQueryClient();
   const [localAuth, setLocalAuth] = useState<User | null>(null);
   const [localLoading, setLocalLoading] = useState(true);
   const [localInitialized, setLocalInitialized] = useState(false);
@@ -75,6 +76,9 @@ export function useAuth() {
     
     // Clear local state immediately
     setLocalAuth(null);
+    
+    // Clear React Query cache completely
+    queryClient.clear();
     
     // Force immediate redirect to landing page
     window.location.href = '/';
