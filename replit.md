@@ -165,6 +165,10 @@ Preferred communication style: Simple, everyday language.
   - Full-stack deployment with PostgreSQL database support
 
 ## Recent Updates
+- **August 11, 2025**: Fixed consultant creation API error and field mapping issues
+- **Field Mapping Fix**: Corrected frontend-backend field mapping for consultant creation (tcNo, firstName, lastName vs tc_no, first_name, last_name)
+- **LSP Errors Resolved**: Fixed TypeScript errors in consultants.tsx for better type safety
+- **API Testing**: Confirmed consultant creation API works properly with PostgreSQL database
 - **January 2025**: Fixed deployment configuration for Autoscale deployment
 - **Package Update**: Updated @neondatabase/serverless from v0.10.4 to v1.0.1 for compatibility
 - **Deployment Fix**: Corrected .replit configuration to use Autoscale deployment target instead of static

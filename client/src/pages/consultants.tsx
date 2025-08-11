@@ -42,15 +42,15 @@ export default function Consultants() {
   });
 
   // Use real consultant data
-  const displayConsultants = consultants || [];
+  const displayConsultants = Array.isArray(consultants) ? consultants : [];
 
   const createConsultantMutation = useMutation({
     mutationFn: async (data: any) => {
       // Map frontend fields to backend schema
       const backendData = {
-        tc_no: data.tcNo,
-        first_name: data.firstName,
-        last_name: data.lastName,
+        tcNo: data.tcNo,
+        firstName: data.firstName,
+        lastName: data.lastName,
         title: data.title,
         email: data.email,
         phone: data.phone
@@ -79,9 +79,9 @@ export default function Consultants() {
     mutationFn: async ({ id, data }: { id: string, data: any }) => {
       // Map frontend fields to backend schema
       const backendData = {
-        tc_no: data.tcNo,
-        first_name: data.firstName,
-        last_name: data.lastName,
+        tcNo: data.tcNo,
+        firstName: data.firstName,
+        lastName: data.lastName,
         title: data.title,
         email: data.email,
         phone: data.phone
@@ -479,7 +479,7 @@ export default function Consultants() {
                     </td>
                   </tr>
                 ) : filteredConsultants.length > 0 ? (
-                  filteredConsultants.map((consultant) => (
+                  filteredConsultants.map((consultant: any) => (
                     <tr key={consultant.id} className="hover:bg-gray-50 dark:hover:bg-gray-700">
                       <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-gray-200">
                         {consultant.tcNo || consultant.tc_no}
