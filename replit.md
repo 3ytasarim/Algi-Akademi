@@ -4,11 +4,12 @@ This is a comprehensive CRM-based educational management system (Algı Akademi) 
 
 ## Recent Changes (August 11, 2025)
 
-### ADMIN LOGIN SYSTEM REDESIGNED - TC KIMLIK AUTHENTICATION (August 11, 2025)
-✓ Admin login changed from username/admin to TC Kimlik No authentication
-✓ Müdür role users (like Rauf Onur Çullu - 52306142250) get admin role automatically
-✓ Admin login uses same TC + 112233 password system as personnel
-✓ Placeholder texts updated: "T.C. Kimlik Numaranız" and "Şifrenizi yazınız"
+### ADMIN LOGIN SYSTEM REDESIGNED - DUAL AUTHENTICATION (August 11, 2025)
+✓ Admin login supports both traditional admin/112233 and TC Kimlik authentication
+✓ Traditional admin login: admin / 112233 (fixed admin user)
+✓ Müdür TC login: Rauf Onur Çullu (52306142250) / 112233 (dynamic from database)
+✓ Both methods provide full admin dashboard access
+✓ Placeholder updated: "T.C. Kimlik No veya admin" and "Şifrenizi yazınız"
 ✓ Session management unified for all user types (admin, consultant, student)
 ✓ Database field mapping issues resolved (tcKimlikNo vs tc_kimlik_no)
 ✓ Memory store session used for production stability

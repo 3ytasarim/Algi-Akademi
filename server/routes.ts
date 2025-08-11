@@ -42,7 +42,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(400).json({ message: "TC Kimlik No ve şifre gereklidir" });
       }
 
-      // Find user by TC Kimlik No
+      // Check for traditional admin login first
+      if (tcKimlikNo === 'admin' && password === '112233') {
+        req.session.auth = {
+          isAuthenticated: true,
+          user: {
+            id: 'admin',
+            tcKimlikNo: 'admin',
+            firstName: 'Admin',
+            lastName: 'User',
+            email: 'admin@algi.com',
+            role: 'admin',
+          }
+        };
+        
+        console.log('=== TRADITIONAL ADMIN LOGIN SUCCESS ===');
+        console.log('Session ID:', req.sessionID);
+        console.log('Stored session auth:', JSON.stringify(req.session.auth, null, 2));
+
+        return res.json({
+          user: req.session.auth.user,
+          message: "Giriş başarılı"
+        });
+      }
+
+      // Find user by TC Kimlik No for Müdür login
       const user = await storage.getUserByTcNo(tcKimlikNo);
       
       if (!user) {
@@ -72,7 +96,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         }
       };
 
-      console.log('=== ADMIN LOGIN SUCCESS ===');
+      console.log('=== MÜDÜR ADMIN LOGIN SUCCESS ===');
       console.log('Session ID:', req.sessionID);
       console.log('Stored session auth:', JSON.stringify(req.session.auth, null, 2));
 

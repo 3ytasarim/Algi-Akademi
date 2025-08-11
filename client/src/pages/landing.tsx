@@ -317,14 +317,14 @@ export default function Landing() {
               ) : (
                 <div className="space-y-2">
                   <Label htmlFor="tcKimlikNo" className="text-gray-300 font-medium">
-                    T.C. Kimlik No
+                    T.C. Kimlik No / Kullanıcı Adı
                   </Label>
                   <div className="relative">
                     <CreditCard className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" size={18} />
                     <Input
                       id="tcKimlikNo"
                       type="text"
-                      placeholder="T.C. Kimlik Numaranız"
+                      placeholder="T.C. Kimlik No veya admin"
                       value={loginData.tcKimlikNo}
                       onChange={(e) => setLoginData(prev => ({ ...prev, tcKimlikNo: e.target.value }))}
                       onKeyDown={(e) => e.key === 'Enter' && handleAdminLogin()}
