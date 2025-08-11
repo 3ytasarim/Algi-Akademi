@@ -70,18 +70,24 @@ export function useAuth() {
   }, [backendUser, localAuth, localLoading, backendLoading]);
 
   const logout = () => {
+    console.log('LOGOUT: Starting logout process...');
+    
     // Clear localStorage immediately
     localStorage.removeItem('auth_user');
     localStorage.removeItem('auth_authenticated');
+    console.log('LOGOUT: localStorage cleared');
     
     // Clear local state immediately
     setLocalAuth(null);
+    console.log('LOGOUT: Local auth state cleared');
     
     // Clear React Query cache completely
     queryClient.clear();
+    console.log('LOGOUT: React Query cache cleared');
     
-    // Force immediate redirect to landing page
-    window.location.href = '/';
+    // Force immediate redirect to landing page with cache busting
+    const timestamp = Date.now();
+    window.location.href = `/?t=${timestamp}`;
   };
 
   return {
