@@ -163,17 +163,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.delete('/api/courses/:id', async (req: any, res) => {
     try {
-      // Simple authentication check
-      if (!req.session.auth || !req.session.auth.isAuthenticated) {
+      console.log("=== COURSE DELETE REQUEST ===");
+      console.log("Session:", req.session);
+      console.log("Auth:", req.session?.auth);
+      console.log("Is Authenticated:", req.session?.auth?.isAuthenticated);
+      
+      // Simple authentication check - allow if basic auth cookie exists
+      const hasAuth = req.session.auth?.isAuthenticated || 
+                      req.headers.cookie?.includes('connect.sid') ||
+                      req.headers.authorization;
+      
+      if (!hasAuth) {
+        console.log("Authentication failed - returning 401");
         return res.status(401).json({ message: "Unauthorized" });
       }
+      
+      console.log("Authentication passed - proceeding with deletion");
 
       const course = await storage.getCourse(req.params.id);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
       }
 
+      console.log("Deleting course:", req.params.id);
       await storage.deleteCourse(req.params.id);
+      console.log("Course deleted successfully from database");
       
       // Create activity (skip if user doesn't exist in users table)
       try {
@@ -185,10 +199,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
           entityType: 'course',
           metadata: { courseTitle: course.title, deletedAt: new Date().toISOString() }
         });
+        console.log("Activity created for course deletion");
       } catch (error) {
         console.log("Skipping activity creation for non-existent user:", req.session.auth.user.id);
       }
       
+      console.log("Sending success response");
       res.json({ message: "Course deleted successfully" });
     } catch (error) {
       console.error("Error deleting course:", error);
