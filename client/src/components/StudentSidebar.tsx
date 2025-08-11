@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { useQuery } from "@tanstack/react-query";
 // Note: Using custom collapsible implementation since @/components/ui/collapsible may not exist
 import { 
   GraduationCap,
@@ -28,6 +29,12 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
   const [examsOpen, setExamsOpen] = useState(false);
   const [personalOpen, setPersonalOpen] = useState(false);
 
+  // Fetch student courses from API
+  const { data: courses = [] } = useQuery({
+    queryKey: ["/api/student/courses"],
+    retry: false,
+  });
+
   const handleLogout = async () => {
     if (user?.isManualStudent) {
       try {
@@ -53,7 +60,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
       isCollapsible: true,
       isOpen: coursesOpen,
       setOpen: setCoursesOpen,
-      items: user?.assignedCategories || []
+      items: courses || []
     },
     {
       id: 'exams', 
@@ -166,18 +173,18 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
                   </div>
                   {item.isOpen && (
                     <div className="space-y-1 mt-2">
-                    {item.id === 'courses' && Array.isArray(item.items) && item.items.map((course: string) => (
-                      <Link key={course} href={`/student/course/${encodeURIComponent(course)}`}>
+                    {item.id === 'courses' && Array.isArray(item.items) && item.items.map((course: any) => (
+                      <Link key={course.id} href={`/student/course/${encodeURIComponent(course.title)}`}>
                         <Button
                           variant="ghost"
                           className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
-                            isActiveItem(`/student/course/${encodeURIComponent(course)}`)
+                            isActiveItem(`/student/course/${encodeURIComponent(course.title)}`)
                               ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
                               : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
                           }`}
                         >
                           <FileText className="mr-2" size={16} />
-                          {course}
+                          {course.title}
                         </Button>
                       </Link>
                     ))}

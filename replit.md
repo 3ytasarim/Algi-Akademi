@@ -192,18 +192,26 @@ Preferred communication style: Simple, everyday language.
   - Frontend builds to `dist/public`, server builds to `dist/index.js`
   - Full-stack deployment with PostgreSQL database support
 
-## Recent Updates
-- **August 11, 2025**: Fixed deployment configuration conflicts and mismatches
-- **Deployment Configuration Fix**: Identified and resolved multiple deployment issues:
-  - .replit file has incorrect `deploymentTarget = "gce"` (should be `"cloudrun"`)
-  - Port mapping conflicts between multiple configurations
-  - Build command missing `npm install` dependency installation
+## Recent Updates  
+- **August 11, 2025**: Fixed öğrenci dashboard navigation and deployment issues
+- **Student Dashboard Redesign**: Complete overhaul of student dashboard experience:
+  - Replaced custom StudentSidebar with admin LayoutWrapper for consistency
+  - Admin navbar now shows student-specific menus when user.role === 'student'
+  - "Kurslarım" menu dynamically populated with student's enrolled courses from API
+  - Fixed TypeScript errors in student-dashboard.tsx with proper type assertions
+  - Courses now display properly in sidebar navigation and main dashboard
+- **API Integration Improvements**: Enhanced student course fetching:
+  - StudentSidebar now uses useQuery to fetch courses from /api/student/courses
+  - Admin Sidebar conditionally renders student courses based on user role
+  - Course links properly encoded for navigation to individual course pages
+- **Deployment Configuration Fix**: Identified and resolved deployment issues:
+  - .replit file has incorrect `deploymentTarget = "gce"` (should be `"cloudrun"`)  
+  - Port mapping conflicts resolved - app confirmed to listen on port 5000
+  - Build command updated to include `npm install` for proper dependency installation
   - Conflicting replit.toml file removed
-- **Port Resolution**: Confirmed app listens on port 5000 (as defined in server/index.ts)
 - **Previous Fixes**: Fixed consultant creation API error and field mapping issues
-- **Field Mapping Fix**: Corrected frontend-backend field mapping for consultant creation (tcNo, firstName, lastName vs tc_no, first_name, last_name)
-- **LSP Errors Resolved**: Fixed TypeScript errors in consultants.tsx for better type safety
-- **API Testing**: Confirmed consultant creation API works properly with PostgreSQL database
+- **Field Mapping Fix**: Corrected frontend-backend field mapping for consultant creation
+- **LSP Errors Resolved**: Fixed TypeScript errors in consultants.tsx and student dashboard
 - **January 2025**: Fixed deployment configuration for Autoscale deployment
 - **Package Update**: Updated @neondatabase/serverless from v0.10.4 to v1.0.1 for compatibility
 - **Deployment Fix**: Corrected .replit configuration to use Autoscale deployment target instead of static

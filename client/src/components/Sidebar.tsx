@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { useQuery } from "@tanstack/react-query";
 import { 
   Gauge, MessageSquare, Settings, Book, Users, ClipboardList, BarChart3, 
   TrendingUp, PieChart, AreaChart, UserCog, Bus, Plug, Menu, Bell, 
@@ -100,6 +101,13 @@ export default function Sidebar({
     }
   ];
 
+  // Fetch student courses if user is a student
+  const { data: studentCourses = [] } = useQuery({
+    queryKey: ["/api/student/courses"],
+    retry: false,
+    enabled: user?.role === 'student',
+  });
+
   // Filter menu items based on user role
   const getFilteredMenuItems = () => {
     if (user?.role === 'consultant') {
@@ -113,6 +121,34 @@ export default function Sidebar({
           { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
         ]
       }];
+    }
+
+    if (user?.role === 'student') {
+      // Student gets personalized dashboard and course access
+      const courseMenuItems = (studentCourses as any[]).map((course: any) => ({
+        icon: BookOpen,
+        label: course.title,
+        href: `/student/course/${encodeURIComponent(course.title)}`
+      }));
+
+      return [
+        {
+          id: "dashboard",
+          icon: Gauge,
+          label: "Ana Sayfa",
+          href: "/student-dashboard",
+          active: activeHref === "/student-dashboard"
+        },
+        {
+          id: "courses", 
+          icon: Book,
+          label: "Kurslarım",
+          hasSubmenu: true,
+          submenuItems: courseMenuItems.length > 0 ? courseMenuItems : [
+            { icon: BookOpen, label: "Henüz kurs kaydınız yok", href: "#" }
+          ]
+        }
+      ];
     }
     
     // Admin and Müdür (role === 'admin') get full access
