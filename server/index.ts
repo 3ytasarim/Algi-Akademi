@@ -7,42 +7,17 @@ import { setupVite, serveStatic, log } from "./vite";
 const app = express();
 
 // Session middleware must come before routes
-const isProduction = process.env.NODE_ENV === 'production';
-
-let sessionConfig;
-if (isProduction && process.env.DATABASE_URL) {
-  // Production: Use PostgreSQL session store
-  const pgStore = connectPg(session);
-  const sessionStore = new pgStore({
-    conString: process.env.DATABASE_URL,
-    createTableIfMissing: false,
-    ttl: 24 * 60 * 60 * 1000, // 24 hours
-    tableName: "sessions",
-  });
-  
-  sessionConfig = {
-    secret: process.env.SESSION_SECRET || 'algı-akademi-secret-key',
-    store: sessionStore,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false, // HTTPS not required for replit.app
-      httpOnly: true,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  };
-} else {
-  // Development: Use memory store
-  sessionConfig = {
-    secret: 'algı-akademi-secret-key',
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      secure: false,
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }
-  };
-}
+// Use memory store for both development and production for simplicity
+const sessionConfig = {
+  secret: process.env.SESSION_SECRET || 'algı-akademi-secret-key',
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    secure: false,
+    httpOnly: true,
+    maxAge: 24 * 60 * 60 * 1000 // 24 hours
+  }
+};
 
 app.use(session(sessionConfig));
 

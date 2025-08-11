@@ -16,9 +16,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Auth endpoints
   app.get('/api/auth/user', async (req: any, res) => {
     try {
+      console.log('=== AUTH CHECK DEBUG ===');
+      console.log('Session ID:', req.sessionID);
+      console.log('Session data:', JSON.stringify(req.session, null, 2));
+      console.log('Session auth:', req.session.auth);
+      
       if (req.session.auth && req.session.auth.isAuthenticated) {
+        console.log('Auth success, returning user:', req.session.auth.user);
         return res.json(req.session.auth.user);
       }
+      console.log('Auth failed - no valid session');
       res.status(401).json({ message: "Unauthorized" });
     } catch (error) {
       console.error("Error in auth check:", error);
@@ -309,18 +316,25 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
       }
 
-      // Store user in session
-      req.session.user = {
-        id: user.id,
-        tcKimlikNo: user.tcKimlikNo,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        role: user.role,
+      // Store user in session - consistent with other auth endpoints
+      req.session.auth = {
+        isAuthenticated: true,
+        user: {
+          id: user.id,
+          tcKimlikNo: user.tcKimlikNo,
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          role: user.role,
+        }
       };
 
+      console.log('=== CONSULTANT LOGIN SUCCESS ===');
+      console.log('Session ID:', req.sessionID);
+      console.log('Stored session auth:', JSON.stringify(req.session.auth, null, 2));
+
       res.json({
-        user: req.session.user,
+        user: req.session.auth.user,
         message: "Giriş başarılı"
       });
     } catch (error) {
