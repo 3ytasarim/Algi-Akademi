@@ -40,6 +40,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
     kayıtTarihi: new Date().toISOString().split('T')[0],
     bitişTarihi: "",
     // Step 3 - Onaylar ve Kurslar
+    isMernisOnaylı: false,
     isÜniversiteOnaylı: false,
     isEDevletOnaylı: false,
     isUluslararasıSertifikasyon: false,
@@ -75,44 +76,19 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       
       console.log("Sending student data:", submitData);
       
-      try {
-        const response = await fetch("/api/students", {
-          method: "POST",
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(submitData),
-        });
-        
-        if (!response.ok) {
-          throw new Error(`API Error: ${response.status}`);
-        }
-        
-        return await response.json();
-      } catch (apiError) {
-        console.log('API failed, using localStorage fallback for production:', apiError);
-        
-        const existingStudents = JSON.parse(localStorage.getItem('students') || '[]');
-        const newStudent = {
-          id: `student-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-          ...submitData,
-          role: 'student',
-          isManualStudent: true,
-          createdAt: new Date().toISOString(),
-          updatedAt: new Date().toISOString(),
-          password: '112233'
-        };
-        
-        existingStudents.push(newStudent);
-        localStorage.setItem('students', JSON.stringify(existingStudents));
-        
-        console.log('Student created with localStorage fallback:', newStudent.id);
-        return {
-          success: true,
-          message: 'Kursiyer başarıyla kaydedildi (Yerel olarak)',
-          student: newStudent
-        };
+      const response = await fetch("/api/students", {
+        method: "POST",
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(submitData),
+      });
+      
+      if (!response.ok) {
+        throw new Error(`API Error: ${response.status}`);
       }
+      
+      return await response.json();
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
@@ -150,6 +126,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       kayıtTarihi: new Date().toISOString().split('T')[0],
       bitişTarihi: "",
       // Step 3 - Onaylar ve Kurslar
+      isMernisOnaylı: false,
       isÜniversiteOnaylı: false,
       isEDevletOnaylı: false,
       isUluslararasıSertifikasyon: false,
