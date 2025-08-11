@@ -55,7 +55,11 @@ export default function Consultants() {
         email: data.email,
         phone: data.phone
       };
-      return await apiRequest('/api/consultants', 'POST', backendData);
+      console.log("Sending consultant data:", backendData);
+      const response = await apiRequest('/api/consultants', 'POST', backendData);
+      const result = await response.json();
+      console.log("Consultant creation response:", result);
+      return result;
     },
     onSuccess: () => {
       toast({
@@ -67,9 +71,10 @@ export default function Consultants() {
       resetForm();
     },
     onError: (error) => {
+      console.error("Consultant creation error:", error);
       toast({
         title: "Hata",
-        description: "Personel eklenirken bir hata oluştu",
+        description: `Personel eklenirken bir hata oluştu: ${error.message || 'Bilinmeyen hata'}`,
         variant: "destructive",
       });
     },
