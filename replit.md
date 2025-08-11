@@ -4,6 +4,14 @@ This is a comprehensive CRM-based educational management system (Algı Akademi) 
 
 ## Recent Changes (August 11, 2025)
 
+### STUDENT DASHBOARD DARK/LIGHT MODE CSS FIXED (August 11, 2025)
+✓ Student dashboard background now properly responds to dark/light mode
+✓ All cards, text, and UI elements updated with dark mode variants
+✓ Header, welcome card, stats cards fully responsive to theme
+✓ Course cards and activity items with proper dark backgrounds
+✓ Quick actions buttons and loading screen theme-compatible
+✓ Glass effects and borders adapt to both light and dark themes
+
 ### ADMIN LOGIN SYSTEM REDESIGNED - DUAL AUTHENTICATION (August 11, 2025)
 ✓ Admin login supports both traditional admin/112233 and TC Kimlik authentication
 ✓ Traditional admin login: admin / 112233 (fixed admin user)
