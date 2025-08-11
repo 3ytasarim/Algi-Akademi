@@ -706,18 +706,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       const studentId = req.session.auth.user.id;
-      const students = await storage.getStudents();
-      const student = students.find(s => s.id === studentId);
       
-      if (!student) {
-        return res.status(404).json({ message: 'Öğrenci bulunamadı' });
-      }
-
-      // Get all courses and filter by selected courses
-      const allCourses = await storage.getCourses();
-      const studentCourses = allCourses.filter(course => 
-        student.selectedCourses && student.selectedCourses.includes(course.id)
-      );
+      // Get courses based on student's assigned categories
+      const studentCourses = await storage.getCoursesByUserCategories(studentId);
 
       res.json(studentCourses);
     } catch (error) {
