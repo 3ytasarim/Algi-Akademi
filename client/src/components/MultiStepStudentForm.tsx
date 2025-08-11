@@ -101,10 +101,11 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
       });
       onSuccess?.();
     },
-    onError: () => {
+    onError: (error) => {
+      console.error("Student creation error:", error);
       toast({
         title: "Hata",
-        description: "Kursiyer tanımlanırken bir hata oluştu.",
+        description: `Kursiyer tanımlanırken bir hata oluştu: ${error.message || 'Bilinmeyen hata'}`,
         variant: "destructive",
       });
     },

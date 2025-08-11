@@ -323,7 +323,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.post('/api/students', async (req: any, res) => {
     try {
-      console.log("Creating student with data:", req.body);
+      console.log("=== POST /api/students REQUEST ===");
+      console.log("Headers:", req.headers);
+      console.log("Body:", JSON.stringify(req.body, null, 2));
+      console.log("Session:", req.session?.auth);
+      
+      // Validate required fields
+      if (!req.body.adı || !req.body.soyadı || !req.body.tcKimlikNo) {
+        console.log("Missing required fields");
+        return res.status(400).json({ 
+          success: false,
+          message: "Adı, soyadı ve T.C. kimlik numarası gereklidir" 
+        });
+      }
       
       // Create student
       const student = await storage.createStudent({
@@ -377,10 +389,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
         student: student 
       });
     } catch (error) {
-      console.error("Error creating student:", error);
+      console.error("=== ERROR CREATING STUDENT ===");
+      console.error("Error details:", error);
+      console.error("Stack trace:", error instanceof Error ? error.stack : 'No stack trace');
+      console.error("Request body was:", JSON.stringify(req.body, null, 2));
+      
       res.status(500).json({ 
         success: false,
-        message: "Kursiyer kaydı sırasında bir hata oluştu" 
+        message: `Kursiyer kaydı sırasında bir hata oluştu: ${error instanceof Error ? error.message : 'Bilinmeyen hata'}`,
+        error: error instanceof Error ? error.message : 'Unknown error'
       });
     }
   });
