@@ -22,43 +22,65 @@ export default function Landing() {
     if (selectedRole === 'admin') {
       setIsLoading(true);
       
-      console.log('Admin login attempt:', loginData.username, loginData.password);
-      
-      // Direct client-side authentication - skip backend entirely for now
-      if (loginData.username === 'admin' && loginData.password === '112233') {
-        console.log('Valid admin credentials detected');
+      try {
+        console.log('Admin login attempt:', loginData.username, loginData.password);
         
-        const adminUser = {
-          id: 'admin',
-          username: 'admin',
-          role: 'admin',
-          firstName: 'Admin',
-          lastName: 'User',
-          isAuthenticated: true
-        };
-        
-        // Store user in localStorage
-        localStorage.setItem('auth_user', JSON.stringify(adminUser));
-        localStorage.setItem('auth_authenticated', 'true');
-        console.log('Admin user stored in localStorage');
-        
-        toast({
-          title: "Giriş Başarılı",
-          description: "Admin paneline yönlendiriliyorsunuz...",
+        const response = await fetch('/api/auth/admin-login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          credentials: 'include',
+          body: JSON.stringify({
+            username: loginData.username,
+            password: loginData.password
+          }),
         });
-        
-        setIsLoading(false);
-        
-        // Force page reload to trigger authentication hooks
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
-        return;
-      } else {
-        console.log('Invalid admin credentials');
+
+        const data = await response.json();
+
+        if (response.ok) {
+          console.log('Backend admin login successful:', data);
+          
+          // Also store in localStorage for consistency
+          const adminUser = {
+            id: 'admin',
+            username: 'admin',
+            role: 'admin',
+            firstName: 'Admin',
+            lastName: 'User',
+            isAuthenticated: true
+          };
+          
+          localStorage.setItem('auth_user', JSON.stringify(adminUser));
+          localStorage.setItem('auth_authenticated', 'true');
+          console.log('Admin user stored in localStorage');
+          
+          toast({
+            title: "Giriş Başarılı",
+            description: "Admin paneline yönlendiriliyorsunuz...",
+          });
+          
+          setIsLoading(false);
+          
+          // Force page reload to trigger authentication hooks
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        } else {
+          console.log('Backend admin login failed:', data);
+          toast({
+            title: "Giriş Başarısız",
+            description: data.message || "Kullanıcı adı veya şifre hatalı",
+            variant: "destructive",
+          });
+          setIsLoading(false);
+        }
+      } catch (error) {
+        console.error('Admin login error:', error);
         toast({
-          title: "Giriş Başarısız",
-          description: "Kullanıcı adı veya şifre hatalı",
+          title: "Giriş Hatası",
+          description: "Sunucu bağlantısı hatası",
           variant: "destructive",
         });
         setIsLoading(false);
