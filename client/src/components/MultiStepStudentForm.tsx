@@ -65,16 +65,24 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
   // Create student mutation
   const createStudentMutation = useMutation({
     mutationFn: async (data: any) => {
+      console.log("=== FRONTEND FORM SUBMISSION ===");
+      console.log("Raw form data:", data);
+      
       const prices = calculateTotalPrice();
+      console.log("Calculated prices:", prices);
       
       const submitData = {
         ...data,
         totalPrice: prices.total.toString(),
         finalPrice: prices.final.toString(),
-        discountAmount: data.discountAmount || "0"
+        discountAmount: data.discountAmount || "0",
+        // Ensure required fields are present
+        password: "112233",
+        role: "student", 
+        isManualStudent: true
       };
       
-      console.log("Sending student data:", submitData);
+      console.log("=== FINAL SUBMIT DATA ===", JSON.stringify(submitData, null, 2));
       
       const response = await fetch("/api/students", {
         method: "POST",
@@ -84,11 +92,19 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
         body: JSON.stringify(submitData),
       });
       
+      console.log("=== API RESPONSE ===");
+      console.log("Status:", response.status);
+      console.log("Headers:", response.headers);
+      
       if (!response.ok) {
-        throw new Error(`API Error: ${response.status}`);
+        const errorText = await response.text();
+        console.error("API Error Response:", errorText);
+        throw new Error(`API Error ${response.status}: ${errorText}`);
       }
       
-      return await response.json();
+      const result = await response.json();
+      console.log("=== SUCCESS RESPONSE ===", result);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
