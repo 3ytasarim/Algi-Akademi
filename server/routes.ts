@@ -336,6 +336,30 @@ export async function registerRoutes(app: Express): Promise<Server> {
           message: "Adı, soyadı ve T.C. kimlik numarası gereklidir" 
         });
       }
+
+      // Check for existing email if provided
+      if (req.body.email) {
+        const existingUsers = await storage.getStudents();
+        const emailExists = existingUsers.some(user => user.email === req.body.email);
+        if (emailExists) {
+          console.log("Email already exists:", req.body.email);
+          return res.status(400).json({ 
+            success: false,
+            message: "Bu email adresi zaten kullanılıyor. Farklı bir email adresi giriniz." 
+          });
+        }
+      }
+
+      // Check for existing TC Kimlik No
+      const existingUsers = await storage.getStudents();
+      const tcExists = existingUsers.some(user => user.tcKimlikNo === req.body.tcKimlikNo);
+      if (tcExists) {
+        console.log("TC Kimlik No already exists:", req.body.tcKimlikNo);
+        return res.status(400).json({ 
+          success: false,
+          message: "Bu T.C. kimlik numarası zaten kayıtlı. Farklı bir T.C. kimlik numarası giriniz." 
+        });
+      }
       
       // Create student
       const student = await storage.createStudent({

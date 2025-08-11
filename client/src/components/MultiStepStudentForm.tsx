@@ -47,6 +47,22 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
     selectedCourses: [] as string[],
     discountAmount: "0",
   });
+  
+  // Auto-generate email when name changes
+  const generateEmail = (ad: string, soyad: string) => {
+    if (ad && soyad) {
+      const cleanAd = ad.toLowerCase().replace(/[çğıöşü]/g, (char) => {
+        const map: { [key: string]: string } = { ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u' };
+        return map[char] || char;
+      }).replace(/[^a-z]/g, '');
+      const cleanSoyad = soyad.toLowerCase().replace(/[çğıöşü]/g, (char) => {
+        const map: { [key: string]: string } = { ç: 'c', ğ: 'g', ı: 'i', ö: 'o', ş: 's', ü: 'u' };
+        return map[char] || char;
+      }).replace(/[^a-z]/g, '');
+      return `${cleanAd}.${cleanSoyad}@algiacademy.com`;
+    }
+    return "";
+  };
 
   const [tcValidation, setTcValidation] = useState<{
     isValid: boolean | null;
@@ -155,7 +171,18 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
   };
 
   const handleInputChange = (field: string, value: string | boolean | string[]) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData(prev => {
+      const newData = { ...prev, [field]: value };
+      
+      // Auto-generate email when name changes
+      if ((field === 'adı' || field === 'soyadı') && typeof value === 'string') {
+        const ad = field === 'adı' ? value : prev.adı;
+        const soyad = field === 'soyadı' ? value : prev.soyadı;
+        newData.email = generateEmail(ad, soyad);
+      }
+      
+      return newData;
+    });
     
     // T.C. Kimlik No özel kontrolü
     if (field === 'tcKimlikNo' && typeof value === 'string') {
