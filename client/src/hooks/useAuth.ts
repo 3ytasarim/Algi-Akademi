@@ -49,6 +49,13 @@ export function useAuth() {
         if (response.ok) {
           return response.json();
         }
+        // If backend returns 401, clear localStorage
+        if (response.status === 401 && localAuth) {
+          console.log('useAuth: Backend 401, clearing localStorage');
+          localStorage.removeItem('auth_user');
+          localStorage.removeItem('auth_authenticated');
+          setLocalAuth(null);
+        }
         return null;
       } catch {
         return null;
@@ -56,9 +63,10 @@ export function useAuth() {
     }
   });
 
-  // Compute final auth state
+  // Compute final auth state - prioritize backend over localStorage
   const authState = useMemo(() => {
-    const user = backendUser || localAuth;
+    // If backend is loaded and returns null, clear localStorage user
+    const user = backendUser || (backendLoading ? localAuth : null);
     const isLoading = localLoading || backendLoading;
     
     return {
