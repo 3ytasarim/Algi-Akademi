@@ -266,26 +266,27 @@ export default function StudentDashboard() {
                           Kalan Gün
                         </h3>
                       </div>
-                      <div className="animate-bounce text-center">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white mb-2">
-                          {countdown.days}
-                        </p>
-                        <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 animate-pulse mb-3">
-                          gün kaldı
-                        </p>
-                        <div className="flex justify-center space-x-4 text-sm font-medium text-purple-500 dark:text-purple-400">
-                          <div className="text-center">
-                            <div className="animate-pulse text-lg font-bold">{countdown.hours.toString().padStart(2, '0')}</div>
-                            <div className="text-xs">saat</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="animate-pulse text-lg font-bold">{countdown.minutes.toString().padStart(2, '0')}</div>
-                            <div className="text-xs">dakika</div>
-                          </div>
-                          <div className="text-center">
-                            <div className="animate-pulse text-lg font-bold">{countdown.seconds.toString().padStart(2, '0')}</div>
-                            <div className="text-xs">saniye</div>
-                          </div>
+                      <div className="text-center">
+                        <div className="flex items-center justify-center space-x-2 text-2xl font-bold text-slate-900 dark:text-white">
+                          <span className="transition-all duration-300 ease-in-out hover:scale-105 hover:text-purple-600">
+                            {countdown.days}
+                          </span>
+                          <span className="text-lg text-purple-600 dark:text-purple-400">Gün</span>
+                          
+                          <span className="transition-all duration-300 ease-in-out hover:scale-105 hover:text-purple-600">
+                            {countdown.hours.toString().padStart(2, '0')}
+                          </span>
+                          <span className="text-lg text-purple-600 dark:text-purple-400">Saat</span>
+                          
+                          <span className="transition-all duration-300 ease-in-out hover:scale-105 hover:text-purple-600">
+                            {countdown.minutes.toString().padStart(2, '0')}
+                          </span>
+                          <span className="text-lg text-purple-600 dark:text-purple-400">Dakika</span>
+                          
+                          <span className="transition-all duration-500 ease-in-out transform hover:scale-110 hover:text-purple-600 animate-pulse">
+                            {countdown.seconds.toString().padStart(2, '0')}
+                          </span>
+                          <span className="text-lg text-purple-600 dark:text-purple-400">Saniye</span>
                         </div>
                       </div>
                     </div>
