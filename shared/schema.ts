@@ -64,15 +64,28 @@ export const users = pgTable("users", {
 
 export const courses = pgTable("courses", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  title: varchar("title").notNull(),
-  description: text("description"),
+  title: varchar("title").notNull(), // Kurs ismi
+  description: text("description"), // Kurs açıklama
   instructorId: varchar("instructor_id").references(() => users.id),
-  price: decimal("price", { precision: 10, scale: 2 }),
-  duration: integer("duration"), // section count (toplam ders sayısı)
-  sections: jsonb("sections").default("[]"), // array of sections with name and pdf info
-  status: varchar("status").notNull().default('active'), // 'active', 'inactive', 'starting'
+  price: decimal("price", { precision: 10, scale: 2 }), // Ücret
+  totalLessons: integer("total_lessons").default(0), // Toplam ders sayısı (15 ders gibi)
+  status: varchar("status").notNull().default('active'), // 'active', 'inactive'
   category: varchar("category").notNull().default('Genel'), // course category for assignment
   thumbnail: varchar("thumbnail"),
+  createdAt: timestamp("created_at").defaultNow(),
+  updatedAt: timestamp("updated_at").defaultNow(),
+});
+
+// Kurs dersleri tablosu - Her kursun birden fazla dersi olabilir
+export const lessons = pgTable("lessons", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  courseId: varchar("course_id").references(() => courses.id).notNull(),
+  title: varchar("title").notNull(), // "Eğitim bölümünün ismini giriniz" alanı
+  orderIndex: integer("order_index").notNull(), // Ders sıralaması (1, 2, 3...)
+  pdfUrl: varchar("pdf_url"), // PDF dosyasının Object Storage URL'i
+  pdfFileName: varchar("pdf_file_name"), // Orijinal PDF dosya adı
+  duration: integer("duration"), // Ders süresi (dakika)
+  isActive: boolean("is_active").default(true),
   createdAt: timestamp("created_at").defaultNow(),
   updatedAt: timestamp("updated_at").defaultNow(),
 });
@@ -165,8 +178,16 @@ export const coursesRelations = relations(courses, ({ one, many }) => ({
     fields: [courses.instructorId],
     references: [users.id],
   }),
+  lessons: many(lessons), // Kursa ait dersler
   enrollments: many(enrollments),
   exams: many(exams),
+}));
+
+export const lessonsRelations = relations(lessons, ({ one }) => ({
+  course: one(courses, {
+    fields: [lessons.courseId],
+    references: [courses.id],
+  }),
 }));
 
 export const enrollmentsRelations = relations(enrollments, ({ one }) => ({
@@ -242,6 +263,12 @@ export const insertCourseSchema = createInsertSchema(courses).omit({
   updatedAt: true,
 });
 
+export const insertLessonSchema = createInsertSchema(lessons).omit({
+  id: true,
+  createdAt: true,
+  updatedAt: true,
+});
+
 export const insertEnrollmentSchema = createInsertSchema(enrollments).omit({
   id: true,
   enrolledAt: true,
@@ -283,6 +310,10 @@ export const insertIntegrationSchema = createInsertSchema(integrations).omit({
 // Types
 export type UpsertUser = typeof users.$inferInsert;
 export type User = typeof users.$inferSelect;
+export type Course = typeof courses.$inferSelect;
+export type InsertCourse = z.infer<typeof insertCourseSchema>;
+export type Lesson = typeof lessons.$inferSelect;
+export type InsertLesson = z.infer<typeof insertLessonSchema>;
 
 // Notification schemas
 export const notifications = pgTable("notifications", {

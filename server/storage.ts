@@ -1,6 +1,7 @@
 import {
   users,
   courses,
+  lessons,
   enrollments,
   exams,
   examResults,
@@ -15,6 +16,8 @@ import {
   type UpsertUser,
   type Course,
   type InsertCourse,
+  type Lesson,
+  type InsertLesson,
   type Enrollment,
   type InsertEnrollment,
   type Exam,
@@ -47,6 +50,12 @@ export interface IStorage {
   createCourse(course: InsertCourse): Promise<Course>;
   updateCourse(id: string, course: Partial<InsertCourse>): Promise<Course>;
   deleteCourse(id: string): Promise<void>;
+  
+  // Lesson operations
+  getLessonsByCourse(courseId: string): Promise<Lesson[]>;
+  createLesson(lesson: InsertLesson): Promise<Lesson>;
+  updateLesson(id: string, lesson: Partial<InsertLesson>): Promise<Lesson>;
+  deleteLesson(id: string): Promise<void>;
   
   // Enrollment operations
   getEnrollments(): Promise<(Enrollment & { student: User; course: Course })[]>;
@@ -211,6 +220,36 @@ export class DatabaseStorage implements IStorage {
       console.error("Storage.deleteCourse error:", error);
       throw error;
     }
+  }
+
+  // Lesson operations
+  async getLessonsByCourse(courseId: string): Promise<Lesson[]> {
+    return await db
+      .select()
+      .from(lessons)
+      .where(eq(lessons.courseId, courseId))
+      .orderBy(lessons.orderIndex);
+  }
+
+  async createLesson(lesson: InsertLesson): Promise<Lesson> {
+    const [newLesson] = await db
+      .insert(lessons)
+      .values(lesson)
+      .returning();
+    return newLesson;
+  }
+
+  async updateLesson(id: string, lesson: Partial<InsertLesson>): Promise<Lesson> {
+    const [updatedLesson] = await db
+      .update(lessons)
+      .set({ ...lesson, updatedAt: new Date() })
+      .where(eq(lessons.id, id))
+      .returning();
+    return updatedLesson;
+  }
+
+  async deleteLesson(id: string): Promise<void> {
+    await db.delete(lessons).where(eq(lessons.id, id));
   }
 
   // Enrollment operations
