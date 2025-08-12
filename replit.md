@@ -78,6 +78,8 @@ Preferred communication style: Simple, everyday language.
 ✓ Animated fade-in for login data, bounce animation for placeholder data
 ✓ Added "Aktif" status indicator with pulsing green dot
 ✓ Moved category count to footer section of the card
+✓ Removed "Toplam Kategori" display from last login card for cleaner look
+✓ Changed "Bölüm Sayısı" to "Ders Sayısı" and "X saat" to "X ders" in course cards
 ✓ Database migration completed successfully with npm run db:push
 ✓ Backend returns updated user data with lastLogin timestamp after authentication
 

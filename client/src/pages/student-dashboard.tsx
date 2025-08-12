@@ -307,13 +307,13 @@ export default function StudentDashboard() {
                       </div>
                       <div className="text-right">
                         <p className="text-2xl font-black text-slate-900 dark:text-white">{course.price}₺</p>
-                        <p className="text-slate-500 dark:text-gray-400 text-sm">{course.duration} saat</p>
+                        <p className="text-slate-500 dark:text-gray-400 text-sm">{course.duration} ders</p>
                       </div>
                     </div>
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-slate-600 dark:text-gray-300">Bölüm Sayısı</span>
-                        <span className="text-slate-900 dark:text-white font-bold">{course.duration || 0} bölüm</span>
+                        <span className="text-slate-600 dark:text-gray-300">Ders Sayısı</span>
+                        <span className="text-slate-900 dark:text-white font-bold">{course.duration || 0} ders</span>
                       </div>
                     </div>
                     <Link href={`/student/course/${encodeURIComponent(course.title)}`}>
