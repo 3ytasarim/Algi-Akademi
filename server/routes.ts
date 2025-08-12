@@ -1032,6 +1032,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               firstName: userStudent.firstName,
               lastName: userStudent.lastName,
               role: 'student',
+              bitişTarihi: userStudent.bitişTarihi,
               isManualStudent: true
             },
             isAuthenticated: true
@@ -1045,6 +1046,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
               firstName: userStudent.firstName,
               lastName: userStudent.lastName,
               role: 'student',
+              bitişTarihi: userStudent.bitişTarihi,
               isManualStudent: true
             }
           });

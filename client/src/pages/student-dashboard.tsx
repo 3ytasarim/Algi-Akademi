@@ -36,14 +36,14 @@ export default function StudentDashboard() {
     seconds: 0
   });
 
-  // Countdown timer effect
+  // Countdown timer effect - using real student end date
   useEffect(() => {
-    const targetDate = new Date();
-    targetDate.setFullYear(targetDate.getFullYear() + 1); // 1 year from now
-    
+    if (!user?.bitişTarihi) return;
+
     const timer = setInterval(() => {
       const now = new Date().getTime();
-      const distance = targetDate.getTime() - now;
+      const targetDate = new Date(user.bitişTarihi).getTime();
+      const distance = targetDate - now;
       
       if (distance > 0) {
         const days = Math.floor(distance / (1000 * 60 * 60 * 24));
@@ -52,11 +52,14 @@ export default function StudentDashboard() {
         const seconds = Math.floor((distance % (1000 * 60)) / 1000);
         
         setCountdown({ days, hours, minutes, seconds });
+      } else {
+        // Course expired
+        setCountdown({ days: 0, hours: 0, minutes: 0, seconds: 0 });
       }
     }, 1000);
     
     return () => clearInterval(timer);
-  }, []);
+  }, [user?.bitişTarihi]);
 
   // Redirect to home if not authenticated
   useEffect(() => {
