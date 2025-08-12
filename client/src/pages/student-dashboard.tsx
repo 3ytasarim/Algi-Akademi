@@ -25,6 +25,7 @@ export default function StudentDashboard() {
   const { toast } = useToast();
   const { isAuthenticated, isLoading, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -146,7 +147,12 @@ export default function StudentDashboard() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-black">
-      <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <StudentSidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)}
+        sidebarCollapsed={sidebarCollapsed}
+        toggleSidebarCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
       
       {/* Main Content */}
       <div className="flex-1 flex flex-col">

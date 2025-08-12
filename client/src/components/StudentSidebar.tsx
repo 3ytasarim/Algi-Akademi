@@ -3,7 +3,6 @@ import { Link, useLocation } from "wouter";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { useQuery } from "@tanstack/react-query";
-// Note: Using custom collapsible implementation since @/components/ui/collapsible may not exist
 import { 
   GraduationCap,
   BookOpen,
@@ -13,21 +12,23 @@ import {
   ChevronRight,
   Award,
   Settings,
-  LogOut
+  LogOut,
+  ChevronLeft
 } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
+import logoUrl from "@assets/algi_akademi_logo_1754502318927.png";
 
 interface StudentSidebarProps {
   isOpen: boolean;
   onClose: () => void;
+  sidebarCollapsed?: boolean;
+  toggleSidebarCollapse?: () => void;
 }
 
-export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
+export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, toggleSidebarCollapse }: StudentSidebarProps) {
   const [location] = useLocation();
   const { user } = useAuth();
-  const [coursesOpen, setCoursesOpen] = useState(true);
-  const [examsOpen, setExamsOpen] = useState(false);
-  const [personalOpen, setPersonalOpen] = useState(false);
+  const [expandedMenus, setExpandedMenus] = useState<string[]>(["courses"]);
 
   // Fetch student courses from API
   const { data: courses = [] } = useQuery({
@@ -54,162 +55,199 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
 
 
 
-  const isActiveItem = (path: string) => location === path;
+  const toggleMenu = (menuId: string) => {
+    setExpandedMenus(prev => 
+      prev.includes(menuId) 
+        ? prev.filter(id => id !== menuId)
+        : [...prev, menuId]
+    );
+  };
+
+  const menuItems = [
+    {
+      id: "dashboard",
+      icon: Settings,
+      label: "Ana Sayfa",
+      href: "/student-dashboard",
+      active: location === "/student-dashboard"
+    },
+    {
+      id: "courses",
+      icon: BookOpen,
+      label: "Kurslarım",
+      hasSubmenu: true,
+      submenuItems: Array.isArray(courses) && courses.length > 0 ? 
+        courses.map((course: any) => ({
+          icon: FileText,
+          label: course.title,
+          href: `/student/course/${encodeURIComponent(course.title)}`
+        })) : []
+    },
+    {
+      id: "exams",
+      icon: Award,
+      label: "Sınavlarım",
+      hasSubmenu: true,
+      submenuItems: [],
+      badge: "Yakında"
+    },
+    {
+      id: "profile",
+      icon: User,
+      label: "Kişisel Bilgilerim",
+      href: "/student/profile",
+      active: location === "/student/profile"
+    }
+  ];
 
   return (
     <>
-      {/* Mobile overlay */}
-      {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/50 z-40 lg:hidden"
-          onClick={onClose}
-        />
-      )}
-
       {/* Sidebar */}
-      <div className={`
-        fixed left-0 top-0 h-full w-80 bg-gray-800 dark:bg-gray-900 text-white z-50
-        transform transition-transform duration-300 ease-in-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:relative lg:z-auto
-        shadow-2xl border-r border-gray-700/50 flex flex-col
-      `}>
-        {/* Header */}
-        <div className="p-6 border-b border-gray-700/50 bg-gradient-to-r from-blue-600/10 to-indigo-600/10">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-xl flex items-center justify-center shadow-lg">
-              <GraduationCap size={26} className="text-white" />
-            </div>
-            <div>
-              <h2 className="text-xl font-black text-white">Algı Akademi</h2>
-              <p className="text-sm text-blue-200 font-medium">Öğrenci Portalı</p>
-            </div>
-          </div>
-        </div>
-
-        {/* User Info */}
-        <div className="p-4 border-b border-gray-700/50 bg-gray-800/50">
-          <div className="flex items-center space-x-4">
-            <div className="w-14 h-14 bg-gradient-to-br from-gray-600 to-gray-700 rounded-full flex items-center justify-center ring-2 ring-blue-500/20">
-              <User size={24} className="text-gray-200" />
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-white text-lg">{user?.firstName} {user?.lastName}</p>
-              <p className="text-sm text-blue-300 font-medium">Aktif Öğrenci</p>
-            </div>
-          </div>
-        </div>
-
-        {/* Navigation */}
-        <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-          {/* Dashboard Link */}
-          <Link href="/student-dashboard">
-            <Button
-              variant="ghost"
-              className={`w-full justify-start text-left h-auto p-4 rounded-xl transition-all duration-200 ${
-                location === '/student-dashboard' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg' 
-                  : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-              }`}
-            >
-              <Settings className="mr-3" size={20} />
-              <span className="font-semibold">Ana Sayfa</span>
-            </Button>
-          </Link>
-
-          {/* Courses Section */}
-          <div>
-            <Button
-              variant="ghost"
-              className="w-full justify-between text-left h-auto p-4 rounded-xl text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
-              onClick={() => setCoursesOpen(!coursesOpen)}
-            >
-              <div className="flex items-center">
-                <BookOpen className="mr-3" size={20} />
-                Kurslarım
-              </div>
-              {coursesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </Button>
-            {coursesOpen && (
-              <div className="space-y-1 mt-2">
-                {Array.isArray(courses) && courses.length > 0 ? (
-                  courses.map((course: any) => (
-                    <Link key={course.id} href={`/student/course/${encodeURIComponent(course.title)}`}>
-                      <Button
-                        variant="ghost"
-                        className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
-                          isActiveItem(`/student/course/${encodeURIComponent(course.title)}`)
-                            ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
-                            : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                        }`}
-                      >
-                        <FileText className="mr-2" size={16} />
-                        {course.title}
-                      </Button>
-                    </Link>
-                  ))
-                ) : (
-                  <div className="p-3 pl-12 text-sm text-gray-500">
-                    Henüz kurs atanmamış
-                  </div>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Exams Section */}
-          <div>
-            <Button
-              variant="ghost"
-              className="w-full justify-between text-left h-auto p-4 rounded-xl text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
-              onClick={() => setExamsOpen(!examsOpen)}
-            >
-              <div className="flex items-center">
-                <Award className="mr-3" size={20} />
-                Sınavlarım
-                <Badge variant="secondary" className="ml-2 text-xs bg-yellow-600 text-white">
-                  Yakında
-                </Badge>
-              </div>
-              {examsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
-            </Button>
-            {examsOpen && (
-              <div className="space-y-1 mt-2">
-                <div className="p-3 pl-12 text-sm text-gray-500">
-                  Henüz sınav bulunmuyor
+      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-20 shadow-2xl border-r border-red-500/20 ${
+        sidebarCollapsed ? 'w-20' : 'w-72'
+      } ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+        
+        {/* Toggle Button */}
+        {toggleSidebarCollapse && (
+          <button
+            onClick={toggleSidebarCollapse}
+            className="absolute top-2 right-2 text-white/70 hover:text-white hover:bg-red-600/40 p-1.5 rounded-md transition-all duration-200 border border-red-600/30 bg-red-900/20 shadow-sm backdrop-blur-sm z-30"
+            title={sidebarCollapsed ? "Menüyü Genişlet" : "Menüyü Daralt"}
+          >
+            {sidebarCollapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+          </button>
+        )}
+        
+        {/* Logo Section */}
+        <div className="p-6 border-b border-red-800/20 pt-12">
+          <div className="flex flex-col items-center space-y-3">
+            {!sidebarCollapsed ? (
+              <>
+                <img src={logoUrl} alt="Algı Akademi" className="w-24 h-24 rounded-xl shadow-lg" />
+                <div className="text-center">
+                  <h3 className="text-white font-bold text-base">Öğrenci Portalı</h3>
+                  <p className="text-white/60 text-sm">👋 Merhaba {user?.firstName || 'Öğrenci'} {user?.lastName || ''}</p>
+                </div>
+              </>
+            ) : (
+              <div className="relative group">
+                <img src={logoUrl} alt="AA" className="w-12 h-12 rounded-lg shadow-md hover:shadow-lg transition-all duration-200" />
+                <div className="absolute left-full ml-3 top-1/2 transform -translate-y-1/2 bg-gray-900 text-white text-xs rounded-lg px-3 py-2 opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap z-50 shadow-xl">
+                  Algı Akademi
+                  <div className="absolute left-0 top-1/2 transform -translate-x-1 -translate-y-1/2 w-0 h-0 border-t-4 border-b-4 border-r-4 border-transparent border-r-gray-900"></div>
                 </div>
               </div>
             )}
           </div>
+        </div>
 
-          {/* Personal Section */}
-          <div>
-            <Link href="/student/profile">
-              <Button
-                variant="ghost"
-                className={`w-full justify-start text-left h-auto p-4 rounded-xl transition-all duration-200 ${
-                  isActiveItem('/student/profile')
-                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg'
-                    : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
-                }`}
-              >
-                <User className="mr-3" size={20} />
-                <span className="font-semibold">Kişisel Bilgilerim</span>
-              </Button>
-            </Link>
-          </div>
-        </nav>
+        {/* Navigation Menu */}
+        <div className="flex-1 overflow-y-auto p-4">
+          <nav className="space-y-2">
+            {menuItems.map((item) => (
+              <div key={item.id}>
+                {item.hasSubmenu ? (
+                  <div>
+                    <button
+                      onClick={() => toggleMenu(item.id)}
+                      className={`w-full flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-200 text-gray-300 hover:text-white hover:bg-slate-800/50 group ${
+                        expandedMenus.includes(item.id) ? 'bg-slate-800/30' : ''
+                      }`}
+                    >
+                      <div className="flex items-center">
+                        <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} transition-colors text-primary group-hover:text-accent`} />
+                        </div>
+                        {!sidebarCollapsed && (
+                          <span className="font-medium">{item.label}</span>
+                        )}
+                        {!sidebarCollapsed && item.badge && (
+                          <Badge variant="secondary" className="ml-2 text-xs bg-yellow-600 text-white">
+                            {item.badge}
+                          </Badge>
+                        )}
+                      </div>
+                      {!sidebarCollapsed && (
+                        expandedMenus.includes(item.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />
+                      )}
+                    </button>
+                    {sidebarCollapsed && (
+                      <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                        {item.label}
+                      </div>
+                    )}
+                    
+                    {expandedMenus.includes(item.id) && !sidebarCollapsed && (
+                      <div className="mt-1 ml-6 space-y-1">
+                        {item.submenuItems && item.submenuItems.length > 0 ? (
+                          item.submenuItems.map((subItem, subIndex) => (
+                            <Link key={subIndex} href={subItem.href}>
+                              <div className={`flex items-center px-4 py-2 text-sm rounded-lg transition-all duration-200 group cursor-pointer ${
+                                subItem.href === location 
+                                  ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                                  : 'text-gray-400 hover:text-white hover:bg-slate-800/30'
+                              }`}>
+                                <div className="w-6 h-6 flex items-center justify-center mr-3 flex-shrink-0">
+                                  <subItem.icon className="w-4 h-4 transition-colors text-gray-500 group-hover:text-primary" />
+                                </div>
+                                <span>{subItem.label}</span>
+                              </div>
+                            </Link>
+                          ))
+                        ) : (
+                          <div className="px-4 py-2 text-sm text-gray-500">
+                            {item.id === 'courses' ? 'Henüz kurs atanmamış' : 'Henüz içerik yok'}
+                          </div>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="relative group">
+                    <Link href={item.href || '#'}>
+                      <div className={`flex items-center px-4 py-3 rounded-xl transition-all duration-200 group cursor-pointer ${
+                        item.active 
+                          ? 'bg-gradient-to-r from-primary to-accent text-white shadow-lg shadow-primary/25' 
+                          : 'text-gray-300 hover:text-white hover:bg-slate-800/50'
+                      }`}>
+                        <div className={`${sidebarCollapsed ? 'w-8 h-8' : 'w-6 h-6'} flex items-center justify-center mr-3 flex-shrink-0`}>
+                          <item.icon className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} transition-colors ${
+                            item.active ? 'text-white' : 'text-primary group-hover:text-accent'
+                          }`} />
+                        </div>
+                        {!sidebarCollapsed && <span className="font-medium">{item.label}</span>}
+                      </div>
+                    </Link>
+                    {sidebarCollapsed && (
+                      <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                        {item.label}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            ))}
+          </nav>
+        </div>
 
-        {/* Logout */}
-        <div className="p-4 border-t border-gray-700/50 bg-gray-800/30">
-          <Button
+        {/* Bottom Actions */}
+        <div className="p-4 border-t border-red-800/20 space-y-2">
+          <button
             onClick={handleLogout}
-            variant="ghost"
-            className="w-full justify-start text-left h-auto p-4 rounded-xl text-red-400 hover:bg-red-900/30 hover:text-red-300 transition-all duration-200"
+            className={`w-full flex items-center px-4 py-3 rounded-xl transition-all duration-200 text-red-400 hover:text-red-300 hover:bg-red-900/30 group ${
+              sidebarCollapsed ? 'justify-center' : 'justify-start'
+            }`}
           >
-            <LogOut className="mr-3" size={20} />
-            <span className="font-semibold">Çıkış Yap</span>
-          </Button>
+            <div className={`${sidebarCollapsed ? 'w-6 h-6' : 'w-5 h-5'} flex items-center justify-center ${sidebarCollapsed ? '' : 'mr-3'} flex-shrink-0`}>
+              <LogOut className={`${sidebarCollapsed ? 'w-5 h-5' : 'w-4 h-4'} transition-colors`} />
+            </div>
+            {!sidebarCollapsed && <span className="font-medium">Çıkış Yap</span>}
+            {sidebarCollapsed && (
+              <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 px-3 py-1.5 bg-slate-800 text-white text-sm rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none whitespace-nowrap z-30 border border-slate-600">
+                Çıkış Yap
+              </div>
+            )}
+          </button>
         </div>
       </div>
     </>

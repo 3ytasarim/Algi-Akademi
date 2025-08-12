@@ -25,6 +25,7 @@ export default function StudentCourseDetails() {
   const params = useParams();
   const courseName = params.courseTitle ? decodeURIComponent(params.courseTitle) : '';
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -113,7 +114,12 @@ export default function StudentCourseDetails() {
 
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-black">
-      <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <StudentSidebar 
+        isOpen={sidebarOpen} 
+        onClose={() => setSidebarOpen(false)}
+        sidebarCollapsed={sidebarCollapsed}
+        toggleSidebarCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
       
       <div className="flex-1 flex flex-col">
         <TopBar 
