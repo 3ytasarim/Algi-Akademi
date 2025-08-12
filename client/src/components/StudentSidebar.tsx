@@ -103,7 +103,7 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
   return (
     <>
       {/* Sidebar */}
-      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-20 shadow-2xl border-r border-red-500/20 ${
+      <div className={`fixed left-0 top-0 h-full bg-gradient-to-br from-red-950/95 to-black/95 text-white transform transition-all duration-300 z-50 shadow-2xl border-r border-red-500/20 ${
         sidebarCollapsed ? 'w-20' : 'w-72'
       } ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         
