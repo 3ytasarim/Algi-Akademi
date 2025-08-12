@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { Storage as CloudStorage } from "@google-cloud/storage";
 import { storage } from "./storage";
-import { insertCourseSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
+import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
