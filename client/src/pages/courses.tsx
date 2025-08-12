@@ -67,8 +67,36 @@ export default function CoursesPage() {
 
   // Create course mutation
   const createCourseMutation = useMutation({
-    mutationFn: async (data: any) => {
-      const response = await apiRequest("/api/courses", "POST", data);
+    mutationFn: async (courseData: any) => {
+      const formData = new FormData();
+      
+      // Add course data as JSON string
+      const courseDataWithoutFiles = {
+        ...courseData,
+        sections: courseData.sections.map((section: any) => ({
+          name: section.name,
+          // Don't include pdfFile in the JSON - it will be uploaded separately
+        }))
+      };
+      
+      formData.append('courseData', JSON.stringify(courseDataWithoutFiles));
+      
+      // Add PDF files for each section
+      courseData.sections.forEach((section: any, index: number) => {
+        if (section.pdfFile) {
+          formData.append(`section_${index}_pdf`, section.pdfFile);
+        }
+      });
+      
+      const response = await fetch("/api/courses", {
+        method: "POST",
+        body: formData,
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to create course');
+      }
+      
       return response.json();
     },
     onSuccess: () => {

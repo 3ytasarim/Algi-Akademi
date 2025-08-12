@@ -1,10 +1,23 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import multer from "multer";
+import { Storage as CloudStorage } from "@google-cloud/storage";
 import { storage } from "./storage";
 import { insertCourseSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
 import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Object Storage Configuration
+  const cloudStorage = new CloudStorage();
+  const bucketName = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID!;
+  const bucket = cloudStorage.bucket(bucketName);
+
+  // Multer configuration for file uploads
+  const upload = multer({
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  });
+
   // Simple session management for admin/student
   app.use((req: any, res, next) => {
     if (!req.session.auth) {
@@ -167,9 +180,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses', async (req: any, res) => {
+  app.post('/api/courses', upload.any(), async (req: any, res) => {
     try {
-      const validatedData = insertCourseSchema.parse(req.body);
+      console.log("=== COURSE CREATION REQUEST ===");
+      console.log("Body:", req.body);
+      console.log("Files:", req.files);
+
+      const courseData = JSON.parse(req.body.courseData || '{}');
+      const validatedData = insertCourseSchema.parse(courseData);
+      
+      // Handle PDF file uploads for each section
+      if (req.files && req.files.length > 0) {
+        const sections = courseData.sections || [];
+        
+        for (let i = 0; i < sections.length; i++) {
+          const section = sections[i];
+          const pdfFile = req.files.find((file: any) => file.fieldname === `section_${i}_pdf`);
+          
+          if (pdfFile) {
+            try {
+              // Upload PDF to object storage
+              const fileName = `courses/${validatedData.title}/section_${i}_${section.name || 'document'}.pdf`;
+              const file = bucket.file(fileName);
+              
+              const stream = file.createWriteStream({
+                metadata: {
+                  contentType: pdfFile.mimetype,
+                }
+              });
+
+              await new Promise((resolve, reject) => {
+                stream.on('error', reject);
+                stream.on('finish', resolve);
+                stream.end(pdfFile.buffer);
+              });
+
+              // Make file publicly accessible
+              await file.makePublic();
+              
+              // Update section with PDF URL
+              section.pdfFile = {
+                name: pdfFile.originalname,
+                url: `https://storage.googleapis.com/${bucketName}/${fileName}`,
+                size: `${Math.round(pdfFile.size / 1024)} KB`
+              };
+              
+              console.log(`PDF uploaded for section ${i}:`, section.pdfFile.url);
+            } catch (uploadError) {
+              console.error(`Error uploading PDF for section ${i}:`, uploadError);
+            }
+          }
+        }
+        
+        validatedData.sections = sections;
+      }
+      
       const course = await storage.createCourse(validatedData);
       
       // Create activity
