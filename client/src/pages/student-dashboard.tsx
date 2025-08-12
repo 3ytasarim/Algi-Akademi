@@ -228,8 +228,7 @@ export default function StudentDashboard() {
                 </div>
               </div>
               <div className="text-xs text-slate-500 dark:text-gray-400 border-t border-white/20 dark:border-gray-700/20 pt-3">
-                <div className="flex items-center justify-between">
-                  <span>Toplam Kategori: {user?.assignedCategories?.length || 0}</span>
+                <div className="flex items-center justify-end">
                   <div className="flex items-center animate-pulse">
                     <div className="w-2 h-2 bg-green-500 rounded-full mr-1"></div>
                     <span>Aktif</span>
