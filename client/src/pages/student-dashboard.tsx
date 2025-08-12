@@ -149,7 +149,7 @@ export default function StudentDashboard() {
   }
 
   return (
-    <LayoutWrapper title="Öğrenci Paneli" subtitle={`Hoşgeldin, ${user?.firstName}!`} activeHref="/student-dashboard">
+    <LayoutWrapper title="Öğrenci Paneli" subtitle="" activeHref="/student-dashboard">
       <div className="space-y-6">
         {/* Welcome Card */}
         <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
