@@ -660,14 +660,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log('Student found:', student.firstName, student.lastName);
 
-      // Return student profile data
+      // Return student profile data - handle both firstName/lastName and adı/soyadı fields
       const profileData = {
         id: student.id,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        email: student.email,
-        telefon: student.telefon,
-        tcKimlikNo: student.tcKimlikNo,
+        firstName: student.firstName || student.adı || '',
+        lastName: student.lastName || student.soyadı || '',
+        email: student.email || '',
+        telefon: student.telefon || '',
+        tcKimlikNo: student.tcKimlikNo || '',
         doğumTarihi: student.doğumTarihi,
         cinsiyet: student.cinsiyet,
         meslek: student.meslek
