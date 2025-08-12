@@ -68,49 +68,67 @@ export default function CoursesPage() {
   // Create course mutation
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: any) => {
-      console.log("=== FRONTEND COURSE CREATION DEBUG ===");
+      console.log("=== EMERGENCY FRONTEND FIX ===");
       console.log("Input courseData:", courseData);
       
-      const formData = new FormData();
-      
-      // Add course data as JSON string
-      const courseDataWithoutFiles = {
-        ...courseData,
-        sections: courseData.sections.map((section: any) => ({
-          name: section.name,
-          // Don't include pdfFile in the JSON - it will be uploaded separately
-        }))
-      };
-      
-      console.log("Processed courseData:", courseDataWithoutFiles);
-      formData.append('courseData', JSON.stringify(courseDataWithoutFiles));
-      
-      // Add PDF files for each section
-      courseData.sections.forEach((section: any, index: number) => {
-        if (section.pdfFile) {
-          console.log(`Adding PDF for section ${index}:`, section.pdfFile.name);
-          formData.append(`section_${index}_pdf`, section.pdfFile);
+      try {
+        const formData = new FormData();
+        
+        // Add course data as JSON string
+        const courseDataWithoutFiles = {
+          ...courseData,
+          sections: courseData.sections.map((section: any) => ({
+            name: section.name,
+            // Don't include pdfFile in the JSON - it will be uploaded separately
+          }))
+        };
+        
+        console.log("Processed courseData:", courseDataWithoutFiles);
+        formData.append('courseData', JSON.stringify(courseDataWithoutFiles));
+        
+        // Add PDF files for each section
+        courseData.sections.forEach((section: any, index: number) => {
+          if (section.pdfFile) {
+            console.log(`Adding PDF for section ${index}:`, section.pdfFile.name);
+            formData.append(`section_${index}_pdf`, section.pdfFile);
+          }
+        });
+        
+        console.log("Making request to /api/courses");
+        const response = await fetch("/api/courses", {
+          method: "POST",
+          body: formData,
+        });
+        
+        console.log("Response status:", response.status);
+        console.log("Response headers:", Object.fromEntries(response.headers.entries()));
+        
+        // Get response text first, then try to parse
+        const responseText = await response.text();
+        console.log("Raw response:", responseText);
+        
+        if (!response.ok) {
+          console.error("Error response status:", response.status);
+          console.error("Error response text:", responseText);
+          
+          // Try to parse as JSON for better error message
+          try {
+            const errorData = JSON.parse(responseText);
+            throw new Error(errorData.message || `Server error: ${response.status}`);
+          } catch (parseError) {
+            throw new Error(`Failed to create course: ${response.status} - ${responseText}`);
+          }
         }
-      });
-      
-      console.log("Making request to /api/courses");
-      const response = await fetch("/api/courses", {
-        method: "POST",
-        body: formData,
-      });
-      
-      console.log("Response status:", response.status);
-      console.log("Response ok:", response.ok);
-      
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error("Error response text:", errorText);
-        throw new Error(`Failed to create course: ${response.status} - ${errorText}`);
+        
+        // Parse successful response
+        const result = JSON.parse(responseText);
+        console.log("Success response:", result);
+        return result;
+        
+      } catch (error) {
+        console.error("=== FRONTEND COURSE CREATION ERROR ===", error);
+        throw error;
       }
-      
-      const result = await response.json();
-      console.log("Success response:", result);
-      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
