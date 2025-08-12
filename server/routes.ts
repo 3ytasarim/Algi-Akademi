@@ -816,6 +816,64 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get course sections and materials by course title
+  app.get('/api/student/course/:courseTitle/sections', async (req: any, res) => {
+    try {
+      const user = req.session.auth?.user;
+      if (!user || user.role !== 'student') {
+        return res.status(403).json({ message: "Access denied. Students only." });
+      }
+
+      const courseTitle = decodeURIComponent(req.params.courseTitle);
+      
+      // Get the specific course by title
+      const courses = await storage.getCoursesByUserCategories(user.assignedCategories || []);
+      const course = courses.find(c => c.title === courseTitle);
+      
+      if (!course) {
+        return res.status(404).json({ message: "Course not found or access denied" });
+      }
+
+      // Parse sections from jsonb field
+      let sections = [];
+      if (course.sections && typeof course.sections === 'string') {
+        try {
+          sections = JSON.parse(course.sections);
+        } catch (e) {
+          sections = [];
+        }
+      } else if (Array.isArray(course.sections)) {
+        sections = course.sections;
+      }
+
+      res.json({
+        course: {
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          category: course.category,
+          price: course.price,
+          duration: course.duration,
+          instructorId: course.instructorId
+        },
+        sections: sections.map((section: any, index: number) => ({
+          id: index + 1,
+          title: section.name || `Bölüm ${index + 1}`,
+          materials: section.pdfFile ? [{
+            id: index + 1,
+            type: "pdf",
+            title: section.pdfFile.name || section.name || `Materyal ${index + 1}`,
+            url: section.pdfFile.url || '#',
+            size: section.pdfFile.size || '0 MB'
+          }] : []
+        }))
+      });
+    } catch (error) {
+      console.error("Error fetching course sections:", error);
+      res.status(500).json({ message: "Failed to fetch course sections" });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

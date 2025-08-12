@@ -65,3 +65,18 @@ Preferred communication style: Simple, everyday language.
 - **Vite Build**: Optimized frontend production builds
 - **Static Assets**: Served through Express
 - **Deployment Configuration**: Autoscale deployment (required for Node.js runtime and backend API)
+
+# Recent Changes (August 12, 2025)
+
+## STUDENT COURSE MATERIALS INTEGRATION COMPLETED (August 12, 2025)
+✓ Replaced fake activities with real course-related activities in Son Aktiviteler section
+✓ Activities now show actual course assignments: "Kurs tanımlandı", "İlerleme kaydedildi", system notifications
+✓ Added new activity types: course_assigned, course_progress, system_notification with proper icons
+✓ Changed course button from "Kursa Devam Et" to "Kurs İçeriğini Gör" with FileText icon
+✓ Created new StudentCourseDetails page showing course sections and PDF materials
+✓ Added backend endpoint `/api/student/course/:courseTitle/sections` to fetch real course data
+✓ Course sections now display admin panel uploaded materials (e.g., "Gastronomi 1", "Gastronomi 2")
+✓ PDF buttons changed from "İndir" to "Oku" - opens PDFs in new tab for viewing
+✓ Real-time course section parsing from database jsonb field
+✓ Activities generated from student's actual enrolled courses via getCoursesByUserCategories
+✓ Course statistics show real data: total materials, sections, duration from database

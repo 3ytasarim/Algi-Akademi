@@ -39,60 +39,31 @@ export default function StudentCourseDetails() {
     }
   }, [isAuthenticated, isLoading, toast]);
 
-  // Fetch student courses to find the specific course
-  const { data: courses = [], isLoading: coursesLoading } = useQuery({
-    queryKey: ["/api/student/courses"],
+  // Fetch course sections from backend
+  const { data: courseData, isLoading: coursesLoading } = useQuery({
+    queryKey: ["/api/student/course", courseName, "sections"],
     retry: false,
   });
 
-  // Type assertion for courses
-  const typedCourses = courses as Array<{
-    id: string;
-    title: string;
-    description: string;
-    category: string;
-    price: number;
-    duration: number;
-    instructor?: string;
-  }>;
+  // Extract course and sections from API response
+  const course = (courseData as any)?.course;
+  const courseSections = (courseData as any)?.sections || [];
 
-  // Find the specific course
-  const course = typedCourses.find(c => c.title === courseName);
-
-  // Mock course sections and materials - in real app this would come from API
-  const courseSections = [
-    {
-      id: 1,
-      title: "Giriş ve Temel Bilgiler",
-      materials: [
-        { id: 1, type: "pdf", title: "Kurs Tanıtım Dokümanı", url: "#", size: "2.1 MB" },
-        { id: 2, type: "pdf", title: "Temel Kavramlar", url: "#", size: "1.8 MB" }
-      ]
-    },
-    {
-      id: 2,
-      title: "Orta Seviye Konular",
-      materials: [
-        { id: 3, type: "pdf", title: "Pratik Uygulamalar", url: "#", size: "3.2 MB" },
-        { id: 4, type: "pdf", title: "Örnek Projeler", url: "#", size: "4.1 MB" }
-      ]
-    },
-    {
-      id: 3,
-      title: "İleri Seviye ve Proje",
-      materials: [
-        { id: 5, type: "pdf", title: "İleri Teknikler", url: "#", size: "2.7 MB" },
-        { id: 6, type: "pdf", title: "Final Projesi Kılavuzu", url: "#", size: "1.5 MB" }
-      ]
+  const handleViewPdf = (material: any) => {
+    if (material.url && material.url !== '#') {
+      // Open PDF in new tab for viewing
+      window.open(material.url, '_blank');
+      toast({
+        title: "PDF Açılıyor",
+        description: `${material.title} yeni sekmede açılıyor...`,
+      });
+    } else {
+      toast({
+        title: "PDF Bulunamadı",
+        description: "Bu materyal henüz yüklenmiş değil.",
+        variant: "destructive"
+      });
     }
-  ];
-
-  const handleDownload = (material: any) => {
-    // In real app, this would handle PDF download
-    toast({
-      title: "İndiriliyor",
-      description: `${material.title} indiriliyor...`,
-    });
   };
 
   if (isLoading || !isAuthenticated || coursesLoading) {
@@ -164,12 +135,7 @@ export default function StudentCourseDetails() {
                     <Clock size={16} className="mr-1" />
                     <span className="text-sm">{course.duration} saat</span>
                   </div>
-                  {course.instructor && (
-                    <div className="flex items-center text-slate-600 dark:text-gray-300">
-                      <Star size={16} className="mr-1" />
-                      <span className="text-sm">{course.instructor}</span>
-                    </div>
-                  )}
+
                 </div>
 
                 <div className="mb-4">
@@ -193,7 +159,7 @@ export default function StudentCourseDetails() {
         <div className="space-y-6">
           <h2 className="text-2xl font-black text-slate-900 dark:text-white">Kurs Bölümleri ve Materyaller</h2>
           
-          {courseSections.map((section) => (
+          {courseSections.map((section: any) => (
             <Card key={section.id} className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
               <CardHeader className="pb-3">
                 <CardTitle className="text-xl font-bold text-slate-900 dark:text-white flex items-center">
@@ -204,7 +170,7 @@ export default function StudentCourseDetails() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {section.materials.map((material) => (
+                {section.materials.map((material: any) => (
                   <div key={material.id} className="glass-effect p-4 rounded-2xl border border-white/20 dark:border-gray-700/20 hover:shadow-lg transition-all duration-300 bg-white/30 dark:bg-gray-700/30">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
@@ -221,11 +187,11 @@ export default function StudentCourseDetails() {
                         </div>
                       </div>
                       <Button 
-                        onClick={() => handleDownload(material)}
+                        onClick={() => handleViewPdf(material)}
                         className="glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white font-medium"
                       >
-                        <Download className="mr-2" size={16} />
-                        İndir
+                        <FileText className="mr-2" size={16} />
+                        Oku
                       </Button>
                     </div>
                   </div>
@@ -243,7 +209,7 @@ export default function StudentCourseDetails() {
                 <FileText size={24} className="text-blue-600" />
               </div>
               <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-1">
-                {courseSections.reduce((total, section) => total + section.materials.length, 0)}
+                {courseSections.reduce((total: any, section: any) => total + section.materials.length, 0)}
               </h3>
               <p className="text-slate-600 dark:text-gray-300 font-medium">Toplam Materyal</p>
             </CardContent>
