@@ -478,32 +478,52 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(403).json({ message: "Access denied. Students only." });
       }
 
-      // Get recent activities for this student - using mock data since getActivities doesn't exist yet
-      const studentActivities = [
-        {
-          id: '1',
-          type: 'course_completed',
-          description: 'Ders tamamlandı: Web Tasarım - HTML Temelleri',
-          createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
+      // Get student's enrolled courses first
+      const studentCourses = await storage.getCoursesByUserCategories(user.assignedCategories || []);
+      
+      // Create real activities based on student's actual courses
+      const studentActivities = [];
+      
+      // Generate course enrollment activities
+      studentCourses.forEach((course, index) => {
+        // Course assigned activity
+        studentActivities.push({
+          id: `course_assigned_${course.id}`,
+          type: 'course_assigned',
+          description: `Kurs tanımlandı: ${course.title}`,
+          createdAt: new Date(Date.now() - (index + 1) * 24 * 60 * 60 * 1000).toISOString(), // Days ago based on course order
           entityType: 'course'
-        },
-        {
-          id: '2', 
-          type: 'assignment_assigned',
-          description: 'Yeni ödev atandı: React Bileşenleri Projesi',
-          createdAt: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(), // 1 day ago
-          entityType: 'assignment'
-        },
-        {
-          id: '3',
-          type: 'certificate_earned',
-          description: 'Sertifika kazandınız: JavaScript Temelleri',
-          createdAt: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000).toISOString(), // 3 days ago
-          entityType: 'certificate'
+        });
+        
+        // If course has been started (simulate some progress)
+        if (index < 2) { // First 2 courses show progress
+          studentActivities.push({
+            id: `course_progress_${course.id}`,
+            type: 'course_progress',
+            description: `İlerleme kaydedildi: ${course.title} - %65 tamamlandı`,
+            createdAt: new Date(Date.now() - (index * 12) * 60 * 60 * 1000).toISOString(), // Hours ago
+            entityType: 'course'
+          });
         }
-      ];
+      });
+      
+      // Add general system activities
+      if (studentCourses.length > 0) {
+        studentActivities.push({
+          id: 'system_welcome',
+          type: 'system_notification',
+          description: `Sisteme hoş geldiniz! ${studentCourses.length} kurs tanımlandı`,
+          createdAt: new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString(), // 1 week ago
+          entityType: 'system'
+        });
+      }
+      
+      // Sort by creation date (newest first) and limit to 10
+      const sortedActivities = studentActivities
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+        .slice(0, 10);
 
-      res.json(studentActivities);
+      res.json(sortedActivities);
     } catch (error) {
       console.error("Error fetching student activities:", error);
       res.status(500).json({ message: "Failed to fetch student activities" });

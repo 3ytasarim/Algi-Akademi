@@ -122,10 +122,16 @@ export default function StudentDashboard() {
     switch (type) {
       case 'course_completed':
         return <CheckCircle size={20} className="text-green-600" />;
+      case 'course_assigned':
+        return <BookOpen size={20} className="text-blue-600" />;
+      case 'course_progress':
+        return <Timer size={20} className="text-orange-600" />;
       case 'assignment_assigned':
         return <FileText size={20} className="text-blue-600" />;
       case 'certificate_earned':
         return <Award size={20} className="text-yellow-600" />;
+      case 'system_notification':
+        return <CheckCircle size={20} className="text-green-600" />;
       default:
         return <Clock size={20} className="text-gray-600" />;
     }
@@ -277,8 +283,8 @@ export default function StudentDashboard() {
                     </div>
                     <Link href={`/student/course/${encodeURIComponent(course.title)}`}>
                       <Button className="w-full glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white font-medium">
-                        <Play className="mr-2" size={16} />
-                        Kursa Devam Et
+                        <FileText className="mr-2" size={16} />
+                        Kurs İçeriğini Gör
                       </Button>
                     </Link>
                   </div>

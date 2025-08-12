@@ -12,6 +12,7 @@ import Dashboard from "@/pages/dashboard";
 import StudentDashboard from "@/pages/student-dashboard";
 import StudentProfile from "@/pages/student-profile";
 import StudentCourse from "@/pages/student-course";
+import StudentCourseDetails from "@/pages/student-course-details";
 import Reports from "@/pages/reports";
 import AddStudent from "@/pages/add-student";
 import StudentList from "@/pages/student-list";
@@ -45,7 +46,7 @@ function Router() {
               <Route path="/" component={StudentDashboard} />
               <Route path="/student-dashboard" component={StudentDashboard} />
               <Route path="/student/profile" component={StudentProfile} />
-              <Route path="/student/course/:courseTitle" component={StudentCourse} />
+              <Route path="/student/course/:courseTitle" component={StudentCourseDetails} />
             </>
           ) : (
             <>
