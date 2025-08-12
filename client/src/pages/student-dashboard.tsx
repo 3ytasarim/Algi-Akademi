@@ -382,34 +382,7 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
-        {/* Quick Actions */}
-        <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
-          <CardHeader>
-            <CardTitle className="text-2xl font-black text-slate-900 dark:text-white">
-              Hızlı İşlemler
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <Button className="glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
-                <BookOpen size={24} />
-                <span>Kurslara Git</span>
-              </Button>
-              <Button className="glass-effect bg-green-500/10 text-green-600 border-green-500/20 hover:bg-green-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
-                <Award size={24} />
-                <span>Sertifikalar</span>
-              </Button>
-              <Button className="glass-effect bg-blue-500/10 text-blue-600 border-blue-500/20 hover:bg-blue-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
-                <FileText size={24} />
-                <span>Ödevler</span>
-              </Button>
-              <Button className="glass-effect bg-purple-500/10 text-purple-600 border-purple-500/20 hover:bg-purple-500 hover:text-white p-6 h-auto flex flex-col items-center space-y-2 font-medium">
-                <Star size={24} />
-                <span>Değerlendirme</span>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
+
       </div>
     </LayoutWrapper>
   );
