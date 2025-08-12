@@ -244,20 +244,27 @@ export class DatabaseStorage implements IStorage {
 
   async getCoursesByUserCategories(userId: string): Promise<Course[]> {
     const user = await this.getUser(userId);
+    console.log('getCoursesByUserCategories - User:', user?.tcKimlikNo, 'Categories:', user?.assignedCategories);
+    
     if (!user?.assignedCategories || user.assignedCategories.length === 0) {
+      console.log('No assigned categories, returning empty array');
       return [];
     }
 
-    return await db
+    const result = await db
       .select()
       .from(courses)
       .where(
         and(
           eq(courses.status, 'active'),
+          // Fix: Use inArray for category matching
           sql`${courses.category} = ANY(${user.assignedCategories})`
         )
       )
       .orderBy(desc(courses.createdAt));
+    
+    console.log('Found courses for categories:', result.length);
+    return result;
   }
 
   async getUsersByRole(role: string): Promise<User[]> {

@@ -232,38 +232,54 @@ export default function StudentDashboard() {
                         </div>
                       ) : (
                         <div className="animate-bounce">
-                          <p className="text-2xl font-black text-slate-900 dark:text-white mb-1">
+                          <p className="text-2xl font-black text-slate-700 dark:text-gray-300 mb-1">
                             --.--.----
                           </p>
-                          <p className="text-lg font-semibold text-slate-500 dark:text-gray-400">
+                          <p className="text-lg font-semibold text-gray-500 dark:text-gray-400 animate-pulse">
                             --:--:--
                           </p>
                         </div>
                       )}
                     </div>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center">
-                      <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse mr-2"></div>
-                      <span className="text-sm text-green-600 dark:text-green-400 font-medium">Aktif</span>
+                    <div className="flex flex-col items-center">
+                      <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mb-1"></div>
+                      <span className="text-xs text-green-600 dark:text-green-400 font-medium">Aktif</span>
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-gradient-to-br from-orange-500/10 to-red-600/5 dark:from-orange-500/20 dark:to-red-600/10">
+              {/* Third Card - Course Count and Remaining Days */}
+              <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-gradient-to-br from-purple-500/10 to-purple-600/5 dark:from-purple-500/20 dark:to-purple-600/10 hover:shadow-lg transition-all duration-300 hover:scale-105">
                 <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-3xl font-black text-slate-900 dark:text-white">{countdown.days}</h3>
-                      <p className="text-slate-600 dark:text-gray-300 font-medium">Kalan Gün</p>
-                      <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                        {countdown.hours}s {countdown.minutes}d {countdown.seconds}sn
-                      </p>
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className="w-10 h-10 bg-purple-500/20 rounded-xl flex items-center justify-center mr-3 animate-pulse">
+                          <Calendar size={20} className="text-purple-600" />
+                        </div>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+                          Kalan Gün
+                        </h3>
+                      </div>
+                      <div className="animate-bounce">
+                        <p className="text-2xl font-black text-slate-900 dark:text-white mb-1">
+                          365
+                        </p>
+                        <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 animate-pulse">
+                          gün kaldı
+                        </p>
+                      </div>
                     </div>
-                    <div className="w-12 h-12 bg-orange-500/20 rounded-2xl flex items-center justify-center">
-                      <Timer size={24} className="text-orange-600" />
+                    <div className="flex flex-col items-center">
+                      <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse mb-1"></div>
+                      <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Aktif</span>
                     </div>
+                  </div>
+                  <div className="mt-4">
+                    <p className="text-sm text-slate-600 dark:text-gray-400">
+                      Toplam {typedCourses.length} ders
+                    </p>
                   </div>
                 </CardContent>
               </Card>
