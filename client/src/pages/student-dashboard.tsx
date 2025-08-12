@@ -306,7 +306,6 @@ export default function StudentDashboard() {
                         </Badge>
                       </div>
                       <div className="text-right">
-                        <p className="text-2xl font-black text-slate-900 dark:text-white">{course.price}₺</p>
                         <p className="text-slate-500 dark:text-gray-400 text-sm">{course.duration} ders</p>
                       </div>
                     </div>
