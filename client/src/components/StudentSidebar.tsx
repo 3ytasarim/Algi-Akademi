@@ -52,38 +52,7 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
     }
   };
 
-  const menuItems = [
-    {
-      id: 'courses',
-      title: 'Kurslarım',
-      icon: BookOpen,
-      isCollapsible: true,
-      isOpen: coursesOpen,
-      setOpen: setCoursesOpen,
-      items: courses || []
-    },
-    {
-      id: 'exams', 
-      title: 'Sınavlarım',
-      icon: Award,
-      isCollapsible: true,
-      isOpen: examsOpen,
-      setOpen: setExamsOpen,
-      comingSoon: true,
-      items: []
-    },
-    {
-      id: 'personal',
-      title: 'Kişisel İşlemler',
-      icon: User,
-      isCollapsible: true,
-      isOpen: personalOpen,
-      setOpen: setPersonalOpen,
-      items: [
-        { name: 'Kişisel Bilgilerim', path: '/student/profile' }
-      ]
-    }
-  ];
+
 
   const isActiveItem = (path: string) => location === path;
 
@@ -148,81 +117,81 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
             </Button>
           </Link>
 
-          {/* Menu Items */}
-          {menuItems.map((item) => (
-            <div key={item.id}>
-              {item.isCollapsible ? (
-                <div>
-                  <div>
+          {/* Courses Section */}
+          <div>
+            <Button
+              variant="ghost"
+              className="w-full justify-between text-left h-auto p-4 rounded-xl text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+              onClick={() => setCoursesOpen(!coursesOpen)}
+            >
+              <div className="flex items-center">
+                <BookOpen className="mr-3" size={20} />
+                Kurslarım
+              </div>
+              {coursesOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </Button>
+            {coursesOpen && (
+              <div className="space-y-1 mt-2">
+                {Array.isArray(courses) && courses.map((course: any) => (
+                  <Link key={course.id} href={`/student/course/${encodeURIComponent(course.title)}`}>
                     <Button
                       variant="ghost"
-                      className="w-full justify-between text-left h-auto p-4 rounded-xl text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
-                      onClick={() => item.setOpen(!item.isOpen)}
+                      className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
+                        isActiveItem(`/student/course/${encodeURIComponent(course.title)}`)
+                          ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
+                          : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                      }`}
                     >
-                      <div className="flex items-center">
-                        <item.icon className="mr-3" size={20} />
-                        {item.title}
-                        {item.comingSoon && (
-                          <Badge variant="secondary" className="ml-2 text-xs bg-yellow-600 text-white">
-                            Yakında
-                          </Badge>
-                        )}
-                      </div>
-                      {item.isOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                      <FileText className="mr-2" size={16} />
+                      {course.title}
                     </Button>
-                  </div>
-                  {item.isOpen && (
-                    <div className="space-y-1 mt-2">
-                    {item.id === 'courses' && Array.isArray(item.items) && item.items.map((course: any) => (
-                      <Link key={course.id} href={`/student/course/${encodeURIComponent(course.title)}`}>
-                        <Button
-                          variant="ghost"
-                          className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
-                            isActiveItem(`/student/course/${encodeURIComponent(course.title)}`)
-                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
-                              : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                          }`}
-                        >
-                          <FileText className="mr-2" size={16} />
-                          {course.title}
-                        </Button>
-                      </Link>
-                    ))}
-                    {item.id === 'personal' && Array.isArray(item.items) && item.items.map((subItem: { name: string; path: string }) => (
-                      <Link key={subItem.path} href={subItem.path}>
-                        <Button
-                          variant="ghost"
-                          className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
-                            isActiveItem(subItem.path)
-                              ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
-                              : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
-                          }`}
-                        >
-                          <User className="mr-2" size={16} />
-                          {subItem.name}
-                        </Button>
-                      </Link>
-                    ))}
-                    </div>
-                  )}
+                  </Link>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Exams Section */}
+          <div>
+            <Button
+              variant="ghost"
+              className="w-full justify-between text-left h-auto p-4 rounded-xl text-gray-300 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+              onClick={() => setExamsOpen(!examsOpen)}
+            >
+              <div className="flex items-center">
+                <Award className="mr-3" size={20} />
+                Sınavlarım
+                <Badge variant="secondary" className="ml-2 text-xs bg-yellow-600 text-white">
+                  Yakında
+                </Badge>
+              </div>
+              {examsOpen ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+            </Button>
+            {examsOpen && (
+              <div className="space-y-1 mt-2">
+                <div className="p-3 pl-12 text-sm text-gray-500">
+                  Henüz sınav bulunmuyor
                 </div>
-              ) : (
-                <Link href={`/student/${item.id}`}>
-                  <Button
-                    variant="ghost"
-                    className={`w-full justify-start text-left h-auto p-3 rounded-lg ${
-                      isActiveItem(`/student/${item.id}`)
-                        ? 'bg-blue-600 text-white hover:bg-blue-700'
-                        : 'text-gray-300 hover:bg-gray-700 hover:text-white'
-                    }`}
-                  >
-                    <item.icon className="mr-3" size={20} />
-                    {item.title}
-                  </Button>
-                </Link>
-              )}
-            </div>
-          ))}
+              </div>
+            )}
+          </div>
+
+          {/* Personal Section */}
+          <div>
+            <Link href="/student/profile">
+              <Button
+                variant="ghost"
+                className={`w-full justify-start text-left h-auto p-4 rounded-xl transition-all duration-200 ${
+                  isActiveItem('/student/profile')
+                    ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-lg'
+                    : 'text-gray-300 hover:bg-gray-700/50 hover:text-white'
+                }`}
+              >
+                <User className="mr-3" size={20} />
+                <span className="font-semibold">Kişisel Bilgilerim</span>
+              </Button>
+            </Link>
+          </div>
         </nav>
 
         {/* Logout */}
