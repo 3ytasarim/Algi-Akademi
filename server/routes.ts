@@ -914,9 +914,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log('=== STUDENT LOGIN ATTEMPT ===');
       console.log('TC:', tcKimlikNo, 'Password provided:', password ? 'YES' : 'NO');
       
-      // First try users table for manual students
-      const allUsers = await storage.getUsers();
-      const userStudent = allUsers.find(u => u.tcKimlikNo === tcKimlikNo && u.role === 'student');
+      // First try users table for manual students  
+      const allUsers = await storage.getAllUsers();
+      const userStudent = allUsers.find((u: any) => u.tcKimlikNo === tcKimlikNo && u.role === 'student');
       
       if (userStudent) {
         console.log('Found user-student:', userStudent.firstName, userStudent.lastName);
