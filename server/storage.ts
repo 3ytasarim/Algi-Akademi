@@ -123,22 +123,25 @@ export class DatabaseStorage implements IStorage {
     return course;
   }
 
-  async createCourse(course: InsertCourse): Promise<Course> {
-    const [newCourse] = await db.insert(courses).values(course).returning();
-    return newCourse;
-  }
-
-  async updateCourse(id: string, course: Partial<InsertCourse>): Promise<Course> {
+  async updateCourse(id: string, courseData: Partial<InsertCourse>): Promise<Course> {
     const [updatedCourse] = await db
       .update(courses)
-      .set({ ...course, updatedAt: new Date() })
+      .set({ ...courseData, updatedAt: new Date() })
       .where(eq(courses.id, id))
       .returning();
     return updatedCourse;
   }
 
   async deleteCourse(id: string): Promise<void> {
+    // First delete related lessons
+    await db.delete(lessons).where(eq(lessons.courseId, id));
+    // Then delete the course
     await db.delete(courses).where(eq(courses.id, id));
+  }
+
+  async createCourse(course: InsertCourse): Promise<Course> {
+    const [newCourse] = await db.insert(courses).values(course).returning();
+    return newCourse;
   }
 
   // Lesson operations
