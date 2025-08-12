@@ -266,17 +266,26 @@ export default function StudentDashboard() {
                           Kalan Gün
                         </h3>
                       </div>
-                      <div className="animate-bounce">
-                        <p className="text-3xl font-black text-slate-900 dark:text-white mb-1">
+                      <div className="animate-bounce text-center">
+                        <p className="text-3xl font-black text-slate-900 dark:text-white mb-2">
                           {countdown.days}
                         </p>
-                        <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 animate-pulse">
+                        <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 animate-pulse mb-3">
                           gün kaldı
                         </p>
-                        <div className="flex space-x-2 text-sm font-medium text-purple-500 dark:text-purple-400 mt-2">
-                          <span className="animate-pulse">{countdown.hours.toString().padStart(2, '0')}s</span>
-                          <span className="animate-pulse">{countdown.minutes.toString().padStart(2, '0')}d</span>
-                          <span className="animate-pulse">{countdown.seconds.toString().padStart(2, '0')}sn</span>
+                        <div className="flex justify-center space-x-4 text-sm font-medium text-purple-500 dark:text-purple-400">
+                          <div className="text-center">
+                            <div className="animate-pulse text-lg font-bold">{countdown.hours.toString().padStart(2, '0')}</div>
+                            <div className="text-xs">saat</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="animate-pulse text-lg font-bold">{countdown.minutes.toString().padStart(2, '0')}</div>
+                            <div className="text-xs">dakika</div>
+                          </div>
+                          <div className="text-center">
+                            <div className="animate-pulse text-lg font-bold">{countdown.seconds.toString().padStart(2, '0')}</div>
+                            <div className="text-xs">saniye</div>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -285,11 +294,7 @@ export default function StudentDashboard() {
                       <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Aktif</span>
                     </div>
                   </div>
-                  <div className="mt-4">
-                    <p className="text-sm text-slate-600 dark:text-gray-400">
-                      Toplam {typedCourses.length} ders
-                    </p>
-                  </div>
+
                 </CardContent>
               </Card>
             </div>
