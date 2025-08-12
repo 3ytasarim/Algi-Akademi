@@ -60,7 +60,7 @@ export default function StudentCourseDetails() {
     } else {
       toast({
         title: "PDF Bulunamadı",
-        description: "Bu materyal henüz yüklenmiş değil.",
+        description: "Bu bölüm için henüz PDF materyali yüklenmemiş. Admin panelden PDF eklenmelidir.",
         variant: "destructive"
       });
     }
@@ -170,7 +170,7 @@ export default function StudentCourseDetails() {
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                {section.materials.map((material: any) => (
+                {section.materials.length > 0 ? section.materials.map((material: any) => (
                   <div key={material.id} className="glass-effect p-4 rounded-2xl border border-white/20 dark:border-gray-700/20 hover:shadow-lg transition-all duration-300 bg-white/30 dark:bg-gray-700/30">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center flex-1">
@@ -195,7 +195,15 @@ export default function StudentCourseDetails() {
                       </Button>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center py-8 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30">
+                    <FileText className="mx-auto text-slate-400 dark:text-gray-500 mb-3" size={32} />
+                    <h4 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Henüz Materyal Yok</h4>
+                    <p className="text-slate-600 dark:text-gray-300 text-sm">
+                      Bu bölüm için henüz PDF materyali yüklenmemiş.
+                    </p>
+                  </div>
+                )}
               </CardContent>
             </Card>
           ))}

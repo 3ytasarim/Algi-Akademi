@@ -966,16 +966,34 @@ export async function registerRoutes(app: Express): Promise<Server> {
         },
         sections: sections.map((section: any, index: number) => {
           console.log(`Processing section ${index}:`, section);
-          return {
-            id: index + 1,
-            title: section.name || `Bölüm ${index + 1}`,
-            materials: section.pdfFile ? [{
+          
+          // Check if pdfFile exists and has valid URL
+          let materials: any[] = [];
+          if (section.pdfFile && Object.keys(section.pdfFile).length > 0) {
+            let pdfUrl = section.pdfFile.url;
+            
+            // If URL is placeholder, try to construct proper object storage URL
+            if (!pdfUrl || pdfUrl === '#') {
+              // Generate expected object storage URL based on course title and section name
+              const sanitizedCourseTitle = course.title.replace(/[^a-zA-Z0-9]/g, '_');
+              const sanitizedSectionName = (section.name || `section_${index}`).replace(/[^a-zA-Z0-9]/g, '_');
+              pdfUrl = `https://storage.googleapis.com/${bucketName}/courses/${sanitizedCourseTitle}/section_${index}_${sanitizedSectionName}.pdf`;
+              console.log(`Generated URL for section ${index}:`, pdfUrl);
+            }
+            
+            materials = [{
               id: index + 1,
               type: "pdf", 
               title: section.pdfFile.name || section.name || `Materyal ${index + 1}`,
-              url: section.pdfFile.url || '#',
+              url: pdfUrl,
               size: section.pdfFile.size || '0 MB'
-            }] : []
+            }];
+          }
+          
+          return {
+            id: index + 1,
+            title: section.name || `Bölüm ${index + 1}`,
+            materials: materials
           };
         })
       });
