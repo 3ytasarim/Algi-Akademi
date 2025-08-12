@@ -133,23 +133,9 @@ export default function StudentCourseDetails() {
                   </Badge>
                   <div className="flex items-center text-slate-600 dark:text-gray-300">
                     <Clock size={16} className="mr-1" />
-                    <span className="text-sm">{course.duration} saat</span>
+                    <span className="text-sm">{course.duration} ders</span>
                   </div>
-
                 </div>
-
-                <div className="mb-4">
-                  <div className="flex justify-between text-sm mb-2">
-                    <span className="text-slate-600 dark:text-gray-300">Kurs İlerlemesi</span>
-                    <span className="text-slate-900 dark:text-white font-bold">65%</span>
-                  </div>
-                  <Progress value={65} className="h-3" />
-                </div>
-              </div>
-              
-              <div className="text-right">
-                <p className="text-3xl font-black text-slate-900 dark:text-white mb-2">{course.price}₺</p>
-                <p className="text-slate-500 dark:text-gray-400">Kurs Ücreti</p>
               </div>
             </div>
           </CardContent>
