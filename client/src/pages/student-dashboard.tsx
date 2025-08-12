@@ -145,11 +145,11 @@ export default function StudentDashboard() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-black transition-colors duration-300">
+    <div className="flex min-h-screen bg-gray-50 dark:bg-black">
       <StudentSidebar isOpen={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       
       {/* Main Content */}
-      <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black transition-all duration-300 lg:ml-80">
+      <div className="flex-1 flex flex-col">
         <TopBar 
           toggleSidebar={() => setSidebarOpen(!sidebarOpen)}
           title="Öğrenci Paneli"
@@ -157,7 +157,8 @@ export default function StudentDashboard() {
         />
         
         {/* Page Content */}
-        <div className="container mx-auto px-4 py-8 text-gray-900 dark:text-white">
+        <div className="flex-1 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
+          <div className="container mx-auto px-4 py-8 text-gray-900 dark:text-white">
           <div className="space-y-6">
             {/* Welcome Card */}
             <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
@@ -368,6 +369,7 @@ export default function StudentDashboard() {
                   )}
                 </CardContent>
               </Card>
+            </div>
             </div>
           </div>
         </div>

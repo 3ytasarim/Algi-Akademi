@@ -71,8 +71,8 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
         fixed left-0 top-0 h-full w-80 bg-gray-800 dark:bg-gray-900 text-white z-50
         transform transition-transform duration-300 ease-in-out
         ${isOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:z-auto
-        shadow-2xl border-r border-gray-700/50
+        lg:translate-x-0 lg:relative lg:z-auto
+        shadow-2xl border-r border-gray-700/50 flex flex-col
       `}>
         {/* Header */}
         <div className="p-6 border-b border-gray-700/50 bg-gradient-to-r from-blue-600/10 to-indigo-600/10">
