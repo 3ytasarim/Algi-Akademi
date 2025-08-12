@@ -97,7 +97,12 @@ export default function CoursesPage() {
         console.log("Making request to /api/courses");
         const response = await fetch("/api/courses", {
           method: "POST",
-          body: formData,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            courseData: JSON.stringify(courseDataWithoutFiles)
+          }),
         });
         
         console.log("Response status:", response.status);

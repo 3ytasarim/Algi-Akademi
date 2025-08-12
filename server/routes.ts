@@ -8,9 +8,22 @@ import { z } from "zod";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Object Storage Configuration
-  const cloudStorage = new CloudStorage();
-  const bucketName = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID!;
-  const bucket = cloudStorage.bucket(bucketName);
+  let cloudStorage: CloudStorage | null = null;
+  let bucketName: string | null = null;
+  let bucket: any = null;
+  
+  try {
+    if (process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID) {
+      cloudStorage = new CloudStorage();
+      bucketName = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      bucket = cloudStorage.bucket(bucketName);
+      console.log("Object storage initialized with bucket:", bucketName);
+    } else {
+      console.log("Object storage not configured - PDF uploads will be skipped");
+    }
+  } catch (error) {
+    console.error("Failed to initialize object storage:", error);
+  }
 
   // Multer configuration for file uploads
   const upload = multer({
@@ -215,13 +228,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.post('/api/courses', upload.any(), async (req: any, res) => {
+  // EMERGENCY SIMPLIFIED COURSE CREATION - NO FILE UPLOAD FOR NOW
+  app.post('/api/courses', async (req: any, res) => {
     try {
-      console.log("=== COURSE CREATION REQUEST ===");
-      console.log("Body:", req.body);
-      console.log("Files:", req.files);
-
-      const courseData = JSON.parse(req.body.courseData || '{}');
+      console.log("=== SIMPLIFIED COURSE CREATION ===");
+      console.log("Request body:", req.body);
+      
+      // Parse course data from request
+      let courseData;
+      if (req.body.courseData) {
+        courseData = JSON.parse(req.body.courseData);
+      } else {
+        courseData = req.body;
+      }
+      
+      console.log("Parsed course data:", courseData);
       
       // Extract lessons from course data
       const { sections, ...courseInfo } = courseData;
@@ -236,49 +257,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const course = await storage.createCourse(validatedCourseData);
       console.log("Course created:", course.id);
       
-      // Create lessons for the course
+      // Create lessons for the course (simplified - no PDF upload)
       for (let i = 0; i < lessonData.length; i++) {
         const lessonInfo = lessonData[i];
-        const pdfFile = req.files?.find((file: any) => file.fieldname === `section_${i}_pdf`);
         
-        let pdfUrl = null;
-        let pdfFileName = null;
-        
-        // Handle PDF file upload if exists
-        if (pdfFile) {
-          try {
-            const fileName = `courses/${course.title}/lesson_${i + 1}_${lessonInfo.name || 'document'}.pdf`;
-            const file = bucket.file(fileName);
-            
-            const stream = file.createWriteStream({
-              metadata: {
-                contentType: pdfFile.mimetype,
-              }
-            });
-
-            await new Promise((resolve, reject) => {
-              stream.on('error', reject);
-              stream.on('finish', resolve);
-              stream.end(pdfFile.buffer);
-            });
-
-            await file.makePublic();
-            pdfUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
-            pdfFileName = pdfFile.originalname;
-            
-            console.log(`PDF uploaded for lesson ${i + 1}:`, pdfUrl);
-          } catch (uploadError) {
-            console.error(`Error uploading PDF for lesson ${i + 1}:`, uploadError);
-          }
-        }
-        
-        // Create lesson record
+        // Create lesson record without PDF for now
         const lessonRecord = {
           courseId: course.id,
           title: lessonInfo.name || `Ders ${i + 1}`,
           orderIndex: i + 1,
-          pdfUrl: pdfUrl,
-          pdfFileName: pdfFileName,
+          pdfUrl: null,
+          pdfFileName: null,
           duration: lessonInfo.duration || 60,
           isActive: true
         };
@@ -305,10 +294,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
       });
     } catch (error) {
       if (error instanceof z.ZodError) {
+        console.error("Validation error:", error.errors);
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
       }
-      console.error("Error creating course:", error);
-      res.status(500).json({ message: "Failed to create course" });
+      console.error("DETAILED ERROR creating course:");
+      console.error("Error type:", (error as any).constructor?.name);
+      console.error("Error message:", (error as any).message);
+      console.error("Error stack:", (error as any).stack);
+      console.error("Full error object:", error);
+      res.status(500).json({ message: "Failed to create course", error: (error as any).message || String(error) });
     }
   });
 
