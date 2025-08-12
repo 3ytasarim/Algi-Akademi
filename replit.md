@@ -68,6 +68,16 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes (August 12, 2025)
 
+## ADMIN LOGIN TC "52306142250" SORUNU ÇÖZÜLDİ (August 12, 2025)
+✓ SORUN TESPİT EDİLDİ: TC "52306142250" admin kullanıcısı users tablosunda yoktu
+✓ ÇÖZÜM UYGULANDI: TC "52306142250" admin kullanıcısı users tablosuna eklendi
+✓ Database'de kayıt oluşturuldu: admin-52306142250 / role: admin / password: 112233
+✓ Test edildi: getUserByTcNo method'u çalışıyor
+✓ SON ADIM: Production deployment gerekiyor - manuel build production'a yansımıyor
+✓ Deploy butonuna tıklandıktan sonra TC "52306142250" / şifre "112233" ile admin girişi çalışacak
+
+# Recent Changes (August 12, 2025)
+
 ## COURSE CREATION BUG FIXED - EMERGENCY RESOLUTION COMPLETED (August 12, 2025)
 ✓ FIXED: Course creation 500 error - was caused by foreign key constraint violation
 ✓ FIXED: instructorId field was set to "admin" string but database expects valid user ID or null
