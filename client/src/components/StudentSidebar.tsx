@@ -37,19 +37,30 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
   });
 
   const handleLogout = async () => {
-    if (user?.isManualStudent) {
-      try {
-        await fetch('/api/auth/manual-logout', {
+    try {
+      console.log('Logout started for user:', user);
+      
+      if (user?.isManualStudent) {
+        console.log('Manual student logout');
+        const response = await fetch('/api/auth/manual-logout', {
           method: 'POST',
           credentials: 'include',
         });
-        window.location.href = window.location.origin;
-      } catch (error) {
-        console.error('Logout error:', error);
-        window.location.href = window.location.origin;
+        
+        if (response.ok) {
+          console.log('Manual logout successful, redirecting to home');
+          window.location.href = window.location.origin;
+        } else {
+          throw new Error('Logout request failed');
+        }
+      } else {
+        console.log('Regular user logout via /api/logout');
+        window.location.href = "/api/logout";
       }
-    } else {
-      window.location.href = "/api/logout";
+    } catch (error) {
+      console.error('Logout error:', error);
+      // Fallback - redirect to home even if logout fails
+      window.location.href = window.location.origin;
     }
   };
 

@@ -155,6 +155,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Manual logout endpoint for manual students
+  app.post('/api/auth/manual-logout', async (req: any, res) => {
+    try {
+      console.log('=== MANUAL LOGOUT REQUEST ===');
+      console.log('Session before logout:', req.session.auth);
+      
+      // Clear session
+      req.session.auth = { isAuthenticated: false, user: null };
+      
+      // Destroy session completely
+      req.session.destroy((err: any) => {
+        if (err) {
+          console.error('Session destroy error:', err);
+          return res.status(500).json({ message: "Logout failed" });
+        }
+        
+        console.log('Manual logout successful');
+        res.json({ message: "Logout successful" });
+      });
+    } catch (error) {
+      console.error("Error in manual logout:", error);
+      res.status(500).json({ message: "Logout failed" });
+    }
+  });
+
   // Dashboard stats
   app.get('/api/dashboard/stats', async (req: any, res) => {
     try {
