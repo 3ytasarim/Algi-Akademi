@@ -27,6 +27,36 @@ export default function StudentDashboard() {
   const { isAuthenticated, isLoading, user } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  
+  // Countdown timer state
+  const [countdown, setCountdown] = useState({
+    days: 365,
+    hours: 0,
+    minutes: 0,
+    seconds: 0
+  });
+
+  // Countdown timer effect
+  useEffect(() => {
+    const targetDate = new Date();
+    targetDate.setFullYear(targetDate.getFullYear() + 1); // 1 year from now
+    
+    const timer = setInterval(() => {
+      const now = new Date().getTime();
+      const distance = targetDate.getTime() - now;
+      
+      if (distance > 0) {
+        const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        
+        setCountdown({ days, hours, minutes, seconds });
+      }
+    }, 1000);
+    
+    return () => clearInterval(timer);
+  }, []);
 
   // Redirect to home if not authenticated
   useEffect(() => {
@@ -73,36 +103,6 @@ export default function StudentDashboard() {
     createdAt: string;
     entityType: string;
   }>;
-
-  // Countdown timer state - get course end date from user/student data
-  const [countdown, setCountdown] = useState({
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0
-  });
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      // Calculate countdown to course end date
-      const endDate = new Date();
-      endDate.setMonth(endDate.getMonth() + 6); // Example: 6 months from now
-      
-      const now = new Date().getTime();
-      const distance = endDate.getTime() - now;
-      
-      if (distance > 0) {
-        setCountdown({
-          days: Math.floor(distance / (1000 * 60 * 60 * 24)),
-          hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
-          minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
-          seconds: Math.floor((distance % (1000 * 60)) / 1000)
-        });
-      }
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, []);
 
   const getTimeAgo = (dateString: string) => {
     const now = new Date();
@@ -264,12 +264,17 @@ export default function StudentDashboard() {
                         </h3>
                       </div>
                       <div className="animate-bounce">
-                        <p className="text-2xl font-black text-slate-900 dark:text-white mb-1">
-                          365
+                        <p className="text-3xl font-black text-slate-900 dark:text-white mb-1">
+                          {countdown.days}
                         </p>
                         <p className="text-lg font-semibold text-purple-600 dark:text-purple-400 animate-pulse">
                           gün kaldı
                         </p>
+                        <div className="flex space-x-2 text-sm font-medium text-purple-500 dark:text-purple-400 mt-2">
+                          <span className="animate-pulse">{countdown.hours.toString().padStart(2, '0')}s</span>
+                          <span className="animate-pulse">{countdown.minutes.toString().padStart(2, '0')}d</span>
+                          <span className="animate-pulse">{countdown.seconds.toString().padStart(2, '0')}sn</span>
+                        </div>
                       </div>
                     </div>
                     <div className="flex flex-col items-center">
