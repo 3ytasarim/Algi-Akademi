@@ -640,13 +640,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: 'Student authentication required' });
       }
 
-      const studentId = req.session.auth.user.id;
-      console.log('Looking for student ID:', studentId);
+      const sessionUser = req.session.auth.user;
+      console.log('Session user data:', sessionUser);
       
-      const student = await storage.getUser(studentId);
+      // Try to find user by ID first, then by TC kimlik no as fallback
+      let student = await storage.getUser(sessionUser.id);
+      
+      if (!student && sessionUser.tcKimlikNo) {
+        console.log('User not found by ID, trying TC kimlik no:', sessionUser.tcKimlikNo);
+        const allUsers = await storage.getAllUsers();
+        student = allUsers.find(user => user.tcKimlikNo === sessionUser.tcKimlikNo);
+        console.log('Found student by TC:', student?.firstName, student?.lastName);
+      }
       
       if (!student) {
-        console.log('Student not found with ID:', studentId);
+        console.log('Student not found with ID:', sessionUser.id, 'or TC:', sessionUser.tcKimlikNo);
         return res.status(404).json({ message: 'Student not found' });
       }
 
