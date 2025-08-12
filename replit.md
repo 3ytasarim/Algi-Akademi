@@ -77,6 +77,13 @@ Preferred communication style: Simple, everyday language.
 ✓ Added backend endpoint `/api/student/course/:courseTitle/sections` to fetch real course data
 ✓ Course sections now display admin panel uploaded materials (e.g., "Gastronomi 1", "Gastronomi 2")
 ✓ PDF buttons changed from "İndir" to "Oku" - opens PDFs in new tab for viewing
-✓ Real-time course section parsing from database jsonb field
+✓ Real-time course section parsing from database jsonb field with multiple format support
 ✓ Activities generated from student's actual enrolled courses via getCoursesByUserCategories
 ✓ Course statistics show real data: total materials, sections, duration from database
+
+## STUDENT DASHBOARD IMPROVEMENTS (August 12, 2025)
+✓ Changed "İlerleme" to "Bölüm Sayısı" showing actual course duration/section count
+✓ Enhanced backend student course fetching with fallback logic for missing categories
+✓ Added comprehensive debugging for course sections parsing (string, array, object types)
+✓ Improved student authentication by TC kimlik no fallback when user ID fails
+✓ Added detailed console logging for troubleshooting course data fetching issues

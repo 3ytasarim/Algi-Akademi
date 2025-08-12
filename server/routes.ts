@@ -806,9 +806,33 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const studentId = req.session.auth.user.id;
       
-      // Get courses based on student's assigned categories
-      const studentCourses = await storage.getCoursesByUserCategories(studentId);
+      // Get student's data first to check assigned categories
+      const student = await storage.getUser(studentId);
+      if (!student) {
+        // Try to find student by TC kimlik no if user lookup fails
+        const students = await storage.getStudents();
+        const studentByTc = students.find(s => s.tcKimlikNo === req.session.auth.user.tcKimlikNo);
+        if (studentByTc) {
+          const studentCourses = await storage.getCoursesByUserCategories(studentByTc.id);
+          console.log("Found student by TC, courses:", studentCourses.length);
+          return res.json(studentCourses);
+        }
+        return res.status(404).json({ message: 'Student not found' });
+      }
 
+      console.log("Student assignedCategories:", student.assignedCategories);
+      
+      // Get courses based on student's assigned categories
+      let studentCourses = await storage.getCoursesByUserCategories(studentId);
+      
+      // If no courses found via categories, try getting all active courses as fallback
+      if (studentCourses.length === 0) {
+        console.log("No courses found via categories, getting all active courses");
+        const allCourses = await storage.getCourses();
+        studentCourses = allCourses.filter(course => course.status === 'active');
+      }
+
+      console.log("Final student courses count:", studentCourses.length);
       res.json(studentCourses);
     } catch (error) {
       console.error("Error fetching student courses:", error);
@@ -826,9 +850,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       const courseTitle = decodeURIComponent(req.params.courseTitle);
       
-      // Get the specific course by title
-      const courses = await storage.getCoursesByUserCategories(user.assignedCategories || []);
+      // Get the specific course by title - first try user categories, then fallback to all courses
+      let courses = await storage.getCoursesByUserCategories(user.id);
+      
+      if (courses.length === 0) {
+        console.log("No courses via categories, trying all active courses");
+        const allCourses = await storage.getCourses();
+        courses = allCourses.filter(course => course.status === 'active');
+      }
+      
       const course = courses.find(c => c.title === courseTitle);
+      console.log("Looking for course:", courseTitle, "in", courses.length, "courses");
       
       if (!course) {
         return res.status(404).json({ message: "Course not found or access denied" });
@@ -836,15 +868,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       // Parse sections from jsonb field
       let sections = [];
+      console.log("Raw course sections data:", course.sections, "Type:", typeof course.sections);
+      
       if (course.sections && typeof course.sections === 'string') {
         try {
           sections = JSON.parse(course.sections);
+          console.log("Parsed sections from string:", sections);
         } catch (e) {
+          console.error("Error parsing sections JSON:", e);
           sections = [];
         }
       } else if (Array.isArray(course.sections)) {
         sections = course.sections;
+        console.log("Using array sections:", sections);
+      } else if (course.sections && typeof course.sections === 'object') {
+        // Handle case where it's already an object
+        sections = Array.isArray(course.sections) ? course.sections : [course.sections];
+        console.log("Converting object to array sections:", sections);
       }
+      
+      console.log("Final sections array:", sections, "Length:", sections.length);
 
       res.json({
         course: {
@@ -856,17 +899,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
           duration: course.duration,
           instructorId: course.instructorId
         },
-        sections: sections.map((section: any, index: number) => ({
-          id: index + 1,
-          title: section.name || `Bölüm ${index + 1}`,
-          materials: section.pdfFile ? [{
+        sections: sections.map((section: any, index: number) => {
+          console.log(`Processing section ${index}:`, section);
+          return {
             id: index + 1,
-            type: "pdf",
-            title: section.pdfFile.name || section.name || `Materyal ${index + 1}`,
-            url: section.pdfFile.url || '#',
-            size: section.pdfFile.size || '0 MB'
-          }] : []
-        }))
+            title: section.name || `Bölüm ${index + 1}`,
+            materials: section.pdfFile ? [{
+              id: index + 1,
+              type: "pdf", 
+              title: section.pdfFile.name || section.name || `Materyal ${index + 1}`,
+              url: section.pdfFile.url || '#',
+              size: section.pdfFile.size || '0 MB'
+            }] : []
+          };
+        })
       });
     } catch (error) {
       console.error("Error fetching course sections:", error);

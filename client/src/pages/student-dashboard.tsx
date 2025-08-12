@@ -276,10 +276,9 @@ export default function StudentDashboard() {
                     </div>
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-2">
-                        <span className="text-slate-600 dark:text-gray-300">İlerleme</span>
-                        <span className="text-slate-900 dark:text-white font-bold">65%</span>
+                        <span className="text-slate-600 dark:text-gray-300">Bölüm Sayısı</span>
+                        <span className="text-slate-900 dark:text-white font-bold">{course.duration || 0} bölüm</span>
                       </div>
-                      <Progress value={65} className="h-2" />
                     </div>
                     <Link href={`/student/course/${encodeURIComponent(course.title)}`}>
                       <Button className="w-full glass-effect bg-primary/10 text-primary border-primary/20 hover:bg-primary hover:text-white font-medium">
