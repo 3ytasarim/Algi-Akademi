@@ -1004,10 +1004,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       console.log('=== STUDENT LOGIN ATTEMPT ===');
       console.log('TC:', tcKimlikNo, 'Password provided:', password ? 'YES' : 'NO');
+      console.log('Timestamp:', new Date().toISOString());
       
       // First try users table for manual students  
       const allUsers = await storage.getAllUsers();
+      console.log('Total users found:', allUsers.length);
+      console.log('Looking for TC:', tcKimlikNo, 'role: student');
+      
       const userStudent = allUsers.find((u: any) => u.tcKimlikNo === tcKimlikNo && u.role === 'student');
+      
+      // Debug: check if user exists with different role
+      const anyUserWithTC = allUsers.find((u: any) => u.tcKimlikNo === tcKimlikNo);
+      if (anyUserWithTC && !userStudent) {
+        console.log('User found with TC but wrong role:', anyUserWithTC.tcKimlikNo, 'role:', anyUserWithTC.role);
+      }
       
       if (userStudent) {
         console.log('Found user-student:', userStudent.firstName, userStudent.lastName);

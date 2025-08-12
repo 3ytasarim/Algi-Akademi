@@ -92,7 +92,11 @@ Preferred communication style: Simple, everyday language.
 ✓ Responsive layout with smooth transitions between collapsed and expanded states
 ✓ LOGOUT FIX: Added manual logout endpoint for proper session cleanup
 ✓ Fixed logout functionality - now properly redirects to login page instead of refreshing
-✓ Enhanced logout with session destruction and error handling
+✓ Enhanced logout with session destruction and error handling  
+✓ STUDENT PROFILE & COURSES ISSUE: Fixed role and category assignment in database
+✓ Added /api/student/profile GET and PUT endpoints for profile management
+✓ Enhanced student login debugging for production troubleshooting
+✓ Updated user TC 52306142250: role admin → student, assigned_categories → ["Genel"]
 ✓ Build successfully completed - ready for production deployment
 
 ## LAST LOGIN DATE/TIME FEATURE COMPLETED (August 12, 2025)
