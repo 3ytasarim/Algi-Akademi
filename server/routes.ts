@@ -829,42 +829,79 @@ export async function registerRoutes(app: Express): Promise<Server> {
   });
 
   // Student login route
+  // Student password change endpoint
+  app.post("/api/student/change-password", async (req: any, res) => {
+    try {
+      if (!req.session.auth || !req.session.auth.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { currentPassword, newPassword } = req.body;
+      
+      if (!currentPassword || !newPassword) {
+        return res.status(400).json({ message: "Mevcut şifre ve yeni şifre gereklidir" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "Yeni şifre en az 6 karakter olmalıdır" });
+      }
+
+      const userId = req.session.auth.user.id;
+      const user = await storage.getUser(userId);
+      
+      if (!user) {
+        return res.status(404).json({ message: "Kullanıcı bulunamadı" });
+      }
+
+      // Check if current password matches
+      if (user.password !== currentPassword) {
+        return res.status(400).json({ message: "Mevcut şifre yanlış" });
+      }
+
+      // Update password
+      await storage.updateUserPassword(userId, newPassword);
+
+      res.json({ message: "Şifre başarıyla güncellendi" });
+    } catch (error) {
+      console.error("Error changing password:", error);
+      res.status(500).json({ message: "Şifre değiştirilirken bir hata oluştu" });
+    }
+  });
+
   app.post('/api/auth/student-login', async (req: any, res) => {
     try {
       const { tcKimlikNo, password } = req.body;
       
-      if (password === '112233') {
-        // Find student by TC kimlik no
-        const students = await storage.getStudents();
-        const student = students.find(s => s.tcKimlikNo === tcKimlikNo);
+      // Check against user's actual password (not hardcoded 112233)
+      const students = await storage.getStudents();
+      const student = students.find(s => s.tcKimlikNo === tcKimlikNo);
+      
+      if (student && student.password === password) {
+        req.session.auth = {
+          user: { 
+            id: student.id, 
+            tcKimlikNo: student.tcKimlikNo, 
+            firstName: student.firstName || student.adı,
+            lastName: student.lastName || student.soyadı,
+            role: 'student' 
+          },
+          isAuthenticated: true
+        };
         
-        if (student) {
-          req.session.auth = {
-            user: { 
-              id: student.id, 
-              tcKimlikNo: student.tcKimlikNo, 
-              firstName: student.firstName || student.adı,
-              lastName: student.lastName || student.soyadı,
-              role: 'student' 
-            },
-            isAuthenticated: true
-          };
-          
-          res.json({ 
-            message: 'Giriş başarılı',
-            user: { 
-              id: student.id, 
-              tcKimlikNo: student.tcKimlikNo,
-              firstName: student.firstName || student.adı,
-              lastName: student.lastName || student.soyadı,
-              role: 'student'
-            }
-          });
-        } else {
-          res.status(401).json({ message: 'Bu T.C. kimlik no ile kayıtlı kullanıcı bulunamadı' });
-        }
-      } else {
+        res.json({ 
+          message: 'Giriş başarılı',
+          user: { 
+            id: student.id, 
+            tcKimlikNo: student.tcKimlikNo,
+            firstName: student.firstName || student.adı,
+            lastName: student.lastName || student.soyadı,
+            role: 'student'
+          }
+        });
+      } else if (student) {
         res.status(401).json({ message: 'Geçersiz şifre' });
+      } else {
+        res.status(401).json({ message: 'Bu T.C. kimlik no ile kayıtlı kullanıcı bulunamadı' });
       }
     } catch (error) {
       console.error("Student login error:", error);

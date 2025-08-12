@@ -38,6 +38,7 @@ export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
   updateUserLastLogin(id: string): Promise<void>;
+  updateUserPassword(id: string, newPassword: string): Promise<void>;
   
   // Course operations
   getCourses(): Promise<Course[]>;
@@ -148,6 +149,16 @@ export class DatabaseStorage implements IStorage {
       .update(users)
       .set({ 
         lastLogin: new Date(),
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, id));
+  }
+
+  async updateUserPassword(id: string, newPassword: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        password: newPassword,
         updatedAt: new Date() 
       })
       .where(eq(users.id, id));
