@@ -245,12 +245,40 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).where(eq(users.role, role)).orderBy(desc(users.createdAt));
   }
 
+  // Consultant operations
+  async getConsultants(): Promise<Consultant[]> {
+    console.log("=== DATABASE CONSULTANT QUERY ===");
+    try {
+      const result = await db.select().from(consultants).orderBy(desc(consultants.createdAt));
+      console.log("Raw DB query result:", result);
+      console.log("Result length:", result.length);
+      return result;
+    } catch (dbError) {
+      console.error("Database query error in getConsultants:", dbError);
+      throw dbError;
+    }
+  }
+
+  async createConsultant(consultantData: InsertConsultant): Promise<Consultant> {
+    const [newConsultant] = await db.insert(consultants).values(consultantData).returning();
+    return newConsultant;
+  }
+
+  async updateConsultant(id: string, consultantData: Partial<InsertConsultant>): Promise<Consultant> {
+    const [updatedConsultant] = await db
+      .update(consultants)
+      .set({ ...consultantData, updatedAt: new Date() })
+      .where(eq(consultants.id, id))
+      .returning();
+    return updatedConsultant;
+  }
+
+  async deleteConsultant(id: string): Promise<void> {
+    await db.delete(consultants).where(eq(consultants.id, id));
+  }
+
   // Missing methods for routes compatibility
   async getEnrollments(): Promise<any[]> { return []; }
-  async getConsultants(): Promise<any[]> { return []; }
-  async createConsultant(data: any): Promise<any> { return {}; }
-  async updateConsultant(id: string, data: any): Promise<any> { return {}; }
-  async deleteConsultant(id: string): Promise<void> { }
   async getSales(): Promise<any[]> { return []; }
   async getIntegrations(): Promise<any[]> { return []; }
   async createIntegration(data: any): Promise<any> { return {}; }

@@ -404,21 +404,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Basic routes for other endpoints
   app.get("/api/consultants", async (req: any, res) => {
     try {
+      console.log("=== CONSULTANT GET REQUEST ===");
+      console.log("Database URL set:", !!process.env.DATABASE_URL);
+      console.log("PGHOST:", process.env.PGHOST);
+      console.log("PGDATABASE:", process.env.PGDATABASE);
+      
       const consultants = await storage.getConsultants();
+      console.log("Consultants fetched:", consultants.length);
+      console.log("First 2 consultants:", consultants.slice(0, 2));
+      
       res.json(consultants);
     } catch (error) {
       console.error("Error fetching consultants:", error);
-      res.status(500).json({ message: "Failed to fetch consultants" });
+      console.error("Database connection error details:", (error as Error).message);
+      res.status(500).json({ message: "Failed to fetch consultants", error: (error as Error).message });
     }
   });
 
   app.post("/api/consultants", async (req: any, res) => {
     try {
-      const consultant = await storage.createConsultant(req.body);
+      console.log("=== CONSULTANT CREATION REQUEST ===");
+      console.log("Request body:", req.body);
+      
+      const consultantData = {
+        tcNo: req.body.tcNo,
+        firstName: req.body.firstName,
+        lastName: req.body.lastName,
+        title: req.body.title || 'Danışman',
+        email: req.body.email || null,
+        phone: req.body.phone || null,
+        userId: null // No user relation required
+      };
+      
+      console.log("Processed consultant data:", consultantData);
+      
+      const consultant = await storage.createConsultant(consultantData);
+      console.log("Consultant created successfully:", consultant);
       res.status(201).json(consultant);
     } catch (error) {
       console.error("Error creating consultant:", error);
-      res.status(500).json({ message: "Failed to create consultant" });
+      res.status(500).json({ message: "Failed to create consultant", error: (error as Error).message });
     }
   });
 

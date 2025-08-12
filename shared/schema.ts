@@ -314,6 +314,20 @@ export type Course = typeof courses.$inferSelect;
 export type InsertCourse = z.infer<typeof insertCourseSchema>;
 export type Lesson = typeof lessons.$inferSelect;
 export type InsertLesson = z.infer<typeof insertLessonSchema>;
+export type Enrollment = typeof enrollments.$inferSelect;
+export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
+export type Exam = typeof exams.$inferSelect;
+export type InsertExam = z.infer<typeof insertExamSchema>;
+export type ExamResult = typeof examResults.$inferSelect;
+export type InsertExamResult = z.infer<typeof insertExamResultSchema>;
+export type Activity = typeof activities.$inferSelect;
+export type InsertActivity = z.infer<typeof insertActivitySchema>;
+export type Consultant = typeof consultants.$inferSelect;
+export type InsertConsultant = z.infer<typeof insertConsultantSchema>;
+export type Sale = typeof sales.$inferSelect;
+export type InsertSale = z.infer<typeof insertSaleSchema>;
+export type Integration = typeof integrations.$inferSelect;
+export type InsertIntegration = z.infer<typeof insertIntegrationSchema>;
 
 // Notification schemas
 export const notifications = pgTable("notifications", {
