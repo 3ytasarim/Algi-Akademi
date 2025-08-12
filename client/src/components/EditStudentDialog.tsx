@@ -157,8 +157,8 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
           <User className="text-white" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Kişisel Bilgiler</h3>
-          <p className="text-sm text-slate-500">Kursiyerin temel bilgilerini güncelleyin</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Kişisel Bilgiler</h3>
+          <p className="text-sm text-slate-500 dark:text-gray-400">Kursiyerin temel bilgilerini güncelleyin</p>
         </div>
       </div>
 
@@ -258,8 +258,8 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
           <School className="text-white" size={20} />
         </div>
         <div>
-          <h3 className="text-lg font-semibold text-slate-900">Eğitim Bilgileri</h3>
-          <p className="text-sm text-slate-500">Kursiyer eğitim tarihlerini ayarlayın</p>
+          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Eğitim Bilgileri</h3>
+          <p className="text-sm text-slate-500 dark:text-gray-400">Kursiyer eğitim tarihlerini ayarlayın</p>
         </div>
       </div>
 
@@ -296,13 +296,13 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
             <FileCheck className="text-white" size={20} />
           </div>
           <div>
-            <h3 className="text-lg font-semibold text-slate-900">Onaylar ve Kurslar</h3>
-            <p className="text-sm text-slate-500">Belge onayları ve kurs seçimleri</p>
+            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">Onaylar ve Kurslar</h3>
+            <p className="text-sm text-slate-500 dark:text-gray-400">Belge onayları ve kurs seçimleri</p>
           </div>
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-medium text-slate-700">Belge Onayları</h4>
+          <h4 className="font-medium text-slate-700 dark:text-slate-300">Belge Onayları</h4>
           
           <div className="space-y-2">
             <div className="flex items-center space-x-2">
@@ -335,27 +335,27 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
         </div>
 
         <div className="space-y-3">
-          <h4 className="font-medium text-slate-700">Kurs Seçimi</h4>
+          <h4 className="font-medium text-slate-700 dark:text-slate-300">Kurs Seçimi</h4>
           <div className="space-y-2 max-h-40 overflow-y-auto">
             {courses.map((course: any) => (
               <div
                 key={course.id}
                 className={`p-3 border rounded-lg cursor-pointer transition-all ${
                   formData.selectedCourses.includes(course.id)
-                    ? 'border-blue-500 bg-blue-50'
-                    : 'border-gray-200 hover:border-gray-300'
+                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20 dark:border-blue-400'
+                    : 'border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 bg-white dark:bg-gray-700/50'
                 }`}
                 onClick={() => handleCourseToggle(course.id)}
               >
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium text-sm text-slate-900">{course.title}</p>
-                    <p className="text-xs text-slate-500">{course.instructor}</p>
+                    <p className="font-medium text-sm text-slate-900 dark:text-white">{course.title}</p>
+                    <p className="text-xs text-slate-500 dark:text-gray-400">{course.instructor}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-semibold text-sm text-slate-900">₺{course.price}</p>
+                    <p className="font-semibold text-sm text-slate-900 dark:text-white">₺{course.price}</p>
                     {formData.selectedCourses.includes(course.id) && (
-                      <Badge className="bg-blue-100 text-blue-800 text-xs">Seçili</Badge>
+                      <Badge className="bg-blue-100 dark:bg-blue-800/50 text-blue-800 dark:text-blue-200 text-xs">Seçili</Badge>
                     )}
                   </div>
                 </div>
@@ -376,18 +376,18 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
             />
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-lg">
+          <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">Toplam Tutar:</span>
-              <span className="font-semibold">₺{prices.total.toFixed(2)}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">Toplam Tutar:</span>
+              <span className="font-semibold text-gray-900 dark:text-white">₺{prices.total.toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600">İndirim:</span>
-              <span className="text-red-600">-₺{parseFloat(formData.discountAmount || '0').toFixed(2)}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-300">İndirim:</span>
+              <span className="text-red-600 dark:text-red-400">-₺{parseFloat(formData.discountAmount || '0').toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center border-t pt-2">
-              <span className="font-semibold text-gray-900">Net Tutar:</span>
-              <span className="font-bold text-lg text-green-600">₺{prices.final.toFixed(2)}</span>
+            <div className="flex justify-between items-center border-t border-gray-200 dark:border-gray-600 pt-2">
+              <span className="font-semibold text-gray-900 dark:text-white">Net Tutar:</span>
+              <span className="font-bold text-lg text-green-600 dark:text-green-400">₺{prices.final.toFixed(2)}</span>
             </div>
           </div>
         </div>
