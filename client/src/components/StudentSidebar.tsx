@@ -132,6 +132,55 @@ export function StudentSidebar({ isOpen, onClose }: StudentSidebarProps) {
             </Button>
             {coursesOpen && (
               <div className="space-y-1 mt-2">
+                <Link href="/student-dashboard">
+                  <Button
+                    variant="ghost"
+                    className={`w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm transition-all duration-200 ${
+                      isActiveItem('/student-dashboard')
+                        ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white hover:from-blue-700 hover:to-indigo-700 shadow-md'
+                        : 'text-gray-400 hover:bg-gray-700/50 hover:text-white'
+                    }`}
+                  >
+                    <BookOpen className="mr-2" size={16} />
+                    Aktiflik
+                  </Button>
+                </Link>
+                <Link href="/student-dashboard">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm text-gray-400 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+                  >
+                    <BookOpen className="mr-2" size={16} />
+                    Yazılı Analiz Yöntemleri
+                  </Button>
+                </Link>
+                <Link href="/student-dashboard">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm text-gray-400 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+                  >
+                    <BookOpen className="mr-2" size={16} />
+                    Arıcılık
+                  </Button>
+                </Link>
+                <Link href="/student-dashboard">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm text-gray-400 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+                  >
+                    <BookOpen className="mr-2" size={16} />
+                    Aile Danışmanlığı
+                  </Button>
+                </Link>
+                <Link href="/student-dashboard">
+                  <Button
+                    variant="ghost"
+                    className="w-full justify-start text-left h-auto p-3 pl-12 rounded-lg text-sm text-gray-400 hover:bg-gray-700/50 hover:text-white transition-all duration-200"
+                  >
+                    <BookOpen className="mr-2" size={16} />
+                    Astı Sekreterlik
+                  </Button>
+                </Link>
                 {Array.isArray(courses) && courses.map((course: any) => (
                   <Link key={course.id} href={`/student/course/${encodeURIComponent(course.title)}`}>
                     <Button
