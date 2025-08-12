@@ -16,7 +16,8 @@ import {
   CheckCircle,
   Star,
   FileText,
-  Link as LinkIcon
+  Link as LinkIcon,
+  Calendar
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
