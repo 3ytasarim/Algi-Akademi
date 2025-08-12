@@ -779,8 +779,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
       
-      // Create student
+      // Create student - populate both firstName/lastName and adı/soyadı for compatibility
       const student = await storage.createStudent({
+        firstName: req.body.adı,     // Map adı to firstName
+        lastName: req.body.soyadı,   // Map soyadı to lastName  
         adı: req.body.adı,
         soyadı: req.body.soyadı,
         email: req.body.email,
