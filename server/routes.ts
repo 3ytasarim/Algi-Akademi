@@ -861,6 +861,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Update password
       await storage.updateUserPassword(userId, newPassword);
 
+      // Create activity for password change
+      try {
+        await storage.createActivity({
+          userId: userId,
+          type: 'password_changed',
+          description: 'Şifre değiştirme: Hesap şifreniz başarıyla güncellendi',
+          entityId: userId,
+          entityType: 'user',
+          metadata: { action: 'password_update' }
+        });
+      } catch (error) {
+        console.log("Activity creation failed:", error);
+      }
+
       res.json({ message: "Şifre başarıyla güncellendi" });
     } catch (error) {
       console.error("Error changing password:", error);
