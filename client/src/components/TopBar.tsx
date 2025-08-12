@@ -65,7 +65,8 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
     return activityDate.toLocaleDateString('tr-TR');
   };
 
-  const unreadCount = activities.length > 0 ? Math.min(activities.length, 9) : 0;
+  const activitiesArray = Array.isArray(activities) ? activities : [];
+  const unreadCount = activitiesArray.length > 0 ? Math.min(activitiesArray.length, 9) : 0;
   
   return (
     <header className="bg-white/90 dark:bg-black/90 backdrop-blur-lg shadow-lg border-b border-gray-200/50 dark:border-red-500/30 sticky top-0 z-10 transition-colors duration-300">
@@ -133,8 +134,8 @@ export default function TopBar({ toggleSidebar, title, subtitle, sidebarCollapse
                 </div>
                 
                 <div className="max-h-64 overflow-y-auto">
-                  {activities.length > 0 ? (
-                    activities.slice(0, 10).map((activity: any) => (
+                  {activitiesArray.length > 0 ? (
+                    activitiesArray.slice(0, 10).map((activity: any) => (
                       <div key={activity.id} className="p-4 border-b border-gray-100 dark:border-gray-700 last:border-b-0 hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                         <div className="flex items-start space-x-3">
                           <div className="flex-shrink-0 mt-1">

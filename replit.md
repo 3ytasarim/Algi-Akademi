@@ -77,8 +77,11 @@ Preferred communication style: Simple, everyday language.
 ✓ Connected password change activity creation to backend for real activity tracking
 ✓ Fixed JSX structure issues in student-dashboard and student-course-details pages
 ✓ Updated all student pages to use consistent StudentSidebar + TopBar layout
+✓ Removed static/fake courses from sidebar - now shows only database courses assigned to student
+✓ Kurslarım dropdown shows only courses assigned during "Kursiyer Tanımlama" process
+✓ Added fallback message "Henüz kurs atanmamış" when no courses are assigned
+✓ Fixed TypeScript issues in TopBar component for activities array handling
 ✓ Build successfully completed - ready for production deployment
-✓ Production deployment suggested for user to manually trigger
 
 ## LAST LOGIN DATE/TIME FEATURE COMPLETED (August 12, 2025)
 ✓ Added lastLogin timestamp field to users table schema
