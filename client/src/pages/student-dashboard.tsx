@@ -267,7 +267,7 @@ export default function StudentDashboard() {
                         </h3>
                       </div>
                       <div className="text-center">
-                        <div className="flex items-center justify-center space-x-2 text-2xl font-bold text-slate-900 dark:text-white">
+                        <div className="flex items-center justify-center space-x-2 text-2xl font-bold text-slate-900 dark:text-white mb-3">
                           <span className="transition-all duration-300 ease-in-out hover:scale-105 hover:text-purple-600">
                             {countdown.days}
                           </span>
@@ -288,12 +288,14 @@ export default function StudentDashboard() {
                           </span>
                           <span className="text-lg text-purple-600 dark:text-purple-400">Saniye</span>
                         </div>
+                        
+                        <div className="flex items-center justify-center space-x-2 mt-2">
+                          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                          <span className="text-sm font-medium text-green-600 dark:text-green-400">Aktif</span>
+                        </div>
                       </div>
                     </div>
-                    <div className="flex flex-col items-center">
-                      <div className="w-3 h-3 bg-purple-500 rounded-full animate-pulse mb-1"></div>
-                      <span className="text-xs text-purple-600 dark:text-purple-400 font-medium">Aktif</span>
-                    </div>
+
                   </div>
 
                 </CardContent>
