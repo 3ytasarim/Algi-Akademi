@@ -68,6 +68,18 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes (August 12, 2025)
 
+## LAST LOGIN DATE/TIME FEATURE COMPLETED (August 12, 2025)
+✓ Added lastLogin timestamp field to users table schema
+✓ Implemented updateUserLastLogin method in DatabaseStorage
+✓ Updated /api/auth/user endpoint to track last login on each authentication check
+✓ Modified category card in student dashboard to show last login date/time
+✓ Format: "Son Giriş: DD.MM.YYYY HH:MM" in Turkish locale
+✓ Added visual separator and Clock icon for last login display
+✓ Database migration completed successfully with npm run db:push
+✓ Backend returns updated user data with lastLogin timestamp after authentication
+
+# Previous Changes
+
 ## STUDENT COURSE MATERIALS INTEGRATION COMPLETED (August 12, 2025)
 ✓ Replaced fake activities with real course-related activities in Son Aktiviteler section
 ✓ Activities now show actual course assignments: "Kurs tanımlandı", "İlerleme kaydedildi", system notifications

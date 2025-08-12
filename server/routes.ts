@@ -36,7 +36,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       if (req.session.auth && req.session.auth.isAuthenticated) {
         console.log('Auth success, returning user:', req.session.auth.user);
-        return res.json(req.session.auth.user);
+        
+        // Update last login timestamp and get updated user data
+        try {
+          await storage.updateUserLastLogin(req.session.auth.user.id);
+          // Get updated user data with lastLogin timestamp
+          const updatedUser = await storage.getUser(req.session.auth.user.id);
+          return res.json(updatedUser || req.session.auth.user);
+        } catch (error) {
+          console.warn('Failed to update last login:', error);
+          return res.json(req.session.auth.user);
+        }
       }
       console.log('Auth failed - no valid session');
       res.status(401).json({ message: "Unauthorized" });

@@ -37,6 +37,7 @@ export interface IStorage {
   // User operations (required for Replit Auth)
   getUser(id: string): Promise<User | undefined>;
   upsertUser(user: UpsertUser): Promise<User>;
+  updateUserLastLogin(id: string): Promise<void>;
   
   // Course operations
   getCourses(): Promise<Course[]>;
@@ -140,6 +141,16 @@ export class DatabaseStorage implements IStorage {
       })
       .returning();
     return user;
+  }
+
+  async updateUserLastLogin(id: string): Promise<void> {
+    await db
+      .update(users)
+      .set({ 
+        lastLogin: new Date(),
+        updatedAt: new Date() 
+      })
+      .where(eq(users.id, id));
   }
 
   // Course operations
