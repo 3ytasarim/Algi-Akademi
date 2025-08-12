@@ -911,37 +911,88 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { tcKimlikNo, password } = req.body;
       
-      // Check against user's actual password (not hardcoded 112233)
+      console.log('=== STUDENT LOGIN ATTEMPT ===');
+      console.log('TC:', tcKimlikNo, 'Password provided:', password ? 'YES' : 'NO');
+      
+      // First try users table for manual students
+      const allUsers = await storage.getUsers();
+      const userStudent = allUsers.find(u => u.tcKimlikNo === tcKimlikNo && u.role === 'student');
+      
+      if (userStudent) {
+        console.log('Found user-student:', userStudent.firstName, userStudent.lastName);
+        console.log('Stored password:', userStudent.password);
+        
+        if (userStudent.password === password) {
+          console.log('Password match - user-student login success');
+          req.session.auth = {
+            user: { 
+              id: userStudent.id, 
+              tcKimlikNo: userStudent.tcKimlikNo, 
+              firstName: userStudent.firstName,
+              lastName: userStudent.lastName,
+              role: 'student',
+              isManualStudent: true
+            },
+            isAuthenticated: true
+          };
+          
+          return res.json({ 
+            message: 'Giriş başarılı',
+            user: { 
+              id: userStudent.id, 
+              tcKimlikNo: userStudent.tcKimlikNo,
+              firstName: userStudent.firstName,
+              lastName: userStudent.lastName,
+              role: 'student',
+              isManualStudent: true
+            }
+          });
+        } else {
+          console.log('Password mismatch for user-student');
+          return res.status(401).json({ message: 'Geçersiz şifre' });
+        }
+      }
+      
+      // Fallback: Try students table for older entries
       const students = await storage.getStudents();
       const student = students.find(s => s.tcKimlikNo === tcKimlikNo);
       
-      if (student && student.password === password) {
-        req.session.auth = {
-          user: { 
-            id: student.id, 
-            tcKimlikNo: student.tcKimlikNo, 
-            firstName: student.firstName || student.adı,
-            lastName: student.lastName || student.soyadı,
-            role: 'student' 
-          },
-          isAuthenticated: true
-        };
+      if (student) {
+        console.log('Found legacy student:', student.adı, student.soyadı);
         
-        res.json({ 
-          message: 'Giriş başarılı',
-          user: { 
-            id: student.id, 
-            tcKimlikNo: student.tcKimlikNo,
-            firstName: student.firstName || student.adı,
-            lastName: student.lastName || student.soyadı,
-            role: 'student'
-          }
-        });
-      } else if (student) {
-        res.status(401).json({ message: 'Geçersiz şifre' });
-      } else {
-        res.status(401).json({ message: 'Bu T.C. kimlik no ile kayıtlı kullanıcı bulunamadı' });
+        if (student.password === password) {
+          console.log('Password match - legacy student login success');
+          req.session.auth = {
+            user: { 
+              id: student.id, 
+              tcKimlikNo: student.tcKimlikNo, 
+              firstName: student.firstName || student.adı,
+              lastName: student.lastName || student.soyadı,
+              role: 'student',
+              isManualStudent: true
+            },
+            isAuthenticated: true
+          };
+          
+          return res.json({ 
+            message: 'Giriş başarılı',
+            user: { 
+              id: student.id, 
+              tcKimlikNo: student.tcKimlikNo,
+              firstName: student.firstName || student.adı,
+              lastName: student.lastName || student.soyadı,
+              role: 'student',
+              isManualStudent: true
+            }
+          });
+        } else {
+          console.log('Password mismatch for legacy student');
+          return res.status(401).json({ message: 'Geçersiz şifre' });
+        }
       }
+      
+      console.log('No student found with TC:', tcKimlikNo);
+      res.status(401).json({ message: 'Bu T.C. kimlik no ile kayıtlı kullanıcı bulunamadı' });
     } catch (error) {
       console.error("Student login error:", error);
       res.status(500).json({ message: 'Giriş sırasında bir hata oluştu' });
