@@ -31,7 +31,7 @@ import {
   type InsertIntegration,
 } from "@shared/schema";
 import { db } from "./db";
-import { eq, desc, count, and, sql } from "drizzle-orm";
+import { eq, desc, count, and, sql, inArray } from "drizzle-orm";
 
 export interface IStorage {
   // User operations (required for Replit Auth)
@@ -251,19 +251,25 @@ export class DatabaseStorage implements IStorage {
       return [];
     }
 
+    // Try direct category matching first for PostgreSQL array compatibility
     const result = await db
       .select()
       .from(courses)
       .where(
         and(
           eq(courses.status, 'active'),
-          // Fix: Use inArray for category matching
-          sql`${courses.category} = ANY(${user.assignedCategories})`
+          // Fixed SQL for PostgreSQL array matching
+          inArray(courses.category, user.assignedCategories)
         )
       )
       .orderBy(desc(courses.createdAt));
     
-    console.log('Found courses for categories:', result.length);
+    console.log('Found courses for categories:', user.assignedCategories, 'Count:', result.length);
+    
+    // Debug: also log available courses
+    const allCourses = await db.select().from(courses).where(eq(courses.status, 'active'));
+    console.log('All active courses:', allCourses.map(c => `${c.title} (${c.category})`));
+    
     return result;
   }
 
