@@ -305,9 +305,6 @@ export default function StudentDashboard() {
                           {course.category}
                         </Badge>
                       </div>
-                      <div className="text-right">
-                        <p className="text-slate-500 dark:text-gray-400 text-sm">{course.duration} ders</p>
-                      </div>
                     </div>
                     <div className="mb-3">
                       <div className="flex justify-between text-sm mb-2">
