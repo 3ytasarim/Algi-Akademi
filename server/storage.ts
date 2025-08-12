@@ -200,8 +200,17 @@ export class DatabaseStorage implements IStorage {
   }
 
   async getUserByTcNo(tcKimlikNo: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.tcKimlikNo, tcKimlikNo));
-    return user;
+    console.log('=== getUserByTcNo DEBUG ===');
+    console.log('Looking for tcKimlikNo:', tcKimlikNo);
+    
+    try {
+      const [user] = await db.select().from(users).where(eq(users.tcKimlikNo, tcKimlikNo));
+      console.log('Found user:', user ? `${user.firstName} ${user.lastName} (${user.role})` : 'null');
+      return user;
+    } catch (error) {
+      console.error('Database error in getUserByTcNo:', error);
+      return undefined;
+    }
   }
 
   // Dashboard operations
