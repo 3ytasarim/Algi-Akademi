@@ -222,69 +222,87 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Files:", req.files);
 
       const courseData = JSON.parse(req.body.courseData || '{}');
-      const validatedData = insertCourseSchema.parse(courseData);
       
-      // Handle PDF file uploads for each section
-      if (req.files && req.files.length > 0) {
-        const sections = courseData.sections || [];
+      // Extract lessons from course data
+      const { sections, ...courseInfo } = courseData;
+      const lessonData = sections || [];
+      
+      // Set total lessons count
+      courseInfo.totalLessons = lessonData.length;
+      
+      const validatedCourseData = insertCourseSchema.parse(courseInfo);
+      
+      // Create the course first
+      const course = await storage.createCourse(validatedCourseData);
+      console.log("Course created:", course.id);
+      
+      // Create lessons for the course
+      for (let i = 0; i < lessonData.length; i++) {
+        const lessonInfo = lessonData[i];
+        const pdfFile = req.files?.find((file: any) => file.fieldname === `section_${i}_pdf`);
         
-        for (let i = 0; i < sections.length; i++) {
-          const section = sections[i];
-          const pdfFile = req.files.find((file: any) => file.fieldname === `section_${i}_pdf`);
-          
-          if (pdfFile) {
-            try {
-              // Upload PDF to object storage
-              const fileName = `courses/${validatedData.title}/section_${i}_${section.name || 'document'}.pdf`;
-              const file = bucket.file(fileName);
-              
-              const stream = file.createWriteStream({
-                metadata: {
-                  contentType: pdfFile.mimetype,
-                }
-              });
+        let pdfUrl = null;
+        let pdfFileName = null;
+        
+        // Handle PDF file upload if exists
+        if (pdfFile) {
+          try {
+            const fileName = `courses/${course.title}/lesson_${i + 1}_${lessonInfo.name || 'document'}.pdf`;
+            const file = bucket.file(fileName);
+            
+            const stream = file.createWriteStream({
+              metadata: {
+                contentType: pdfFile.mimetype,
+              }
+            });
 
-              await new Promise((resolve, reject) => {
-                stream.on('error', reject);
-                stream.on('finish', resolve);
-                stream.end(pdfFile.buffer);
-              });
+            await new Promise((resolve, reject) => {
+              stream.on('error', reject);
+              stream.on('finish', resolve);
+              stream.end(pdfFile.buffer);
+            });
 
-              // Make file publicly accessible
-              await file.makePublic();
-              
-              // Update section with PDF URL
-              section.pdfFile = {
-                name: pdfFile.originalname,
-                url: `https://storage.googleapis.com/${bucketName}/${fileName}`,
-                size: `${Math.round(pdfFile.size / 1024)} KB`
-              };
-              
-              console.log(`PDF uploaded for section ${i}:`, section.pdfFile.url);
-            } catch (uploadError) {
-              console.error(`Error uploading PDF for section ${i}:`, uploadError);
-            }
+            await file.makePublic();
+            pdfUrl = `https://storage.googleapis.com/${bucketName}/${fileName}`;
+            pdfFileName = pdfFile.originalname;
+            
+            console.log(`PDF uploaded for lesson ${i + 1}:`, pdfUrl);
+          } catch (uploadError) {
+            console.error(`Error uploading PDF for lesson ${i + 1}:`, uploadError);
           }
         }
         
-        validatedData.sections = sections;
+        // Create lesson record
+        const lessonRecord = {
+          courseId: course.id,
+          title: lessonInfo.name || `Ders ${i + 1}`,
+          orderIndex: i + 1,
+          pdfUrl: pdfUrl,
+          pdfFileName: pdfFileName,
+          duration: lessonInfo.duration || 60,
+          isActive: true
+        };
+        
+        await storage.createLesson(lessonRecord);
+        console.log(`Lesson created: ${lessonRecord.title}`);
       }
-      
-      const course = await storage.createCourse(validatedData);
       
       // Create activity
       if (req.session.auth?.isAuthenticated) {
         await storage.createActivity({
           userId: req.session.auth.user.id,
           type: 'course_created',
-          description: `${req.session.auth.user.firstName || 'Admin'} yeni kurs oluşturdu: ${course.title}`,
+          description: `${req.session.auth.user.firstName || 'Admin'} yeni kurs oluşturdu: ${course.title} (${lessonData.length} ders)`,
           entityId: course.id,
           entityType: 'course',
-          metadata: { courseTitle: course.title, price: course.price }
+          metadata: { courseTitle: course.title, price: course.price, lessonsCount: lessonData.length }
         });
       }
       
-      res.status(201).json(course);
+      res.status(201).json({
+        ...course,
+        lessonsCount: lessonData.length
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
@@ -1181,28 +1199,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Course not found or access denied" });
       }
 
-      // Parse sections from jsonb field
-      let sections = [];
-      console.log("Raw course sections data:", course.sections, "Type:", typeof course.sections);
-      
-      if (course.sections && typeof course.sections === 'string') {
-        try {
-          sections = JSON.parse(course.sections);
-          console.log("Parsed sections from string:", sections);
-        } catch (e) {
-          console.error("Error parsing sections JSON:", e);
-          sections = [];
-        }
-      } else if (Array.isArray(course.sections)) {
-        sections = course.sections;
-        console.log("Using array sections:", sections);
-      } else if (course.sections && typeof course.sections === 'object') {
-        // Handle case where it's already an object
-        sections = Array.isArray(course.sections) ? course.sections : [course.sections];
-        console.log("Converting object to array sections:", sections);
-      }
-      
-      console.log("Final sections array:", sections, "Length:", sections.length);
+      // Get lessons from lessons table instead of sections field
+      const lessons = await storage.getLessonsByCourse(course.id);
+      console.log(`Found ${lessons.length} lessons for course:`, course.title);
 
       res.json({
         course: {
@@ -1211,39 +1210,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
           description: course.description,
           category: course.category,
           price: course.price,
-          duration: course.duration,
+          totalLessons: course.totalLessons,
           instructorId: course.instructorId
         },
-        sections: sections.map((section: any, index: number) => {
-          console.log(`Processing section ${index}:`, section);
+        sections: lessons.map((lesson: any, index: number) => {
+          console.log(`Processing lesson ${index}:`, lesson);
           
-          // Check if pdfFile exists and has valid URL
+          // Create materials array from lesson data
           let materials: any[] = [];
-          if (section.pdfFile && Object.keys(section.pdfFile).length > 0) {
-            let pdfUrl = section.pdfFile.url;
-            
-            // If URL is placeholder, try to construct proper object storage URL
-            if (!pdfUrl || pdfUrl === '#') {
-              // Generate expected object storage URL based on course title and section name
-              const sanitizedCourseTitle = course.title.replace(/[^a-zA-Z0-9]/g, '_');
-              const sanitizedSectionName = (section.name || `section_${index}`).replace(/[^a-zA-Z0-9]/g, '_');
-              pdfUrl = `https://storage.googleapis.com/${bucketName}/courses/${sanitizedCourseTitle}/section_${index}_${sanitizedSectionName}.pdf`;
-              console.log(`Generated URL for section ${index}:`, pdfUrl);
-            }
-            
-            materials = [{
-              id: index + 1,
-              type: "pdf", 
-              title: section.pdfFile.name || section.name || `Materyal ${index + 1}`,
-              url: pdfUrl,
-              size: section.pdfFile.size || '0 MB'
-            }];
+          if (lesson.pdfUrl && lesson.pdfFileName) {
+            materials.push({
+              name: lesson.pdfFileName,
+              type: 'pdf',
+              url: lesson.pdfUrl
+            });
           }
           
           return {
-            id: index + 1,
-            title: section.name || `Bölüm ${index + 1}`,
-            materials: materials
+            name: lesson.title,
+            materials: materials,
+            totalMaterials: materials.length
           };
         })
       });
