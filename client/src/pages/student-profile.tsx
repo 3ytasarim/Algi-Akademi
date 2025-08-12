@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
+import { useQuery } from "@tanstack/react-query";
 import { useToast } from "@/hooks/use-toast";
 import { StudentSidebar } from "@/components/StudentSidebar";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -30,12 +31,31 @@ export default function StudentProfile() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   
   const [personalInfo, setPersonalInfo] = useState({
-    firstName: user?.firstName || '',
-    lastName: user?.lastName || '',
-    email: user?.email || '',
-    phone: user?.telefon || '',
-    tcKimlikNo: user?.tcKimlikNo || ''
+    firstName: '',
+    lastName: '',
+    email: '',
+    phone: '',
+    tcKimlikNo: ''
   });
+
+  // Fetch student profile data
+  const { data: profileData, isLoading: profileLoading } = useQuery({
+    queryKey: ["/api/student/profile"],
+    enabled: isAuthenticated && user?.role === 'student',
+  });
+
+  // Update form when profile data is loaded
+  useEffect(() => {
+    if (profileData) {
+      setPersonalInfo({
+        firstName: profileData.firstName || '',
+        lastName: profileData.lastName || '',
+        email: profileData.email || '',
+        phone: profileData.telefon || '',
+        tcKimlikNo: profileData.tcKimlikNo || ''
+      });
+    }
+  }, [profileData]);
 
   const [passwordData, setPasswordData] = useState({
     currentPassword: '',

@@ -630,6 +630,97 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Student profile GET endpoint
+  app.get('/api/student/profile', async (req: any, res) => {
+    try {
+      console.log('=== STUDENT PROFILE GET REQUEST ===');
+      console.log('Session auth:', req.session.auth);
+      
+      if (!req.session.auth?.isAuthenticated || req.session.auth.user.role !== 'student') {
+        return res.status(401).json({ message: 'Student authentication required' });
+      }
+
+      const studentId = req.session.auth.user.id;
+      console.log('Looking for student ID:', studentId);
+      
+      const student = await storage.getUser(studentId);
+      
+      if (!student) {
+        console.log('Student not found with ID:', studentId);
+        return res.status(404).json({ message: 'Student not found' });
+      }
+
+      console.log('Student found:', student.firstName, student.lastName);
+
+      // Return student profile data
+      const profileData = {
+        id: student.id,
+        firstName: student.firstName,
+        lastName: student.lastName,
+        email: student.email,
+        telefon: student.telefon,
+        tcKimlikNo: student.tcKimlikNo,
+        doğumTarihi: student.doğumTarihi,
+        cinsiyet: student.cinsiyet,
+        meslek: student.meslek
+      };
+      
+      console.log('Returning profile data:', profileData);
+      res.json(profileData);
+    } catch (error) {
+      console.error("Error fetching student profile:", error);
+      res.status(500).json({ message: "Failed to fetch profile" });
+    }
+  });
+
+  // Student profile UPDATE endpoint  
+  app.put('/api/student/profile', async (req: any, res) => {
+    try {
+      console.log('=== STUDENT PROFILE UPDATE REQUEST ===');
+      console.log('Session auth:', req.session.auth);
+      console.log('Request body:', req.body);
+      
+      if (!req.session.auth?.isAuthenticated || req.session.auth.user.role !== 'student') {
+        return res.status(401).json({ message: 'Student authentication required' });
+      }
+
+      const studentId = req.session.auth.user.id;
+      const { firstName, lastName, email, phone, tcKimlikNo } = req.body;
+      
+      console.log('Updating student:', studentId, 'with data:', { firstName, lastName, email, phone, tcKimlikNo });
+      
+      // Update student data
+      await storage.updateStudent(studentId, {
+        firstName,
+        lastName, 
+        email,
+        telefon: phone,
+        tcKimlikNo
+      });
+      
+      console.log('Student profile updated successfully');
+      
+      // Create activity for profile update
+      try {
+        await storage.createActivity({
+          userId: studentId,
+          type: 'profile_updated',
+          description: 'Profil bilgilerini güncelledi',
+          entityId: studentId,
+          entityType: 'user',
+          metadata: { action: 'profile_update' }
+        });
+      } catch (error) {
+        console.log("Activity creation failed:", error);
+      }
+
+      res.json({ message: "Profil başarıyla güncellendi" });
+    } catch (error) {
+      console.error("Error updating student profile:", error);
+      res.status(500).json({ message: "Failed to update profile" });
+    }
+  });
+
   app.get('/api/students', async (req: any, res) => {
     try {
       const students = await storage.getStudents();
