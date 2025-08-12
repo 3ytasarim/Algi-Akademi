@@ -68,6 +68,19 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes (August 12, 2025)
 
+## COURSE MULTI-LESSON SYSTEM COMPLETED (August 12, 2025)
+✓ Created lessons table in production database with proper schema
+✓ Updated schema.ts to include lessons table with course relations
+✓ Fixed storage.ts to use new lessons approach instead of old "sections" system
+✓ Each course now supports multiple lessons (15+ lessons per course)
+✓ Each lesson has individual PDF upload capability with pdfUrl and pdfFileName fields
+✓ Updated routes.ts to handle lesson creation during course creation
+✓ Fixed database migration: courses.totalLessons field added
+✓ Cleaned up duplicate type definitions in schema
+✓ Backend now creates individual lesson records for each course section
+✓ Student interface will display lessons as separate PDF viewable items
+✓ Production deployment required for changes to take effect
+
 ## STUDENT INTERFACE IMPROVEMENTS AND DYNAMIC NOTIFICATIONS COMPLETED (August 12, 2025)
 ✓ Completely restructured student dashboard to use StudentSidebar instead of LayoutWrapper
 ✓ Fixed sidebar menu structure: "Kurslarım", "Sınavlarım", "Kişisel Bilgilerim" as separate menu items
