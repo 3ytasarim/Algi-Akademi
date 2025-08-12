@@ -233,7 +233,7 @@ export default function CoursesPage() {
     const courseData = {
       title: courseForm.title,
       description: courseForm.description,
-      instructorId: "admin", // Default instructor for admin-created courses
+      instructorId: null, // No instructor required - set to null
       price: courseForm.price || "0",
       duration: courseForm.sections.length, // Toplam ders sayısı = section sayısı
       sections: courseForm.sections, // Keep as object for JSON field
