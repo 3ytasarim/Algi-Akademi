@@ -68,6 +68,9 @@ export default function CoursesPage() {
   // Create course mutation
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: any) => {
+      console.log("=== FRONTEND COURSE CREATION DEBUG ===");
+      console.log("Input courseData:", courseData);
+      
       const formData = new FormData();
       
       // Add course data as JSON string
@@ -79,25 +82,35 @@ export default function CoursesPage() {
         }))
       };
       
+      console.log("Processed courseData:", courseDataWithoutFiles);
       formData.append('courseData', JSON.stringify(courseDataWithoutFiles));
       
       // Add PDF files for each section
       courseData.sections.forEach((section: any, index: number) => {
         if (section.pdfFile) {
+          console.log(`Adding PDF for section ${index}:`, section.pdfFile.name);
           formData.append(`section_${index}_pdf`, section.pdfFile);
         }
       });
       
+      console.log("Making request to /api/courses");
       const response = await fetch("/api/courses", {
         method: "POST",
         body: formData,
       });
       
+      console.log("Response status:", response.status);
+      console.log("Response ok:", response.ok);
+      
       if (!response.ok) {
-        throw new Error('Failed to create course');
+        const errorText = await response.text();
+        console.error("Error response text:", errorText);
+        throw new Error(`Failed to create course: ${response.status} - ${errorText}`);
       }
       
-      return response.json();
+      const result = await response.json();
+      console.log("Success response:", result);
+      return result;
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/courses"] });
@@ -109,7 +122,10 @@ export default function CoursesPage() {
       });
     },
     onError: (error: any) => {
-      console.error("Create course error:", error);
+      console.error("=== DETAILED CREATE COURSE ERROR ===");
+      console.error("Error object:", error);
+      console.error("Error message:", error.message);
+      console.error("Error stack:", error.stack);
       toast({
         title: "Hata",
         description: error.message || "Kurs oluşturulurken bir hata oluştu.",
