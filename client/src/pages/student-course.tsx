@@ -248,7 +248,7 @@ export default function StudentCourse() {
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center text-slate-500 dark:text-gray-400">
                             <FileText size={16} className="mr-1" />
-                            <span className="text-sm">{section.title}</span>
+                            <span className="text-sm">Ders Materyali</span>
                           </div>
                           {section.pdfUrl && section.pdfUrl !== '#' ? (
                             <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
