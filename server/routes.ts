@@ -293,17 +293,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const course = await storage.createCourse(validatedCourseData);
       console.log("Course created:", course.id);
       
-      // Create lessons for the course (simplified - no PDF upload)
+      // Create lessons for the course with PDF data
       for (let i = 0; i < lessonData.length; i++) {
         const lessonInfo = lessonData[i];
         
-        // Create lesson record without PDF for now
+        // Create lesson record with PDF data if provided
         const lessonRecord = {
           courseId: course.id,
           title: lessonInfo.name || `Ders ${i + 1}`,
           orderIndex: i + 1,
-          pdfUrl: null,
-          pdfFileName: null,
+          pdfUrl: lessonInfo.pdfUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+          pdfFileName: lessonInfo.pdfFileName || lessonInfo.pdfFile || `${lessonInfo.name || 'ders'}.pdf`,
           duration: lessonInfo.duration || 60,
           isActive: true
         };
