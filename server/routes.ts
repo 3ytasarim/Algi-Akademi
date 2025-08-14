@@ -3,8 +3,10 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { Storage as CloudStorage } from "@google-cloud/storage";
 import { storage } from "./storage";
-import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema } from "@shared/schema";
+import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, lessons } from "@shared/schema";
 import { z } from "zod";
+import { eq } from "drizzle-orm";
+import { db } from "./db";
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Object Storage Configuration
@@ -308,27 +310,61 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.put('/api/courses/:id', async (req: any, res) => {
     try {
-      // Temporarily bypass authentication for course updates
       console.log("=== COURSE UPDATE REQUEST ===");
       console.log("Course ID:", req.params.id);
       console.log("Update data:", req.body);
       
-      const validatedData = insertCourseSchema.parse(req.body);
+      // Extract lessons/sections from course data
+      const { sections, ...courseInfo } = req.body;
+      const lessonData = sections || [];
+      
+      // Set total lessons count
+      courseInfo.totalLessons = lessonData.length;
+      
+      const validatedData = insertCourseSchema.parse(courseInfo);
       const course = await storage.updateCourse(req.params.id, validatedData);
+      
+      // Update lessons for the course
+      if (lessonData.length > 0) {
+        // First, delete existing lessons for this course
+        await db.delete(lessons).where(eq(lessons.courseId, req.params.id));
+        console.log("Deleted existing lessons");
+        
+        // Create new lessons
+        for (let i = 0; i < lessonData.length; i++) {
+          const lessonInfo = lessonData[i];
+          
+          const lessonRecord = {
+            courseId: req.params.id,
+            title: lessonInfo.name || lessonInfo.title || `Ders ${i + 1}`,
+            orderIndex: i + 1,
+            pdfUrl: lessonInfo.pdfUrl || null,
+            pdfFileName: lessonInfo.pdfFileName || null,
+            duration: lessonInfo.duration || 60,
+            isActive: true
+          };
+          
+          await storage.createLesson(lessonRecord);
+          console.log(`Created/Updated lesson: ${lessonRecord.title}`);
+        }
+      }
       
       // Create activity
       if (req.session.auth?.isAuthenticated) {
         await storage.createActivity({
           userId: req.session.auth.user.id,
           type: 'course_updated', 
-          description: `${req.session.auth.user.firstName || 'Admin'} kursu güncelledi: ${course.title}`,
+          description: `${req.session.auth.user.firstName || 'Admin'} kursu güncelledi: ${course.title} (${lessonData.length} ders)`,
           entityId: course.id,
           entityType: 'course',
-          metadata: { courseTitle: course.title, price: course.price }
+          metadata: { courseTitle: course.title, price: course.price, lessonsCount: lessonData.length }
         });
       }
       
-      res.json(course);
+      res.json({
+        ...course,
+        lessonsCount: lessonData.length
+      });
     } catch (error) {
       if (error instanceof z.ZodError) {
         return res.status(400).json({ message: "Invalid data", errors: error.errors });
