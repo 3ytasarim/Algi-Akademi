@@ -219,6 +219,40 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/courses/:id', async (req: any, res) => {
     try {
+      console.log("=== GET COURSE BY ID ===");
+      console.log("Course ID:", req.params.id);
+      
+      const course = await storage.getCourse(req.params.id);
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+      
+      // Get lessons/sections for the course
+      const lessons = await storage.getLessonsByCourse(req.params.id);
+      console.log("Found lessons:", lessons.length);
+      
+      // Format sections for admin edit form
+      const sections = lessons.map(lesson => ({
+        name: lesson.title,
+        pdfFileName: lesson.pdfFileName,
+        pdfUrl: lesson.pdfUrl
+      }));
+      
+      const courseWithSections = {
+        ...course,
+        sections: sections
+      };
+      
+      console.log("Returning course with sections:", courseWithSections.title, "sections:", sections.length);
+      res.json(courseWithSections);
+    } catch (error) {
+      console.error("Error fetching course:", error);
+      res.status(500).json({ message: "Failed to fetch course" });
+    }
+  });
+
+  app.get('/api/courses/:id', async (req: any, res) => {
+    try {
       const course = await storage.getCourse(req.params.id);
       if (!course) {
         return res.status(404).json({ message: "Course not found" });
