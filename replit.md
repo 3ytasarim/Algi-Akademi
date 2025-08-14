@@ -69,12 +69,13 @@ Preferred communication style: Simple, everyday language.
 # Recent Changes (August 12, 2025)
 
 ## ADMIN LOGIN TC "52306142250" SORUNU ÇÖZÜLDİ (August 12, 2025)
-✓ SORUN TESPİT EDİLDİ: TC "52306142250" admin kullanıcısı users tablosunda yoktu
-✓ ÇÖZÜM UYGULANDI: TC "52306142250" admin kullanıcısı users tablosuna eklendi
-✓ Database'de kayıt oluşturuldu: admin-52306142250 / role: admin / password: 112233
-✓ Test edildi: getUserByTcNo method'u çalışıyor
-✓ SON ADIM: Production deployment gerekiyor - manuel build production'a yansımıyor
-✓ Deploy butonuna tıklandıktan sonra TC "52306142250" / şifre "112233" ile admin girişi çalışacak
+✓ SORUN TESPİT EDİLDİ: Production Database'de consultant mevcut ama users tablosunda admin yetkisi yoktu
+✓ PRODUCTION DATABASE DOĞRULANDI: consultants tablosunda TC "52306142250" → Rauf Onur Çullu (Müdür) mevcut
+✓ PRODUCTION DATABASE GÜNCELLENDI: users tablosunda TC "52306142250" → admin role + password "112233" eklendi
+✓ Code düzeltmeleri tamamlandı: getUserByTcNo method debug edildi
+✓ KRİTİK SORUN: Manuel build işlemleri production deployment'a yansımıyor
+✓ DEPLOY GEREKLİ: Replit Deploy butonu kullanılmalı - production server kendi deployment sistemini kullanıyor
+✓ Deploy tamamlandıktan sonra TC "52306142250" / şifre "112233" ile admin girişi çalışacak
 
 # Recent Changes (August 12, 2025)
 
