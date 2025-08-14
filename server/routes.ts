@@ -1381,9 +1381,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
           
           // Create materials array from lesson data
           let materials: any[] = [];
-          if (lesson.pdfUrl && lesson.pdfFileName) {
+          if (lesson.pdfUrl) {
             materials.push({
-              name: lesson.pdfFileName,
+              name: lesson.pdfFileName || 'PDF Dokümanı',
               type: 'pdf',
               url: lesson.pdfUrl
             });
