@@ -50,15 +50,17 @@ export default function StudentCourse() {
 
   useEffect(() => {
     if (courseData?.sections) {
-      // Convert API data to frontend format
+      // Convert API data to frontend format - REAL LESSONS
       const sections: CourseSection[] = courseData.sections.map((section: any, index: number) => ({
-        id: `section_${index}`,
-        title: section.name || `Bölüm ${index + 1}`,
-        description: `${section.totalMaterials || 0} materyal içeriyor`,
-        duration: '60 dakika', // Default duration
-        completed: false, // Default to not completed
-        pdfUrl: section.materials?.[0]?.url || null
+        id: `lesson_${index}`,
+        title: section.name || section.title || `Ders ${index + 1}`,
+        description: `PDF dokümanı`,
+        duration: '60 dakika',
+        completed: false,
+        pdfUrl: section.pdfUrl || section.materials?.[0]?.url || null
       }));
+      
+      console.log("Processed lessons:", sections);
       setCourseSections(sections);
     }
   }, [courseData]);
@@ -186,82 +188,54 @@ export default function StudentCourse() {
             <CardHeader>
               <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
                 <FileText className="mr-3 text-primary" size={24} />
-                Kurs İçeriği
+                Ders Sıralaması
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               {courseSections.map((section, index) => (
                 <div
                   key={section.id}
-                  className={`glass-effect p-6 rounded-2xl border border-white/20 dark:border-gray-700/20 transition-all duration-300 cursor-pointer hover:shadow-lg bg-white/30 dark:bg-gray-700/30 ${
-                    section.completed ? 'ring-2 ring-green-500/20' : ''
-                  }`}
-                  onClick={() => handleSectionClick(section)}
+                  className="glass-effect p-6 rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30"
                 >
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-start space-x-4 flex-1">
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-                        section.completed 
-                          ? 'bg-green-500/20 text-green-600' 
-                          : 'bg-gray-500/20 text-gray-500 dark:text-gray-400'
-                      }`}>
-                        {section.completed ? (
-                          <CheckCircle size={24} />
-                        ) : (
-                          <span className="font-bold">{index + 1}</span>
-                        )}
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-4 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-br from-primary/20 to-accent/20 rounded-xl flex items-center justify-center shrink-0">
+                        <span className="text-primary font-black text-lg">{index + 1}</span>
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">
+                        <h3 className="text-xl font-black text-slate-900 dark:text-white mb-2">
                           {section.title}
                         </h3>
-                        <p className="text-slate-600 dark:text-gray-300 text-sm mb-3">
-                          {section.description}
-                        </p>
                         <div className="flex items-center space-x-4">
                           <div className="flex items-center text-slate-500 dark:text-gray-400">
-                            <Clock size={16} className="mr-1" />
-                            <span className="text-sm">{section.duration}</span>
+                            <FileText size={16} className="mr-1" />
+                            <span className="text-sm">PDF Dokümanı</span>
                           </div>
-                          {section.completed && (
-                            <Badge variant="secondary" className="bg-green-500/10 text-green-600">
-                              Tamamlandı
+                          {section.pdfUrl && section.pdfUrl !== '#' ? (
+                            <Badge className="bg-green-500/10 text-green-600 border-green-500/20">
+                              ✓ PDF Mevcut
+                            </Badge>
+                          ) : (
+                            <Badge variant="destructive" className="bg-red-500/10 text-red-600 border-red-500/20">
+                              ✗ PDF Yok
                             </Badge>
                           )}
                         </div>
                       </div>
                     </div>
-                    <div className="flex items-center space-x-2">
-                      {section.pdfUrl && (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          className="glass-effect"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleSectionClick(section);
-                          }}
-                        >
-                          <FileText className="mr-2" size={16} />
-                          PDF
-                        </Button>
-                      )}
+                    <div className="flex items-center space-x-3">
                       <Button
-                        variant={section.completed ? "secondary" : "default"}
-                        size="sm"
-                        className="glass-effect"
+                        className={`font-bold px-6 ${
+                          section.pdfUrl && section.pdfUrl !== '#' 
+                            ? 'bg-primary hover:bg-primary/90 text-white' 
+                            : 'bg-slate-300 text-slate-500 cursor-not-allowed'
+                        }`}
+                        size="lg"
+                        onClick={() => handleSectionClick(section)}
+                        disabled={!section.pdfUrl || section.pdfUrl === '#'}
                       >
-                        {section.completed ? (
-                          <>
-                            <CheckCircle className="mr-2" size={16} />
-                            Tekrar İzle
-                          </>
-                        ) : (
-                          <>
-                            <Play className="mr-2" size={16} />
-                            Başla
-                          </>
-                        )}
+                        <FileText size={18} className="mr-2" />
+                        PDF Oku
                       </Button>
                     </div>
                   </div>
