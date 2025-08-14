@@ -109,7 +109,7 @@ export default function StudentCourse() {
       window.open(section.pdfUrl, '_blank');
       toast({
         title: "PDF Başarı ile Açıldı",
-        description: `${section.title} dersi yeni sekmede açılıyor...`,
+        description: `${section.title || 'PDF dosyası'} yeni sekmede açılıyor...`,
       });
     } else {
       toast({
