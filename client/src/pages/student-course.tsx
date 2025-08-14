@@ -41,7 +41,7 @@ export default function StudentCourse() {
     setCourseTitle(courseName);
   }, []);
 
-  // Fetch real course sections from API
+  // Fetch real course sections from API 
   const { data: courseData, isLoading: courseSectionsLoading, error: courseDataError } = useQuery({
     queryKey: ['/api/student/course', courseTitle, 'sections'],
     enabled: !!courseTitle,

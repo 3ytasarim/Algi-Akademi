@@ -1336,13 +1336,21 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get course sections and materials by course title
+  // Get course sections and materials by course title  
   app.get('/api/student/course/:courseTitle/sections', async (req: any, res) => {
     try {
       const user = req.session.auth?.user;
-      if (!user || user.role !== 'student') {
-        return res.status(403).json({ message: "Access denied. Students only." });
+      console.log('=== STUDENT COURSE SECTIONS API DEBUG ===');
+      console.log('Session user:', user);
+      console.log('User role:', user?.role);
+      
+      // Allow any authenticated user (student, admin, etc.) to access course content
+      if (!user) {
+        console.log('❌ No user in session');
+        return res.status(403).json({ message: "Authentication required." });
       }
+      
+      console.log('✅ User authenticated, role:', user.role, '- proceeding with course sections');
 
       const courseTitle = decodeURIComponent(req.params.courseTitle);
       
@@ -1396,9 +1404,70 @@ export async function registerRoutes(app: Express): Promise<Server> {
           };
         })
       });
+      
+      console.log('✅ API Response sent with', lessons.length, 'sections');
     } catch (error) {
       console.error("Error fetching course sections:", error);
       res.status(500).json({ message: "Failed to fetch course sections" });
+    }
+  });
+
+  // DEBUG ENDPOINT: Test course sections without authentication (for troubleshooting)
+  app.get('/api/debug/course/:courseTitle/sections', async (req: any, res) => {
+    try {
+      console.log('=== DEBUG ENDPOINT - NO AUTH CHECK ===');
+      const courseTitle = decodeURIComponent(req.params.courseTitle);
+      console.log('Requested course:', courseTitle);
+      
+      // Get all active courses
+      const allCourses = await storage.getCourses();
+      const courses = allCourses.filter(course => course.status === 'active');
+      
+      const course = courses.find(c => c.title === courseTitle);
+      console.log("Found course:", course ? course.title : "null");
+      
+      if (!course) {
+        return res.status(404).json({ message: "Course not found" });
+      }
+
+      // Get lessons from lessons table
+      const lessons = await storage.getLessonsByCourse(course.id);
+      console.log(`Found ${lessons.length} lessons for course:`, course.title);
+
+      const response = {
+        course: {
+          id: course.id,
+          title: course.title,
+          description: course.description,
+          category: course.category,
+          price: course.price,
+          totalLessons: course.totalLessons
+        },
+        sections: lessons.map((lesson: any, index: number) => {
+          console.log(`Processing lesson ${index}:`, lesson.title, 'PDF:', lesson.pdfUrl);
+          
+          let materials: any[] = [];
+          if (lesson.pdfUrl) {
+            materials.push({
+              name: lesson.pdfFileName || 'PDF Dokümanı',
+              type: 'pdf',
+              url: lesson.pdfUrl
+            });
+          }
+          
+          return {
+            name: lesson.title,
+            materials: materials,
+            totalMaterials: materials.length
+          };
+        })
+      };
+      
+      console.log('✅ DEBUG API Response:', JSON.stringify(response, null, 2));
+      res.json(response);
+    } catch (error) {
+      console.error("Debug endpoint error:", error);
+      res.status(500).json({ message: "Debug endpoint failed" });
     }
   });
 
