@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Production Fix Test</title>
+</head>
+<body>
+    <h1>Production Site Lesson Name Test</h1>
+    <button onclick="testProductionAPI()">Test Production API</button>
+    <div id="result"></div>
+    
+    <script>
+        async function testProductionAPI() {
+            try {
+                const response = await fetch('https://algi-akademi.replit.app/api/debug/course/Adli%20Sekreterlik/sections');
+                const data = await response.json();
+                
+                let html = '<h3>API Response:</h3>';
+                data.sections.forEach((section, index) => {
+                    const title = section.name || section.title || `Ders ${index + 1}`;
+                    html += `<p>Section ${index}: name="${section.name}", title="${section.title}", final="${title}"</p>`;
+                });
+                
+                // Test the exact code used in frontend
+                const processedSections = data.sections.map((section, index) => {
+                    const lessonTitle = section.name || section.title || `Ders ${index + 1}`;
+                    return {
+                        id: `lesson_${index}`,
+                        title: lessonTitle,
+                        description: `${lessonTitle} - Ders Materyali`,
+                        pdfUrl: section.materials?.[0]?.url
+                    };
+                });
+                
+                html += '<h3>Processed Sections (What Frontend Should Use):</h3>';
+                processedSections.forEach((section, index) => {
+                    html += `<p>Processed ${index}: title="${section.title}", description="${section.description}"</p>`;
+                    html += `<p>Toast message would be: "${section.title || 'Ders materyali'} yeni sekmede açılıyor..."</p>`;
+                });
+                
+                document.getElementById('result').innerHTML = html;
+                
+            } catch (error) {
+                document.getElementById('result').innerHTML = `Error: ${error.message}`;
+            }
+        }
+    </script>
+</body>
+</html>
