@@ -54,7 +54,7 @@ export default function StudentCourse() {
       const sections: CourseSection[] = courseData.sections.map((section: any, index: number) => ({
         id: `lesson_${index}`,
         title: section.name || section.title || `Ders ${index + 1}`,
-        description: `PDF dokümanı`,
+        description: section.name || section.title || `Ders ${index + 1}`, // Show actual lesson name instead of "PDF dokümanı"
         duration: '60 dakika',
         completed: false,
         pdfUrl: section.pdfUrl || section.materials?.[0]?.url || null

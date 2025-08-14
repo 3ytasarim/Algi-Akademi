@@ -231,11 +231,13 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const lessons = await storage.getLessonsByCourse(req.params.id);
       console.log("Found lessons:", lessons.length);
       
-      // Format sections for admin edit form
+      // Format lessons for admin edit form
       const sections = lessons.map(lesson => ({
         name: lesson.title,
         pdfFileName: lesson.pdfFileName,
-        pdfUrl: lesson.pdfUrl
+        pdfFile: lesson.pdfFileName, // Also provide as pdfFile for form compatibility
+        pdfUrl: lesson.pdfUrl,
+        duration: lesson.duration || 60
       }));
       
       const courseWithSections = {
@@ -243,7 +245,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
         sections: sections
       };
       
-      console.log("Returning course with sections:", courseWithSections.title, "sections:", sections.length);
+      console.log("Returning course for admin edit:", courseWithSections.title, "sections:", sections.length);
+      console.log("Section data:", sections);
       res.json(courseWithSections);
     } catch (error) {
       console.error("Error fetching course:", error);
@@ -251,18 +254,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  app.get('/api/courses/:id', async (req: any, res) => {
-    try {
-      const course = await storage.getCourse(req.params.id);
-      if (!course) {
-        return res.status(404).json({ message: "Course not found" });
-      }
-      res.json(course);
-    } catch (error) {
-      console.error("Error fetching course:", error);
-      res.status(500).json({ message: "Failed to fetch course" });
-    }
-  });
+
 
   // PDF upload endpoint for course creation
   app.post('/api/courses/pdf-upload', async (req: any, res) => {
