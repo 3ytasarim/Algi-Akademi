@@ -279,14 +279,54 @@ export default function CoursesPage() {
     }
   };
 
-  const handleEditCourse = (course: any) => {
-    setEditingCourse(course);
-    setCourseForm({
-      title: course.title || "",
-      description: course.description || "",
-      price: course.price?.toString() || "",
-      sections: course.sections || [{ name: "", pdfFile: null }]
-    });
+  const handleEditCourse = async (course: any) => {
+    console.log("=== HANDLE EDIT COURSE ===");
+    console.log("Selected course:", course);
+    
+    try {
+      // Fetch detailed course data with lessons from API
+      const response = await fetch(`/api/courses/${course.id}`);
+      if (response.ok) {
+        const detailedCourse = await response.json();
+        console.log("Detailed course data:", detailedCourse);
+        
+        setEditingCourse(detailedCourse);
+        setCourseForm({
+          title: detailedCourse.title || "",
+          description: detailedCourse.description || "",
+          price: detailedCourse.price?.toString() || "",
+          sections: detailedCourse.sections?.length > 0 
+            ? detailedCourse.sections.map((section: any) => ({
+                name: section.name || section.title || '',
+                pdfFile: section.pdfFileName || section.pdfFile || null, // Show existing PDF file name
+                pdfUrl: section.pdfUrl || null
+              }))
+            : [{ name: "", pdfFile: null }]
+        });
+        
+        console.log("Form populated with sections:", detailedCourse.sections);
+      } else {
+        // Fallback to basic course data if detailed fetch fails
+        setEditingCourse(course);
+        setCourseForm({
+          title: course.title || "",
+          description: course.description || "",
+          price: course.price?.toString() || "",
+          sections: [{ name: "", pdfFile: null }] // Start with empty if no API data
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching course details:", error);
+      // Fallback to basic course data
+      setEditingCourse(course);
+      setCourseForm({
+        title: course.title || "",
+        description: course.description || "",
+        price: course.price?.toString() || "",
+        sections: [{ name: "", pdfFile: null }]
+      });
+    }
+    
     setIsCreateDialogOpen(true);
   };
 
