@@ -277,10 +277,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // PDF serving endpoint - converts GCS URLs to accessible URLs
+  app.get("/pdf/:pdfId", async (req: any, res) => {
+    try {
+      const pdfId = req.params.pdfId.replace('.pdf', '');
+      console.log("PDF request for ID:", pdfId);
+      
+      const { ObjectStorageService } = require('./objectStorage');
+      const objectStorageService = new ObjectStorageService();
+      
+      // Get bucket info from env
+      const bucketId = process.env.DEFAULT_OBJECT_STORAGE_BUCKET_ID;
+      if (!bucketId) {
+        return res.status(500).json({ error: "Object storage not configured" });
+      }
+      
+      const { objectStorageClient } = require('./objectStorage');
+      const bucket = objectStorageClient.bucket(bucketId);
+      const file = bucket.file(`.private/pdfs/${pdfId}.pdf`);
+      
+      const [exists] = await file.exists();
+      if (!exists) {
+        return res.status(404).json({ error: "PDF not found" });
+      }
+      
+      await objectStorageService.downloadObject(file, res);
+    } catch (error) {
+      console.error("PDF serving error:", error);
+      res.status(500).json({ error: "Failed to serve PDF" });
+    }
+  });
+
   // Course creation with real PDF support
   app.post('/api/courses', async (req: any, res) => {
     try {
-      console.log("=== SIMPLIFIED COURSE CREATION ===");
+      console.log("=== REAL PDF COURSE CREATION ===");
       console.log("Request body:", req.body);
       
       // Parse course data from request
@@ -310,19 +341,28 @@ export async function registerRoutes(app: Express): Promise<Server> {
       for (let i = 0; i < lessonData.length; i++) {
         const lessonInfo = lessonData[i];
         
-        // Create lesson record with PDF data if provided
+        let pdfUrl = null;
+        if (lessonInfo.pdfUrl) {
+          // Convert GCS URL to local serving URL
+          const urlParts = lessonInfo.pdfUrl.split('/');
+          const pdfFileName = urlParts[urlParts.length - 1].split('?')[0];
+          const pdfId = pdfFileName.replace('.pdf', '');
+          pdfUrl = `/pdf/${pdfId}`;
+        }
+        
+        // Create lesson record with converted PDF URL
         const lessonRecord = {
           courseId: course.id,
           title: lessonInfo.name || `Ders ${i + 1}`,
           orderIndex: i + 1,
-          pdfUrl: lessonInfo.pdfUrl || null, // Use actual uploaded PDF URL, no dummy fallback
-          pdfFileName: lessonInfo.pdfFileName || lessonInfo.pdfFile || null, // Use actual filename
+          pdfUrl: pdfUrl,
+          pdfFileName: lessonInfo.pdfFileName || lessonInfo.pdfFile || null,
           duration: lessonInfo.duration || 60,
           isActive: true
         };
         
         await storage.createLesson(lessonRecord);
-        console.log(`Lesson created: ${lessonRecord.title}`);
+        console.log(`Lesson created: ${lessonRecord.title} with PDF: ${pdfUrl}`);
       }
       
       // Create activity
