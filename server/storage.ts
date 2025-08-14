@@ -286,6 +286,8 @@ export class DatabaseStorage implements IStorage {
     await db.delete(consultants).where(eq(consultants.id, id));
   }
 
+
+
   // Missing methods for routes compatibility
   async getEnrollments(): Promise<any[]> { return []; }
   async getSales(): Promise<any[]> { return []; }

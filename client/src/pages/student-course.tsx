@@ -16,6 +16,7 @@ import {
   CheckCircle,
   Star
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface CourseSection {
   id: string;
@@ -38,62 +39,43 @@ export default function StudentCourse() {
     const path = window.location.pathname;
     const courseName = decodeURIComponent(path.split('/').pop() || '');
     setCourseTitle(courseName);
-
-    // Mock course sections data - in real app, fetch from API
-    const mockSections: CourseSection[] = [
-      {
-        id: '1',
-        title: 'Giriş ve Temel Kavramlar',
-        description: 'Kursa giriş ve temel kavramların öğrenilmesi',
-        duration: '45 dakika',
-        completed: true,
-        pdfUrl: '/assets/sample.pdf'
-      },
-      {
-        id: '2', 
-        title: 'Uygulama Temelleri',
-        description: 'Pratik uygulamalar ve temel beceriler',
-        duration: '60 dakika',
-        completed: true,
-        pdfUrl: '/assets/sample.pdf'
-      },
-      {
-        id: '3',
-        title: 'İleri Seviye Konular',
-        description: 'Derinlemesine konular ve uzman bilgileri',
-        duration: '90 dakika',
-        completed: false,
-        pdfUrl: '/assets/sample.pdf'
-      },
-      {
-        id: '4',
-        title: 'Sınav Hazırlığı',
-        description: 'Sınava yönelik hazırlık ve pratik testler',
-        duration: '30 dakika',
-        completed: false,
-        pdfUrl: '/assets/sample.pdf'
-      },
-      {
-        id: '5',
-        title: 'Sertifika Sınavı',
-        description: 'Final sınavı ve sertifika kazanımı',
-        duration: '120 dakika',
-        completed: false
-      }
-    ];
-
-    setCourseSections(mockSections);
   }, []);
 
+  // Fetch real course sections from API
+  const { data: courseData, isLoading: courseSectionsLoading } = useQuery({
+    queryKey: ['/api/student/course', courseTitle, 'sections'],
+    enabled: !!courseTitle,
+    retry: false,
+  });
+
+  useEffect(() => {
+    if (courseData?.sections) {
+      // Convert API data to frontend format
+      const sections: CourseSection[] = courseData.sections.map((section: any, index: number) => ({
+        id: `section_${index}`,
+        title: section.name || `Bölüm ${index + 1}`,
+        description: `${section.totalMaterials || 0} materyal içeriyor`,
+        duration: '60 dakika', // Default duration
+        completed: false, // Default to not completed
+        pdfUrl: section.materials?.[0]?.url || null
+      }));
+      setCourseSections(sections);
+    }
+  }, [courseData]);
+
   const handleSectionClick = (section: CourseSection) => {
-    if (section.pdfUrl) {
-      // Open PDF in new tab
+    if (section.pdfUrl && section.pdfUrl !== '#') {
+      // Open PDF in new tab for viewing
       window.open(section.pdfUrl, '_blank');
+      toast({
+        title: "PDF Açılıyor",
+        description: `${section.title} yeni sekmede açılıyor...`,
+      });
     } else {
       toast({
-        title: "Bilgi",
-        description: "Bu bölüm henüz mevcut değil.",
-        variant: "default",
+        title: "PDF Bulunamadı", 
+        description: "Bu bölüm için henüz PDF materyali yüklenmemiş. Admin panelden PDF eklenmelidir.",
+        variant: "destructive"
       });
     }
   };
@@ -110,12 +92,12 @@ export default function StudentCourse() {
     }, 0);
   };
 
-  if (isLoading || !isAuthenticated) {
+  if (isLoading || !isAuthenticated || courseSectionsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 dark:from-gray-900 dark:via-gray-800/30 dark:to-gray-900/20">
         <div className="glass-effect p-8 rounded-3xl bg-white/50 dark:bg-gray-800/50">
           <div className="animate-spin rounded-full h-12 w-12 border-4 border-primary border-t-transparent mx-auto"></div>
-          <p className="text-slate-600 dark:text-gray-300 font-medium mt-4">Yükleniyor...</p>
+          <p className="text-slate-600 dark:text-gray-300 font-medium mt-4">Kurs içeriği yükleniyor...</p>
         </div>
       </div>
     );
