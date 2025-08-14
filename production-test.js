@@ -1,24 +1,19 @@
-// Production database test script
-const fetch = require('node-fetch');
+// Production test that can be pasted into browser console
+console.log("=== PRODUCTION DEBUG TEST ===");
 
-async function testProductionDB() {
-    try {
-        // Test admin login with hardcoded credentials
-        const adminLogin = await fetch('https://algi-akademi.replit.app/api/auth/admin-login', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ tcKimlikNo: 'admin', password: '112233' })
-        });
-        
-        console.log('Admin login response:', await adminLogin.text());
-        
-        // Test if we can get users list
-        const usersResponse = await fetch('https://algi-akademi.replit.app/api/users');
-        console.log('Users API response:', await usersResponse.text());
-        
-    } catch (error) {
-        console.error('Production test error:', error);
-    }
-}
-
-testProductionDB();
+// Test real API call
+fetch('https://algi-akademi.replit.app/api/debug/course/Adli%20Sekreterlik/sections')
+  .then(response => response.json())
+  .then(data => {
+    console.log("API Response:", data);
+    
+    data.sections.forEach((section, index) => {
+      const lessonTitle = section.name || section.title || `Ders ${index + 1}`;
+      console.log(`Section ${index}:`);
+      console.log(`  section.name: "${section.name}"`);
+      console.log(`  section.title: "${section.title}"`);
+      console.log(`  final lessonTitle: "${lessonTitle}"`);
+      console.log(`  Toast would show: "${lessonTitle} yeni sekmede açılıyor..."`);
+    });
+  })
+  .catch(error => console.error("Error:", error));

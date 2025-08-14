@@ -83,6 +83,7 @@ export default function StudentCourse() {
         }
         
         const lessonTitle = section.name || section.title || `Ders ${index + 1}`;
+        console.log(`DEBUG section ${index}: name="${section.name}", title="${section.title}", final="${lessonTitle}"`);
         const processedSection = {
           id: `lesson_${index}`,
           title: lessonTitle, // Use lesson name/title directly
@@ -110,7 +111,7 @@ export default function StudentCourse() {
       window.open(section.pdfUrl, '_blank');
       toast({
         title: "PDF Başarı ile Açıldı",
-        description: `${section.title || 'Ders materyali'} yeni sekmede açılıyor...`,
+        description: `${section.title} yeni sekmede açılıyor...`,
       });
     } else {
       toast({
