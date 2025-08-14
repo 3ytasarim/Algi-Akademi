@@ -76,8 +76,8 @@ export default function StudentCourse() {
         
         const processedSection = {
           id: `lesson_${index}`,
-          title: section.name || section.title || `Ders ${index + 1}`,
-          description: section.name || section.title || `Ders ${index + 1}`, // Show actual lesson name instead of "PDF dokümanı"
+          title: section.name || section.title || `Ders ${index + 1}`, // Use lesson name/title directly
+          description: `${section.name || section.title || `Ders ${index + 1}`} - Ders Materyali`, // Show lesson name with material info
           duration: '60 dakika',
           completed: false,
           pdfUrl: pdfUrl

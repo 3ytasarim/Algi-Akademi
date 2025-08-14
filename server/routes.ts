@@ -1391,16 +1391,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
           let materials: any[] = [];
           if (lesson.pdfUrl) {
             materials.push({
-              name: lesson.pdfFileName || 'PDF Dokümanı',
+              name: lesson.pdfFileName || `${lesson.title} PDF Materyali`,
               type: 'pdf',
               url: lesson.pdfUrl
             });
           }
           
           return {
-            name: lesson.title,
+            name: lesson.title, // This is the lesson title that will be displayed
+            title: lesson.title, // Add title field too for consistency
             materials: materials,
-            totalMaterials: materials.length
+            totalMaterials: materials.length,
+            pdfUrl: lesson.pdfUrl // Add direct pdfUrl for easy access
           };
         })
       });
