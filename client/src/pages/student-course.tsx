@@ -41,11 +41,13 @@ export default function StudentCourse() {
     setCourseTitle(courseName);
   }, []);
 
-  // Fetch real course sections from API 
+  // Fetch real course sections from API with cache busting
   const { data: courseData, isLoading: courseSectionsLoading, error: courseDataError } = useQuery({
-    queryKey: ['/api/student/course', courseTitle, 'sections'],
+    queryKey: ['/api/student/course', courseTitle, 'sections', Date.now()], // Cache busting with timestamp
     enabled: !!courseTitle,
     retry: false,
+    staleTime: 0, // Always refetch
+    cacheTime: 0, // Don't cache
   });
 
   // Log API response for debugging
@@ -100,8 +102,8 @@ export default function StudentCourse() {
       // Open PDF in new tab for viewing
       window.open(section.pdfUrl, '_blank');
       toast({
-        title: "PDF Açılıyor",
-        description: `${section.title} yeni sekmede açılıyor...`,
+        title: "PDF Başarı ile Açıldı",
+        description: `${section.title} dersi yeni sekmede açılıyor...`,
       });
     } else {
       toast({

@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Fix</title>
+</head>
+<body>
+    <h1>Lesson Name Test</h1>
+    <div id="result"></div>
+    <script>
+        fetch('http://localhost:5000/api/debug/course/Adli%20Sekreterlik/sections')
+            .then(res => res.json())
+            .then(data => {
+                console.log('API Response:', data);
+                document.getElementById('result').innerHTML = 
+                    `<h3>Lessons:</h3>
+                    <ul>
+                        ${data.sections.map(s => `<li>Name: ${s.name}</li>`).join('')}
+                    </ul>`;
+            })
+            .catch(err => {
+                console.error('Error:', err);
+                document.getElementById('result').innerHTML = `Error: ${err.message}`;
+            });
+    </script>
+</body>
+</html>
