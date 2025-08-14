@@ -42,26 +42,56 @@ export default function StudentCourse() {
   }, []);
 
   // Fetch real course sections from API
-  const { data: courseData, isLoading: courseSectionsLoading } = useQuery({
+  const { data: courseData, isLoading: courseSectionsLoading, error: courseDataError } = useQuery({
     queryKey: ['/api/student/course', courseTitle, 'sections'],
     enabled: !!courseTitle,
     retry: false,
   });
 
+  // Log API response for debugging
   useEffect(() => {
-    if (courseData?.sections) {
+    console.log("=== STUDENT COURSE API RESPONSE ===");
+    console.log("Course Title:", courseTitle);
+    console.log("Course Data:", courseData);
+    console.log("Loading:", courseSectionsLoading);
+    console.log("Error:", courseDataError);
+  }, [courseData, courseSectionsLoading, courseDataError, courseTitle]);
+
+  useEffect(() => {
+    console.log("=== STUDENT COURSE DATA PROCESSING ===");
+    console.log("Raw courseData:", courseData);
+    
+    if (courseData && 'sections' in courseData && Array.isArray((courseData as any).sections)) {
       // Convert API data to frontend format - REAL LESSONS
-      const sections: CourseSection[] = courseData.sections.map((section: any, index: number) => ({
-        id: `lesson_${index}`,
-        title: section.name || section.title || `Ders ${index + 1}`,
-        description: section.name || section.title || `Ders ${index + 1}`, // Show actual lesson name instead of "PDF dokümanı"
-        duration: '60 dakika',
-        completed: false,
-        pdfUrl: section.pdfUrl || section.materials?.[0]?.url || null
-      }));
+      const sections: CourseSection[] = ((courseData as any).sections as any[]).map((section: any, index: number) => {
+        console.log(`Processing section ${index}:`, section);
+        
+        // Get PDF URL from materials or direct pdfUrl field
+        let pdfUrl = null;
+        if (section.materials && section.materials.length > 0) {
+          pdfUrl = section.materials[0].url;
+        } else if (section.pdfUrl) {
+          pdfUrl = section.pdfUrl;
+        }
+        
+        const processedSection = {
+          id: `lesson_${index}`,
+          title: section.name || section.title || `Ders ${index + 1}`,
+          description: section.name || section.title || `Ders ${index + 1}`, // Show actual lesson name instead of "PDF dokümanı"
+          duration: '60 dakika',
+          completed: false,
+          pdfUrl: pdfUrl
+        };
+        
+        console.log(`Processed section ${index}:`, processedSection);
+        return processedSection;
+      });
       
-      console.log("Processed lessons:", sections);
+      console.log("Final processed lessons:", sections);
       setCourseSections(sections);
+    } else {
+      console.log("No sections found in courseData or sections is not an array");
+      setCourseSections([]);
     }
   }, [courseData]);
 
@@ -192,7 +222,16 @@ export default function StudentCourse() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {courseSections.map((section, index) => (
+              {courseSections.length === 0 ? (
+                <div className="text-center py-8">
+                  <FileText className="mx-auto h-12 w-12 text-gray-400 mb-4" />
+                  <p className="text-gray-500 dark:text-gray-400">Bu bölümde henüz materyal bulunmuyor</p>
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-2">
+                    Kurs: {courseTitle} - Lessons: {courseSectionsLoading ? "Yükleniyor..." : "Veri yok"}
+                  </p>
+                </div>
+              ) : (
+                courseSections.map((section, index) => (
                 <div
                   key={section.id}
                   className="glass-effect p-6 rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30"
@@ -240,7 +279,8 @@ export default function StudentCourse() {
                     </div>
                   </div>
                 </div>
-              ))}
+                ))
+              )}
             </CardContent>
           </Card>
 
