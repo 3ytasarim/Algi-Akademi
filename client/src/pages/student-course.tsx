@@ -82,10 +82,11 @@ export default function StudentCourse() {
           pdfUrl = section.pdfUrl;
         }
         
+        const lessonTitle = section.name || section.title || `Ders ${index + 1}`;
         const processedSection = {
           id: `lesson_${index}`,
-          title: section.name || section.title || `Ders ${index + 1}`, // Use lesson name/title directly
-          description: `${section.name || section.title || `Ders ${index + 1}`} - Ders Materyali`, // Show lesson name with material info
+          title: lessonTitle, // Use lesson name/title directly
+          description: `${lessonTitle} - Ders Materyali`, // Show lesson name with material info
           duration: '60 dakika',
           completed: false,
           pdfUrl: pdfUrl
@@ -109,7 +110,7 @@ export default function StudentCourse() {
       window.open(section.pdfUrl, '_blank');
       toast({
         title: "PDF Başarı ile Açıldı",
-        description: `${section.title || 'PDF dosyası'} yeni sekmede açılıyor...`,
+        description: `${section.title || 'Ders materyali'} yeni sekmede açılıyor...`,
       });
     } else {
       toast({
