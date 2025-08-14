@@ -111,7 +111,7 @@ export default function Sidebar({
   // Filter menu items based on user role
   const getFilteredMenuItems = () => {
     if (user?.role === 'consultant') {
-      // Consultant can only see "Kursiyer Tanımlama" under "Kurs Yönetimi"
+      // Danışman can only see "Kursiyer Tanımlama" under "Kurs Yönetimi"
       return [{
         id: "courses", 
         icon: Book,

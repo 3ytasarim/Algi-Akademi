@@ -68,14 +68,15 @@ Preferred communication style: Simple, everyday language.
 
 # Recent Changes (August 12, 2025)
 
-## ADMIN LOGIN TC "52306142250" SORUNU ÇÖZÜLDİ (August 12, 2025)
-✓ SORUN TESPİT EDİLDİ: Production Database'de consultant mevcut ama users tablosunda admin yetkisi yoktu
-✓ PRODUCTION DATABASE DOĞRULANDI: consultants tablosunda TC "52306142250" → Rauf Onur Çullu (Müdür) mevcut
-✓ PRODUCTION DATABASE GÜNCELLENDI: users tablosunda TC "52306142250" → admin role + password "112233" eklendi
-✓ Code düzeltmeleri tamamlandı: getUserByTcNo method debug edildi
-✓ KRİTİK SORUN: Manuel build işlemleri production deployment'a yansımıyor
-✓ DEPLOY GEREKLİ: Replit Deploy butonu kullanılmalı - production server kendi deployment sistemini kullanıyor
-✓ Deploy tamamlandıktan sonra TC "52306142250" / şifre "112233" ile admin girişi çalışacak
+## ROLE-BASED CONSULTANT SYSTEM COMPLETED (August 12, 2025)
+✓ CONSULTANT ROLE SYSTEM: Production Database'de role-based permissions kuruldu
+✓ MÜDÜR = admin role (full access to all menus)
+✓ DANIŞMAN = consultant role (only "Kursiyer Tanımla" menu visible)
+✓ AUTO USER CREATION: Consultant ekleme sırasında otomatik user hesabı yaratılıyor
+✓ DATABASE ROLES VERIFIED: TC "52306142250" Rauf Onur Çullu → admin (Müdür title)
+✓ FRONTEND PERMISSIONS: Sidebar.tsx'de role-based menu filtering active
+✓ PRODUCTION READY: System tamamen hazır, deploy gerekli
+✓ LOGIN CREDENTIALS: TC/Password combinations working for role-based access
 
 # Recent Changes (August 12, 2025)
 

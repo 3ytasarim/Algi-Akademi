@@ -109,9 +109,9 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(401).json({ message: "Geçersiz TC Kimlik No veya şifre" });
       }
 
-      // Check if user is admin (Müdür role)
-      if (user.role !== 'admin') {
-        return res.status(401).json({ message: "Bu giriş sadece yöneticiler içindir" });
+      // Check if user is admin or consultant role
+      if (user.role !== 'admin' && user.role !== 'consultant') {
+        return res.status(401).json({ message: "Bu giriş sadece yöneticiler ve danışmanlar içindir" });
       }
 
       // Verify password
@@ -440,6 +440,32 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       const consultant = await storage.createConsultant(consultantData);
       console.log("Consultant created successfully:", consultant);
+      
+      // Create user account for the consultant automatically
+      try {
+        const userData = {
+          id: `consultant-${consultantData.tcNo}`,
+          tcKimlikNo: consultantData.tcNo,
+          firstName: consultantData.firstName,
+          lastName: consultantData.lastName,
+          email: consultantData.email,
+          role: consultantData.title === 'Müdür' ? 'admin' : 'consultant', // Müdür = admin, Danışman = consultant
+          password: '112233', // Default password
+          assignedCategories: ['Genel'],
+          isManualStudent: false
+        };
+        
+        const user = await storage.createStudent(userData);
+        console.log("User account created for consultant:", user.id, "Role:", user.role);
+        
+        // Link consultant to user
+        await storage.updateConsultant(consultant.id, { userId: user.id });
+        console.log("Consultant linked to user account");
+        
+      } catch (userError) {
+        console.log("User account creation failed (may already exist):", userError);
+      }
+      
       res.status(201).json(consultant);
     } catch (error) {
       console.error("Error creating consultant:", error);

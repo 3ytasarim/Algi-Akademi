@@ -34,7 +34,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   profileImageUrl: varchar("profile_image_url"),
   telefon: varchar("telefon"),
-  role: varchar("role").notNull().default('student'), // 'student', 'admin', 'instructor'
+  role: varchar("role").notNull().default('student'), // 'student', 'admin', 'instructor', 'consultant'
   assignedCategories: text("assigned_categories").array().default(sql`ARRAY[]::text[]`), // course categories assigned to student
   // Manual student fields
   tcKimlikNo: varchar("tc_kimlik_no"),
@@ -134,7 +134,7 @@ export const consultants = pgTable("consultants", {
   tcNo: varchar("tc_no").unique().notNull(),
   firstName: varchar("first_name").notNull(),
   lastName: varchar("last_name").notNull(),
-  title: varchar("title").notNull().default('Danışman'), // 'Danışman', 'Müdür'
+  title: varchar("title").notNull().default('Danışman'), // 'Danışman' (limited access), 'Müdür' (full admin access)
   email: varchar("email"),
   phone: varchar("phone"),
   userId: varchar("user_id").references(() => users.id),
