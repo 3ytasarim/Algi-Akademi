@@ -6,6 +6,11 @@ Algı Akademi is a comprehensive CRM-based educational management system designe
 
 Preferred communication style: Simple, everyday language.
 
+**CRITICAL: Production Database Connection**
+- All database operations MUST use: postgresql://neondb_owner:npg_sa6Fi0IofpNq@ep-square-bar-aemr0mg3.c-2.us-east-2.aws.neon.tech/neondb?sslmode=require
+- User's actual production data is in this database
+- Real "Deneme" course ID: 1b0542d6-cf0f-4916-9c4b-033468e7cfb4
+
 # System Architecture
 
 ## Frontend Architecture
