@@ -65,44 +65,75 @@ export default function CoursesPage() {
     queryKey: ["/api/courses"],
   });
 
-  // Create course mutation
+  // Create course mutation with real PDF upload
   const createCourseMutation = useMutation({
     mutationFn: async (courseData: any) => {
-      console.log("=== EMERGENCY FRONTEND FIX ===");
+      console.log("=== REAL PDF COURSE CREATION ===");
       console.log("Input courseData:", courseData);
       
       try {
-        const formData = new FormData();
+        // First, upload PDFs to Object Storage and get URLs
+        const sectionsWithPDFUrls = await Promise.all(
+          courseData.sections.map(async (section: any, index: number) => {
+            if (section.pdfFile) {
+              console.log(`Uploading PDF for section ${index}:`, section.pdfFile.name);
+              
+              // Get upload URL from backend
+              const uploadResponse = await fetch("/api/courses/pdf-upload", {
+                method: "POST",
+              });
+              
+              if (!uploadResponse.ok) {
+                throw new Error("Failed to get PDF upload URL");
+              }
+              
+              const { uploadURL } = await uploadResponse.json();
+              console.log("Got upload URL:", uploadURL);
+              
+              // Upload PDF to Object Storage
+              const pdfUploadResponse = await fetch(uploadURL, {
+                method: "PUT",
+                body: section.pdfFile,
+                headers: {
+                  'Content-Type': 'application/pdf',
+                },
+              });
+              
+              if (!pdfUploadResponse.ok) {
+                throw new Error("Failed to upload PDF to Object Storage");
+              }
+              
+              console.log("PDF uploaded successfully");
+              
+              return {
+                name: section.name,
+                pdfUrl: uploadURL.split('?')[0], // Remove query params to get clean URL
+                pdfFileName: section.pdfFile.name
+              };
+            }
+            
+            return {
+              name: section.name,
+              pdfUrl: null,
+              pdfFileName: null
+            };
+          })
+        );
         
-        // Add course data as JSON string
-        const courseDataWithoutFiles = {
+        // Now create course with real PDF URLs
+        const courseDataWithPDFUrls = {
           ...courseData,
-          sections: courseData.sections.map((section: any) => ({
-            name: section.name,
-            // Don't include pdfFile in the JSON - it will be uploaded separately
-          }))
+          sections: sectionsWithPDFUrls
         };
         
-        console.log("Processed courseData:", courseDataWithoutFiles);
-        formData.append('courseData', JSON.stringify(courseDataWithoutFiles));
+        console.log("Course data with PDF URLs:", courseDataWithPDFUrls);
         
-        // Add PDF files for each section
-        courseData.sections.forEach((section: any, index: number) => {
-          if (section.pdfFile) {
-            console.log(`Adding PDF for section ${index}:`, section.pdfFile.name);
-            formData.append(`section_${index}_pdf`, section.pdfFile);
-          }
-        });
-        
-        console.log("Making request to /api/courses");
         const response = await fetch("/api/courses", {
           method: "POST",
           headers: {
             'Content-Type': 'application/json',
           },
-          body: JSON.stringify({
-            courseData: JSON.stringify(courseDataWithoutFiles)
-          }),
+          body: JSON.stringify(courseDataWithPDFUrls),
         });
         
         console.log("Response status:", response.status);

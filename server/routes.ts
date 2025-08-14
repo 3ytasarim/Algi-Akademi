@@ -264,7 +264,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // EMERGENCY SIMPLIFIED COURSE CREATION - NO FILE UPLOAD FOR NOW
+  // PDF upload endpoint for course creation
+  app.post('/api/courses/pdf-upload', async (req: any, res) => {
+    try {
+      const { ObjectStorageService } = require('./objectStorage');
+      const objectStorageService = new ObjectStorageService();
+      const uploadURL = await objectStorageService.getPDFUploadURL();
+      res.json({ uploadURL });
+    } catch (error) {
+      console.error("PDF upload URL generation error:", error);
+      res.status(500).json({ error: "Failed to generate PDF upload URL" });
+    }
+  });
+
+  // Course creation with real PDF support
   app.post('/api/courses', async (req: any, res) => {
     try {
       console.log("=== SIMPLIFIED COURSE CREATION ===");
@@ -302,8 +315,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
           courseId: course.id,
           title: lessonInfo.name || `Ders ${i + 1}`,
           orderIndex: i + 1,
-          pdfUrl: lessonInfo.pdfUrl || 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-          pdfFileName: lessonInfo.pdfFileName || lessonInfo.pdfFile || `${lessonInfo.name || 'ders'}.pdf`,
+          pdfUrl: lessonInfo.pdfUrl || null, // Use actual uploaded PDF URL, no dummy fallback
+          pdfFileName: lessonInfo.pdfFileName || lessonInfo.pdfFile || null, // Use actual filename
           duration: lessonInfo.duration || 60,
           isActive: true
         };
