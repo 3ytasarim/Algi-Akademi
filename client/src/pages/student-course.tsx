@@ -16,7 +16,7 @@ import {
   CheckCircle,
   Star
 } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface CourseSection {
   id: string;
@@ -30,6 +30,7 @@ interface CourseSection {
 export default function StudentCourse() {
   const { user, isAuthenticated, isLoading } = useAuth();
   const { toast } = useToast();
+  const queryClient = useQueryClient();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [courseTitle, setCourseTitle] = useState<string>("");
   const [courseSections, setCourseSections] = useState<CourseSection[]>([]);
@@ -39,15 +40,20 @@ export default function StudentCourse() {
     const path = window.location.pathname;
     const courseName = decodeURIComponent(path.split('/').pop() || '');
     setCourseTitle(courseName);
-  }, []);
+    
+    // Clear all cache when component mounts to force fresh data
+    queryClient.clear();
+  }, [queryClient]);
 
   // Fetch real course sections from API with cache busting
   const { data: courseData, isLoading: courseSectionsLoading, error: courseDataError } = useQuery({
-    queryKey: ['/api/student/course', courseTitle, 'sections', Date.now()], // Cache busting with timestamp
+    queryKey: ['/api/debug/course', encodeURIComponent(courseTitle), 'sections'], // Use debug endpoint directly
     enabled: !!courseTitle,
     retry: false,
     staleTime: 0, // Always refetch
-    cacheTime: 0, // Don't cache
+    gcTime: 0, // Don't cache (React Query v5)
+    refetchOnMount: true,
+    refetchOnWindowFocus: true,
   });
 
   // Log API response for debugging
