@@ -62,7 +62,7 @@ export default function CourseTable() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-gray-900 dark:text-white">{course.title}</h3>
-                      <p className="text-sm text-gray-600 dark:text-gray-300">Eğitmen: {course.instructor || 'Belirtilmemiş'}</p>
+
                       <div className="flex items-center space-x-4 mt-1">
                         <span className="text-xs text-gray-500 dark:text-gray-400">Kursiyer sayısı belirleniyor</span>
                         <span className={`text-xs ${course.status === 'active' ? 'text-green-600' : 'text-orange-600'}`}>
