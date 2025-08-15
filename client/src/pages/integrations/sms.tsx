@@ -66,6 +66,25 @@ export default function SmsIntegration() {
     });
   };
 
+  const testSmsMutation = useMutation({
+    mutationFn: async (phone: string) => {
+      return await apiRequest('/api/sms/test', "POST", { phone });
+    },
+    onSuccess: (data) => {
+      toast({
+        title: "Başarılı",
+        description: `Test mesajı başarıyla gönderildi. Job ID: ${data.jobId}`,
+      });
+    },
+    onError: (error: any) => {
+      toast({
+        title: "Hata",
+        description: `Test mesajı gönderilemedi: ${error.message || 'Bilinmeyen hata'}`,
+        variant: "destructive",
+      });
+    },
+  });
+
   const sendTestSms = () => {
     if (!testPhone || testPhone.trim() === '') {
       toast({
@@ -81,12 +100,7 @@ export default function SmsIntegration() {
       description: `Test mesajı ${testPhone} numarasına gönderiliyor...`,
     });
     
-    setTimeout(() => {
-      toast({
-        title: "Başarılı",
-        description: `Test mesajı ${testPhone} numarasına başarıyla gönderildi`,
-      });
-    }, 2000);
+    testSmsMutation.mutate(testPhone);
   };
 
   return (
@@ -195,11 +209,16 @@ export default function SmsIntegration() {
               <Button
                 onClick={sendTestSms}
                 variant="outline"
-                disabled={!smsConfig.isActive || !testPhone.trim()}
+                disabled={!smsConfig.isActive || !testPhone.trim() || testSmsMutation.isPending}
                 className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <TestTube className="mr-2" size={16} />
-                {testPhone.trim() ? `${testPhone} numarasına test gönder` : 'Test Mesajı Gönder'}
+                {testSmsMutation.isPending 
+                  ? 'SMS Gönderiliyor...' 
+                  : testPhone.trim() 
+                    ? `${testPhone} numarasına test gönder` 
+                    : 'Test Mesajı Gönder'
+                }
               </Button>
               <Link href="/integrations/sms-templates">
                 <Button
