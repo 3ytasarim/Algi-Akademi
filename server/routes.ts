@@ -7,8 +7,13 @@ import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertE
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
+import { getNetGSMService, initializeNetGSM } from "./smsService";
 
 export async function registerRoutes(app: Express): Promise<Server> {
+  // Initialize NetGSM SMS Service
+  const netGSMService = initializeNetGSM();
+  console.log('NetGSM SMS Service initialized');
+
   // Object Storage Configuration
   let cloudStorage: CloudStorage | null = null;
   let bucketName: string | null = null;
@@ -1473,10 +1478,10 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // SMS Routes
+  // SMS Routes - NetGSM Real Integration
   app.post('/api/sms/send-welcome', async (req: any, res) => {
     try {
-      const { phone, message } = req.body;
+      const { phone, message, studentData } = req.body;
       
       if (!phone || !message) {
         return res.status(400).json({ 
@@ -1485,23 +1490,63 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
-      // NetGSM SMS integration would go here
-      // For now, just log the SMS attempt
-      console.log("Welcome SMS would be sent:", { phone, message });
+      console.log("NetGSM SMS Gönderimi Başlatılıyor:", { phone, messageLength: message.length });
       
-      // Simulate SMS sending delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      res.json({ 
-        success: true, 
-        message: "SMS başarıyla gönderildi",
-        phone: phone 
+      // NetGSM ile gerçek SMS gönder
+      const smsResult = await netGSMService.sendSMS({
+        phone: phone,
+        message: message
       });
-    } catch (error) {
-      console.error("SMS send error:", error);
+      
+      if (smsResult.success) {
+        console.log("✅ SMS Başarıyla Gönderildi:", { jobId: smsResult.jobId, phone });
+        res.json({ 
+          success: true, 
+          message: "SMS başarıyla gönderildi",
+          phone: phone,
+          jobId: smsResult.jobId
+        });
+      } else {
+        console.error("❌ SMS Gönderim Hatası:", smsResult.error);
+        res.status(500).json({ 
+          success: false, 
+          message: `SMS gönderilirken hata: ${smsResult.error}`,
+          phone: phone
+        });
+      }
+    } catch (error: any) {
+      console.error("SMS endpoint error:", error);
       res.status(500).json({ 
         success: false, 
-        message: "SMS gönderilirken hata oluştu" 
+        message: "SMS gönderilirken hata oluştu: " + error.message 
+      });
+    }
+  });
+
+  // Test SMS endpoint
+  app.post('/api/sms/test', async (req: any, res) => {
+    try {
+      console.log("NetGSM Test SMS başlatılıyor...");
+      
+      const testResult = await netGSMService.testConnection();
+      
+      if (testResult.success) {
+        res.json({
+          success: true,
+          message: "Test SMS başarıyla gönderildi",
+          jobId: testResult.jobId || 'unknown'
+        });
+      } else {
+        res.status(500).json({
+          success: false,
+          message: `Test SMS hatası: ${testResult.error}`
+        });
+      }
+    } catch (error: any) {
+      console.error("Test SMS error:", error);
+      res.status(500).json({
+        success: false,
+        message: "Test SMS hatası: " + error.message
       });
     }
   });
