@@ -993,6 +993,27 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
       console.log("Student created successfully:", student.id);
       
+      // Send welcome SMS if phone number is provided
+      if (req.body.telefon) {
+        try {
+          console.log("🔄 Hoşgeldin SMS gönderiliyor...");
+          const smsResult = await netGSMService.sendWelcomeSMS({
+            firstName: student.firstName,
+            tcKimlikNo: student.tcKimlikNo,
+            phone: req.body.telefon,
+            password: '112233'
+          });
+          
+          if (smsResult.success) {
+            console.log("✅ Hoşgeldin SMS başarıyla gönderildi:", smsResult.jobId);
+          } else {
+            console.error("❌ Hoşgeldin SMS hatası:", smsResult.error);
+          }
+        } catch (smsError) {
+          console.error("SMS gönderim hatası:", smsError);
+        }
+      }
+      
       // Create activity for student addition
       if (req.session.auth?.isAuthenticated) {
         try {
@@ -1523,24 +1544,48 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Test SMS endpoint
+  // Test SMS endpoint - with phone number parameter
   app.post('/api/sms/test', async (req: any, res) => {
     try {
       console.log("NetGSM Test SMS başlatılıyor...");
+      const { phone } = req.body;
       
-      const testResult = await netGSMService.testConnection();
-      
-      if (testResult.success) {
-        res.json({
-          success: true,
-          message: "Test SMS başarıyla gönderildi",
-          jobId: testResult.jobId || 'unknown'
+      if (phone) {
+        // Test with specific phone number
+        const smsResult = await netGSMService.sendSMS({
+          phone: phone,
+          message: 'Test mesajı - Algı Akademi SMS sistemi çalışıyor.'
         });
+        
+        if (smsResult.success) {
+          res.json({
+            success: true,
+            message: "Test SMS başarıyla gönderildi",
+            phone: phone,
+            jobId: smsResult.jobId
+          });
+        } else {
+          res.status(500).json({
+            success: false,
+            message: `Test SMS hatası: ${smsResult.error}`
+          });
+        }
       } else {
-        res.status(500).json({
-          success: false,
-          message: `Test SMS hatası: ${testResult.error}`
-        });
+        // Use default test connection
+        const testResult = await netGSMService.testConnection();
+        
+        if (testResult.success) {
+          res.json({
+            success: true,
+            message: "Test SMS başarıyla gönderildi",
+            jobId: testResult.jobId || 'unknown'
+          });
+        } else {
+          res.status(500).json({
+            success: false,
+            message: `Test SMS hatası: ${testResult.error}`
+          });
+        }
       }
     } catch (error: any) {
       console.error("Test SMS error:", error);
