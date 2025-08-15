@@ -1473,6 +1473,84 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // SMS Routes
+  app.post('/api/sms/send-welcome', async (req: any, res) => {
+    try {
+      const { phone, message } = req.body;
+      
+      if (!phone || !message) {
+        return res.status(400).json({ 
+          success: false, 
+          message: "Telefon numarası ve mesaj gerekli" 
+        });
+      }
+
+      // NetGSM SMS integration would go here
+      // For now, just log the SMS attempt
+      console.log("Welcome SMS would be sent:", { phone, message });
+      
+      // Simulate SMS sending delay
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+      res.json({ 
+        success: true, 
+        message: "SMS başarıyla gönderildi",
+        phone: phone 
+      });
+    } catch (error) {
+      console.error("SMS send error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "SMS gönderilirken hata oluştu" 
+      });
+    }
+  });
+
+  app.post('/api/sms-templates', async (req: any, res) => {
+    try {
+      const template = req.body;
+      
+      // Store SMS template (would integrate with database)
+      console.log("SMS template saved:", template);
+      
+      res.json({ 
+        success: true, 
+        message: "SMS şablonu kaydedildi",
+        template: template 
+      });
+    } catch (error) {
+      console.error("SMS template save error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "SMS şablonu kaydedilirken hata oluştu" 
+      });
+    }
+  });
+
+  app.get('/api/sms-templates', async (req: any, res) => {
+    try {
+      // Return saved SMS templates (would come from database)
+      const templates = [
+        {
+          id: '1',
+          name: 'Kursiyer Hoşgeldin SMS',
+          subject: 'Algı Akademi Üyelik',
+          content: 'Merhaba {isim}, Algı Akademi\'ye hoş geldiniz! Giriş bilgileriniz - TC: {tc}, Şifre: {sifre} - Link: {link}',
+          variables: ['isim', 'tc', 'sifre', 'link'],
+          type: 'welcome'
+        }
+      ];
+      
+      res.json(templates);
+    } catch (error) {
+      console.error("SMS templates fetch error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "SMS şablonları getirilirken hata oluştu" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

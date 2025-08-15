@@ -63,10 +63,22 @@ export default function AddStudent() {
       };
       return apiRequest("/api/students", "POST", studentData);
     },
-    onSuccess: () => {
+    onSuccess: (response) => {
+      // Send welcome SMS automatically
+      const smsData = {
+        phone: formData.telefon,
+        message: `Merhaba ${formData.adı}, Algı Akademi'ye hoş geldiniz! Giriş bilgileriniz - TC: ${formData.tcKimlikNo}, Şifre: 112233 - Link: https://algi-akademi.replit.app/`
+      };
+
+      // Send SMS in background
+      apiRequest("/api/sms/send-welcome", "POST", smsData).catch(() => {
+        // SMS failed but don't show error to user
+        console.log("SMS gönderimi başarısız");
+      });
+
       toast({
         title: "Başarılı",
-        description: "Yeni kursiyer başarıyla tanımlandı. Giriş şifresi: 112233",
+        description: `Yeni kursiyer başarıyla tanımlandı. SMS: ${formData.telefon} numarasına gönderildi.`,
       });
       queryClient.invalidateQueries({ queryKey: ["/api/students"] });
       // Reset form

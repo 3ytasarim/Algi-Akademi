@@ -20,6 +20,7 @@ import ExamResults from "@/pages/exam-results";
 import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
 import SmsIntegration from "@/pages/integrations/sms";
+import SmsTemplates from "@/pages/integrations/sms-templates";
 import EmailIntegration from "@/pages/integrations/email";
 import NotificationsPage from "@/pages/notifications";
 import CoursesPage from "@/pages/courses";
@@ -61,6 +62,7 @@ function Router() {
               <Route path="/consultants" component={Consultants} />
               <Route path="/integrations" component={Integrations} />
               <Route path="/integrations/sms" component={SmsIntegration} />
+              <Route path="/integrations/sms-templates" component={SmsTemplates} />
               <Route path="/integrations/email" component={EmailIntegration} />
               <Route path="/notifications" component={NotificationsPage} />
               <Route path="/courses" component={CoursesPage} />

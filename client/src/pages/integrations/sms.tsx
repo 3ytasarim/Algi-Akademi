@@ -201,6 +201,15 @@ export default function SmsIntegration() {
                 <TestTube className="mr-2" size={16} />
                 {testPhone.trim() ? `${testPhone} numarasına test gönder` : 'Test Mesajı Gönder'}
               </Button>
+              <Link href="/integrations/sms-templates">
+                <Button
+                  variant="secondary"
+                  className="dark:bg-gray-700 dark:text-gray-200 dark:hover:bg-gray-600"
+                >
+                  <Settings className="mr-2" size={16} />
+                  SMS Şablonları
+                </Button>
+              </Link>
             </div>
           </CardContent>
         </Card>

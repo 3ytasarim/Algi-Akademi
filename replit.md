@@ -56,6 +56,7 @@ Preferred communication style: Simple, everyday language.
 - **PDF Management**: Integration with object storage for real PDF file uploads and serving.
 - **User Roles**: Admin, Student, Consultant roles with distinct access levels and functionalities.
 - **Reporting/Analytics**: Real-time activity notifications and performance tracking.
+- **SMS Integration**: Automatic welcome SMS sending when new students are created, with template-based message system and NetGSM integration placeholders.
 
 # External Dependencies
 
