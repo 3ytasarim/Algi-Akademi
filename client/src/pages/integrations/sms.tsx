@@ -28,6 +28,8 @@ export default function SmsIntegration() {
     isActive: true
   });
 
+  const [testPhone, setTestPhone] = useState("");
+
   const updateIntegrationMutation = useMutation({
     mutationFn: async (data: any) => {
       return await apiRequest('/api/integrations/sms', "POST", data);
@@ -65,15 +67,24 @@ export default function SmsIntegration() {
   };
 
   const sendTestSms = () => {
+    if (!testPhone || testPhone.trim() === '') {
+      toast({
+        title: "Hata",
+        description: "Lütfen test telefon numarasını girin",
+        variant: "destructive",
+      });
+      return;
+    }
+
     toast({
       title: "Test Mesajı",
-      description: "Test mesajı gönderiliyor...",
+      description: `Test mesajı ${testPhone} numarasına gönderiliyor...`,
     });
     
     setTimeout(() => {
       toast({
         title: "Başarılı",
-        description: "Test mesajı başarıyla gönderildi",
+        description: `Test mesajı ${testPhone} numarasına başarıyla gönderildi`,
       });
     }, 2000);
   };
@@ -145,7 +156,7 @@ export default function SmsIntegration() {
                 />
               </div>
               
-              <div className="space-y-2 md:col-span-2">
+              <div className="space-y-2">
                 <Label htmlFor="smsSender" className="dark:text-gray-200">Gönderici Adı</Label>
                 <Input
                   id="smsSender"
@@ -153,6 +164,19 @@ export default function SmsIntegration() {
                   value={smsConfig.sender}
                   onChange={(e) => handleSmsConfigChange('sender', e.target.value)}
                   placeholder="Gönderici adı (max 11 karakter)"
+                  disabled={!smsConfig.isActive}
+                  className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="testPhone" className="dark:text-gray-200">Test Telefon Numarası</Label>
+                <Input
+                  id="testPhone"
+                  type="tel"
+                  value={testPhone}
+                  onChange={(e) => setTestPhone(e.target.value)}
+                  placeholder="Test mesajı gönderilecek telefon numarası"
                   disabled={!smsConfig.isActive}
                   className="dark:bg-gray-700 dark:border-gray-600 dark:text-white"
                 />
@@ -171,11 +195,11 @@ export default function SmsIntegration() {
               <Button
                 onClick={sendTestSms}
                 variant="outline"
-                disabled={!smsConfig.isActive}
+                disabled={!smsConfig.isActive || !testPhone.trim()}
                 className="dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-700"
               >
                 <TestTube className="mr-2" size={16} />
-                Test Mesajı Gönder
+                {testPhone.trim() ? `${testPhone} numarasına test gönder` : 'Test Mesajı Gönder'}
               </Button>
             </div>
           </CardContent>
@@ -191,6 +215,7 @@ export default function SmsIntegration() {
                 <ul className="list-disc list-inside space-y-1 text-gray-600 dark:text-gray-300">
                   <li>SMS gönderimi için geçerli bir SMS servis sağlayıcısı hesabı gereklidir</li>
                   <li>Gönderici adı en fazla 11 karakter olabilir</li>
+                  <li>Test telefon numarası girerek hangi numaraya test mesajı gönderileceğini belirleyin</li>
                   <li>Test mesajı göndererek ayarların doğru olduğunu kontrol edebilirsiniz</li>
                   <li>SMS entegrasyonu devre dışı bırakıldığında otomatik SMS gönderimi durur</li>
                 </ul>
