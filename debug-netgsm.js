@@ -4,10 +4,10 @@ import { Netgsm } from '@netgsm/sms';
 async function testNetGSM() {
   console.log('🔍 NetGSM API Test Başlıyor...');
   
-  // Environment variables kontrolü - Doğru sırada
-  const username = process.env.NETGSM_USERNAME || '3129117683';
-  const password = process.env.NETGSM_PASSWORD || '3@CAED1';
-  const sender = process.env.NETGSM_SENDER || 'ALGIAKADEMI';
+  // NetGSM desteğinden onaylanan doğru bilgiler
+  const username = '3129117683';
+  const password = '3@CAED1';
+  const sender = 'ALGIAKADEMI';
   
   console.log('🔍 Environment Variable Kontrolü:');
   console.log('NETGSM_USERNAME env:', process.env.NETGSM_USERNAME);
@@ -54,14 +54,14 @@ async function testNetGSM() {
     console.error('Detay:', error);
     
     // Yaygın hata kodları kontrolü
-    if (error.message.includes('30')) {
+    // Hata kodları kontrolü
+    const errorCode = error.code || error.message;
+    if (errorCode && errorCode.toString().includes('30')) {
       console.log('🔑 Hata 30: Geçersiz kullanıcı adı/şifre veya API erişimi yok');
-      console.log('💡 Çözüm: NetGSM panelinden alt kullanıcı oluşturun ve API yetkisi verin');
     }
     
-    if (error.message.includes('40')) {
+    if (errorCode && errorCode.toString().includes('40')) {
       console.log('📝 Hata 40: Mesaj başlığı tanımlanmamış');
-      console.log('💡 Çözüm: ALGIAKADEMI başlığının NetGSM panelinde onaylanmış olduğundan emin olun');
     }
   }
 }
