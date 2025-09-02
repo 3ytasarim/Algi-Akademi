@@ -364,14 +364,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       
       // Create activity
       if (req.session.auth?.isAuthenticated) {
-        await storage.createActivity({
-          userId: req.session.auth.user.id,
-          type: 'course_created',
-          description: `${req.session.auth.user.firstName || 'Admin'} yeni kurs oluşturdu: ${course.title} (${lessonData.length} ders)`,
-          entityId: course.id,
-          entityType: 'course',
-          metadata: { courseTitle: course.title, price: course.price, lessonsCount: lessonData.length }
-        });
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'course_created',
+            description: `${req.session.auth.user.firstName || 'Admin'} yeni kurs oluşturdu: ${course.title} (${lessonData.length} ders)`,
+            entityId: course.id,
+            entityType: 'course',
+            metadata: { courseTitle: course.title, price: course.price, lessonsCount: lessonData.length }
+          });
+        } catch (activityError) {
+          console.log("Activity creation failed, continuing without activity:", activityError);
+        }
       }
       
       res.status(201).json({
