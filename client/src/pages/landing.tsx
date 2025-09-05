@@ -406,22 +406,25 @@ export default function Landing() {
 
 
           {/* Footer */}
-          <div className="border-t border-red-500/30 pt-6 animate-in fade-in-0 duration-500 delay-900">
-            <div className="flex flex-col sm:flex-row items-center justify-between text-xs text-gray-500">
-              <div className="mb-2 sm:mb-0">
+          <div className="border-t border-red-500/30 pt-8 animate-in fade-in-0 duration-500 delay-900">
+            <div className="text-center space-y-4 animate-in slide-in-from-bottom-4 duration-800 delay-1000">
+              <div className="text-xs text-gray-500 opacity-90 transition-all duration-300 hover:opacity-100">
                 © 2024 Algı Akademi. Tüm hakları saklıdır.
               </div>
-              <div className="flex items-center space-x-2">
-                <span>Design by</span>
+              <div className="flex items-center justify-center space-x-2 text-xs group">
+                <span className="text-gray-400 transition-colors duration-300 group-hover:text-gray-300">
+                  Design by
+                </span>
                 <a 
                   href="https://www.3ytasarim.com" 
                   target="_blank" 
                   rel="noopener noreferrer"
-                  className="font-semibold text-red-400 hover:text-red-300 transition-colors duration-200 hover:underline"
+                  className="font-bold text-red-400 hover:text-red-300 transition-all duration-300 hover:scale-105 hover:underline decoration-2 underline-offset-2 transform hover:-translate-y-0.5"
                 >
                   3Y Tasarım Yazılım Hizmetleri
                 </a>
               </div>
+              <div className="w-20 h-0.5 bg-gradient-to-r from-transparent via-red-500/40 to-transparent mx-auto animate-pulse"></div>
             </div>
           </div>
         </div>
