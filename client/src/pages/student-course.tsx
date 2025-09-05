@@ -315,6 +315,28 @@ export default function StudentCourse() {
             </Card>
           )}
         </div>
+        
+        {/* Footer */}
+        <footer className="border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm">
+          <div className="container mx-auto px-6 py-6">
+            <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+              <div className="mb-2 sm:mb-0">
+                © 2024 Algı Akademi. Tüm hakları saklıdır.
+              </div>
+              <div className="flex items-center space-x-2">
+                <span>Design by</span>
+                <a 
+                  href="https://www.3ytasarim.com" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200 hover:underline"
+                >
+                  3Y Tasarım Yazılım Hizmetleri
+                </a>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </div>
   );

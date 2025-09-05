@@ -167,8 +167,8 @@ export default function StudentDashboard() {
         />
         
         {/* Page Content */}
-        <div className="flex-1 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black">
-          <div className="container mx-auto px-4 py-8 text-gray-900 dark:text-white">
+        <div className="flex-1 bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-black flex flex-col">
+          <div className="flex-1 container mx-auto px-4 py-8 text-gray-900 dark:text-white">
           <div className="space-y-6">
             {/* Welcome Card */}
             <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
@@ -411,6 +411,28 @@ export default function StudentDashboard() {
             </div>
             </div>
           </div>
+          
+          {/* Footer */}
+          <footer className="border-t border-gray-200 dark:border-gray-700 bg-white/50 dark:bg-gray-800/30 backdrop-blur-sm">
+            <div className="container mx-auto px-4 py-6">
+              <div className="flex flex-col sm:flex-row items-center justify-between text-sm text-gray-600 dark:text-gray-400">
+                <div className="mb-2 sm:mb-0">
+                  © 2024 Algı Akademi. Tüm hakları saklıdır.
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span>Design by</span>
+                  <a 
+                    href="https://www.3ytasarim.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="font-semibold text-red-600 dark:text-red-400 hover:text-red-700 dark:hover:text-red-300 transition-colors duration-200 hover:underline"
+                  >
+                    3Y Tasarım Yazılım Hizmetleri
+                  </a>
+                </div>
+              </div>
+            </div>
+          </footer>
         </div>
       </div>
     </div>
