@@ -28,6 +28,7 @@ import StudentStatistics from "@/pages/student-statistics";
 import CostReport from "@/pages/cost-report";
 import ExamsList from "@/pages/exams/index";
 import NewExam from "@/pages/exams/new";
+import EditExam from "@/pages/exams/edit";
 
 
 function Router() {
@@ -72,6 +73,7 @@ function Router() {
               <Route path="/cost-report" component={CostReport} />
               <Route path="/exams" component={ExamsList} />
               <Route path="/exams/new" component={NewExam} />
+              <Route path="/exams/:id/edit" component={EditExam} />
             </>
           )}
         </>
