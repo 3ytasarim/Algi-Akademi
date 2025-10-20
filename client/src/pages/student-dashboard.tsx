@@ -17,7 +17,9 @@ import {
   Star,
   FileText,
   Link as LinkIcon,
-  Calendar
+  Calendar,
+  ClipboardCheck,
+  HelpCircle
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
@@ -88,6 +90,12 @@ export default function StudentDashboard() {
     retry: false,
   });
 
+  // Fetch student exams
+  const { data: exams = [], isLoading: examsLoading } = useQuery({
+    queryKey: ["/api/student/exams"],
+    retry: false,
+  });
+
   // Type assertion for courses since we know the structure from the API
   const typedCourses = courses as Array<{
     id: string;
@@ -105,6 +113,17 @@ export default function StudentDashboard() {
     description: string;
     createdAt: string;
     entityType: string;
+  }>;
+
+  // Type assertion for exams
+  const typedExams = exams as Array<{
+    id: string;
+    title: string;
+    description: string | null;
+    courseId: string | null;
+    maxScore: number | null;
+    questionCount: number;
+    courseName: string | null;
   }>;
 
   const getTimeAgo = (dateString: string) => {
@@ -354,6 +373,78 @@ export default function StudentDashboard() {
                       <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Henüz Kurs Kaydın Yok</h3>
                       <p className="text-slate-600 dark:text-gray-300">
                         Kategorilerine göre kurslar otomatik olarak atanacak.
+                      </p>
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+
+              {/* Exams Section */}
+              <Card className="glass-effect border-white/20 dark:border-gray-700/20 bg-white/50 dark:bg-gray-800/50">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-2xl font-black text-slate-900 dark:text-white flex items-center">
+                    <ClipboardCheck className="mr-3 text-blue-600" size={24} />
+                    Sınavlarım
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  {examsLoading ? (
+                    <div className="text-center py-8">
+                      <div className="animate-spin rounded-full h-8 w-8 border-4 border-primary border-t-transparent mx-auto mb-4"></div>
+                      <p className="text-slate-600 dark:text-gray-300">Sınavlar yükleniyor...</p>
+                    </div>
+                  ) : typedExams.length > 0 ? (
+                    <div className="space-y-4">
+                      {typedExams.map((exam) => (
+                        <div
+                          key={exam.id}
+                          data-testid={`exam-${exam.id}`}
+                          className="p-4 glass-effect rounded-2xl border border-white/20 dark:border-gray-700/20 bg-white/30 dark:bg-gray-700/30 hover:bg-white/50 dark:hover:bg-gray-700/50 transition-all duration-200"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <div className="flex-1">
+                              <h3 className="font-bold text-slate-900 dark:text-white text-lg mb-1">
+                                {exam.title}
+                              </h3>
+                              {exam.courseName && (
+                                <Badge variant="outline" className="bg-blue-500/10 text-blue-700 dark:text-blue-300 border-blue-500/30 mb-2">
+                                  {exam.courseName}
+                                </Badge>
+                              )}
+                              {exam.description && (
+                                <p className="text-slate-600 dark:text-gray-300 text-sm mb-2">
+                                  {exam.description}
+                                </p>
+                              )}
+                              <div className="flex items-center gap-4 text-sm text-slate-500 dark:text-gray-400">
+                                <div className="flex items-center">
+                                  <HelpCircle size={14} className="mr-1" />
+                                  <span>{exam.questionCount} Soru</span>
+                                </div>
+                                <div className="flex items-center">
+                                  <Star size={14} className="mr-1" />
+                                  <span>Maks. {exam.maxScore || 100} Puan</span>
+                                </div>
+                              </div>
+                            </div>
+                            <Button 
+                              size="sm" 
+                              className="glass-effect bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20 hover:bg-green-500 hover:text-white"
+                              data-testid={`button-start-exam-${exam.id}`}
+                            >
+                              <Play className="mr-1" size={14} />
+                              Sınava Başla
+                            </Button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <ClipboardCheck className="mx-auto text-slate-400 dark:text-gray-500 mb-4" size={48} />
+                      <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2">Henüz Sınav Yok</h3>
+                      <p className="text-slate-600 dark:text-gray-300">
+                        Kurslarınıza ait sınavlar eklendiğinde burada görünecek.
                       </p>
                     </div>
                   )}

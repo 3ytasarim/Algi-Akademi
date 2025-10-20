@@ -1798,6 +1798,56 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get student's exams (based on enrolled courses)
+  app.get('/api/student/exams', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const userId = req.session.auth.user.id;
+      
+      // Get student data
+      const student = await storage.getStudent(userId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      // Get all exams
+      const allExams = await storage.getExams();
+      
+      // Filter exams for courses the student is enrolled in
+      const studentCourseIds = student.selectedCourses || [];
+      const studentExams = allExams.filter(exam => 
+        exam.courseId && studentCourseIds.includes(exam.courseId)
+      );
+
+      // Enrich with question counts and course names
+      const examsWithDetails = await Promise.all(
+        studentExams.map(async (exam) => {
+          const questions = await storage.getExamQuestions(exam.id);
+          let courseName = null;
+          
+          if (exam.courseId) {
+            const course = await storage.getCourse(exam.courseId);
+            courseName = course?.title || null;
+          }
+
+          return {
+            ...exam,
+            questionCount: questions.length,
+            courseName,
+          };
+        })
+      );
+
+      res.json(examsWithDetails);
+    } catch (error) {
+      console.error("Error fetching student exams:", error);
+      res.status(500).json({ message: "Failed to fetch student exams" });
+    }
+  });
+
   app.post('/api/sms-templates', async (req: any, res) => {
     try {
       const template = req.body;
