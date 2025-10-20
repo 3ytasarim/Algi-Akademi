@@ -111,7 +111,7 @@ export const exams = pgTable("exams", {
 
 export const examQuestions = pgTable("exam_questions", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
-  examId: varchar("exam_id").references(() => exams.id),
+  examId: varchar("exam_id").references(() => exams.id, { onDelete: 'cascade' }),
   questionText: text("question_text").notNull(),
   optionA: text("option_a").notNull(),
   optionB: text("option_b").notNull(),

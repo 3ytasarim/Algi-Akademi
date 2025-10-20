@@ -4,6 +4,7 @@ import {
   lessons,
   enrollments,
   exams,
+  examQuestions,
   examResults,
   activities,
   consultants,
@@ -22,6 +23,8 @@ import {
   type InsertEnrollment,
   type Exam,
   type InsertExam,
+  type ExamQuestion,
+  type InsertExamQuestion,
   type ExamResult,
   type InsertExamResult,
   type Activity,
@@ -64,6 +67,18 @@ export interface IStorage {
   deleteStudent(id: string): Promise<void>;
   getStudentByTcNo(tcKimlikNo: string): Promise<User | undefined>;
   getUserByTcNo(tcKimlikNo: string): Promise<User | undefined>;
+  
+  // Exam operations
+  getExams(): Promise<Exam[]>;
+  getExam(id: string): Promise<Exam | undefined>;
+  createExam(exam: InsertExam): Promise<Exam>;
+  updateExam(id: string, exam: Partial<InsertExam>): Promise<Exam>;
+  deleteExam(id: string): Promise<void>;
+  
+  // Exam Question operations
+  getExamQuestions(examId: string): Promise<ExamQuestion[]>;
+  createExamQuestion(question: InsertExamQuestion): Promise<ExamQuestion>;
+  deleteExamQuestions(examId: string): Promise<void>;
   
   // Dashboard and other operations
   getDashboardStats(): Promise<any>;
@@ -286,7 +301,51 @@ export class DatabaseStorage implements IStorage {
     await db.delete(consultants).where(eq(consultants.id, id));
   }
 
+  // Exam operations
+  async getExams(): Promise<Exam[]> {
+    return await db.select().from(exams).orderBy(desc(exams.createdAt));
+  }
 
+  async getExam(id: string): Promise<Exam | undefined> {
+    const [exam] = await db.select().from(exams).where(eq(exams.id, id));
+    return exam;
+  }
+
+  async createExam(examData: InsertExam): Promise<Exam> {
+    const [newExam] = await db.insert(exams).values(examData).returning();
+    return newExam;
+  }
+
+  async updateExam(id: string, examData: Partial<InsertExam>): Promise<Exam> {
+    const [updatedExam] = await db
+      .update(exams)
+      .set(examData)
+      .where(eq(exams.id, id))
+      .returning();
+    return updatedExam;
+  }
+
+  async deleteExam(id: string): Promise<void> {
+    await db.delete(exams).where(eq(exams.id, id));
+  }
+
+  // Exam Question operations
+  async getExamQuestions(examId: string): Promise<ExamQuestion[]> {
+    return await db
+      .select()
+      .from(examQuestions)
+      .where(eq(examQuestions.examId, examId))
+      .orderBy(examQuestions.orderIndex);
+  }
+
+  async createExamQuestion(questionData: InsertExamQuestion): Promise<ExamQuestion> {
+    const [newQuestion] = await db.insert(examQuestions).values(questionData).returning();
+    return newQuestion;
+  }
+
+  async deleteExamQuestions(examId: string): Promise<void> {
+    await db.delete(examQuestions).where(eq(examQuestions.examId, examId));
+  }
 
   // Missing methods for routes compatibility
   async getEnrollments(): Promise<any[]> { return []; }

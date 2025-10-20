@@ -1600,6 +1600,204 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // ==================== EXAM ROUTES ====================
+  
+  // Get all exams with question counts and course names
+  app.get('/api/exams', async (req: any, res) => {
+    try {
+      const allExams = await storage.getExams();
+      
+      // Enrich with question counts and course names
+      const examsWithDetails = await Promise.all(
+        allExams.map(async (exam) => {
+          const questions = await storage.getExamQuestions(exam.id);
+          let courseName = null;
+          
+          if (exam.courseId) {
+            const course = await storage.getCourse(exam.courseId);
+            courseName = course?.title || null;
+          }
+          
+          return {
+            ...exam,
+            questionCount: questions.length,
+            courseName,
+          };
+        })
+      );
+      
+      res.json(examsWithDetails);
+    } catch (error) {
+      console.error("Error fetching exams:", error);
+      res.status(500).json({ message: "Failed to fetch exams" });
+    }
+  });
+
+  // Get single exam with questions
+  app.get('/api/exams/:id', async (req: any, res) => {
+    try {
+      const exam = await storage.getExam(req.params.id);
+      
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+      
+      const questions = await storage.getExamQuestions(exam.id);
+      
+      res.json({
+        ...exam,
+        questions,
+      });
+    } catch (error) {
+      console.error("Error fetching exam:", error);
+      res.status(500).json({ message: "Failed to fetch exam" });
+    }
+  });
+
+  // Create new exam with questions
+  app.post('/api/exams', async (req: any, res) => {
+    try {
+      const { questions: questionsList, ...examData } = req.body;
+      
+      // Validate exam data
+      const validatedExamData = insertExamSchema.parse(examData);
+      
+      // Create exam
+      const exam = await storage.createExam(validatedExamData);
+      
+      // Create questions if provided
+      if (questionsList && Array.isArray(questionsList)) {
+        for (const question of questionsList) {
+          await storage.createExamQuestion({
+            examId: exam.id,
+            questionText: question.questionText,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
+            correctAnswer: question.correctAnswer,
+            orderIndex: question.orderIndex,
+          });
+        }
+      }
+      
+      // Create activity log
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'exam_created',
+            description: `${req.session.auth.user.firstName || 'Admin'} yeni sınav oluşturdu: ${exam.title}`,
+            entityId: exam.id,
+            entityType: 'exam',
+            metadata: { 
+              examTitle: exam.title, 
+              questionCount: questionsList?.length || 0 
+            }
+          });
+        } catch (activityError) {
+          console.log("Activity creation failed, continuing without activity:", activityError);
+        }
+      }
+      
+      res.json(exam);
+    } catch (error) {
+      console.error("Error creating exam:", error);
+      res.status(500).json({ message: "Failed to create exam" });
+    }
+  });
+
+  // Update exam
+  app.put('/api/exams/:id', async (req: any, res) => {
+    try {
+      const { questions: questionsList, ...examData } = req.body;
+      
+      // Update exam
+      const exam = await storage.updateExam(req.params.id, examData);
+      
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+      
+      // If questions provided, delete old questions and create new ones
+      if (questionsList && Array.isArray(questionsList)) {
+        await storage.deleteExamQuestions(req.params.id);
+        
+        for (const question of questionsList) {
+          await storage.createExamQuestion({
+            examId: exam.id,
+            questionText: question.questionText,
+            optionA: question.optionA,
+            optionB: question.optionB,
+            optionC: question.optionC,
+            optionD: question.optionD,
+            correctAnswer: question.correctAnswer,
+            orderIndex: question.orderIndex,
+          });
+        }
+      }
+      
+      // Create activity log
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'exam_updated',
+            description: `${req.session.auth.user.firstName || 'Admin'} sınavı güncelledi: ${exam.title}`,
+            entityId: exam.id,
+            entityType: 'exam',
+            metadata: { examTitle: exam.title }
+          });
+        } catch (activityError) {
+          console.log("Activity creation failed, continuing without activity:", activityError);
+        }
+      }
+      
+      res.json(exam);
+    } catch (error) {
+      console.error("Error updating exam:", error);
+      res.status(500).json({ message: "Failed to update exam" });
+    }
+  });
+
+  // Delete exam
+  app.delete('/api/exams/:id', async (req: any, res) => {
+    try {
+      const exam = await storage.getExam(req.params.id);
+      
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+      
+      // Delete questions first
+      await storage.deleteExamQuestions(req.params.id);
+      
+      // Delete exam
+      await storage.deleteExam(req.params.id);
+      
+      // Create activity log
+      if (req.session.auth?.isAuthenticated) {
+        try {
+          await storage.createActivity({
+            userId: req.session.auth.user.id,
+            type: 'exam_deleted',
+            description: `${req.session.auth.user.firstName || 'Admin'} sınavı sildi: ${exam.title}`,
+            entityId: req.params.id,
+            entityType: 'exam',
+            metadata: { examTitle: exam.title }
+          });
+        } catch (activityError) {
+          console.log("Activity creation failed, continuing without activity:", activityError);
+        }
+      }
+      
+      res.json({ success: true, message: "Exam deleted successfully" });
+    } catch (error) {
+      console.error("Error deleting exam:", error);
+      res.status(500).json({ message: "Failed to delete exam" });
+    }
+  });
+
   app.post('/api/sms-templates', async (req: any, res) => {
     try {
       const template = req.body;

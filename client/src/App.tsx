@@ -26,6 +26,8 @@ import NotificationsPage from "@/pages/notifications";
 import CoursesPage from "@/pages/courses";
 import StudentStatistics from "@/pages/student-statistics";
 import CostReport from "@/pages/cost-report";
+import ExamsList from "@/pages/exams/index";
+import NewExam from "@/pages/exams/new";
 
 
 function Router() {
@@ -68,6 +70,8 @@ function Router() {
               <Route path="/courses" component={CoursesPage} />
               <Route path="/student-statistics" component={StudentStatistics} />
               <Route path="/cost-report" component={CostReport} />
+              <Route path="/exams" component={ExamsList} />
+              <Route path="/exams/new" component={NewExam} />
             </>
           )}
         </>
