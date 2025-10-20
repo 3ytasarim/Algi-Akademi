@@ -44,7 +44,7 @@ export default function StudentDashboard() {
 
     const timer = setInterval(() => {
       const now = new Date().getTime();
-      const targetDate = new Date(user.bitişTarihi).getTime();
+      const targetDate = new Date(user.bitişTarihi || '').getTime();
       const distance = targetDate - now;
       
       if (distance > 0) {

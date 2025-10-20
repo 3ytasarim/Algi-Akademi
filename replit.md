@@ -38,9 +38,9 @@ Preferred communication style: Simple, everyday language.
 ## Database Design
 - **Primary Database**: PostgreSQL with Neon serverless connection
 - **Schema Management**: Drizzle Kit for migrations and schema management
-- **Key Entities**: Users (admin/student/consultant), Courses, Enrollments, Exams, Exam Results, Activities, Sales, Integrations, Lessons.
-- **Relationships**: Proper foreign key constraints.
-- **Schema Features**: `lastLogin` timestamp in users table, `lessons` table for multi-lesson courses, `totalLessons` in courses table.
+- **Key Entities**: Users (admin/student/consultant), Courses, Enrollments, Exams, Exam Questions, Exam Results, Activities, Sales, Integrations, Lessons.
+- **Relationships**: Proper foreign key constraints with cascade delete (exam deletion automatically removes associated questions).
+- **Schema Features**: `lastLogin` timestamp in users table, `lessons` table for multi-lesson courses, `totalLessons` in courses table, `examQuestions` table with CASCADE DELETE for exam-question relationship.
 
 ## Development Workflow
 - **Monorepo Structure**: Shared TypeScript types between client and server
@@ -57,6 +57,7 @@ Preferred communication style: Simple, everyday language.
 - **User Roles**: Admin, Student, Consultant roles with distinct access levels and functionalities.
 - **Reporting/Analytics**: Real-time activity notifications and performance tracking.
 - **SMS Integration**: Automatic welcome SMS sending when new students are created, with template-based message system and NetGSM integration placeholders.
+- **Exam Management System**: Complete exam system with multiple-choice questions (A/B/C/D options), course association, edit/delete functionality, and student-specific exam display based on enrolled courses.
 
 # External Dependencies
 
