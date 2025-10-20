@@ -109,6 +109,19 @@ export const exams = pgTable("exams", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const examQuestions = pgTable("exam_questions", {
+  id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
+  examId: varchar("exam_id").references(() => exams.id),
+  questionText: text("question_text").notNull(),
+  optionA: text("option_a").notNull(),
+  optionB: text("option_b").notNull(),
+  optionC: text("option_c").notNull(),
+  optionD: text("option_d").notNull(),
+  correctAnswer: varchar("correct_answer").notNull(), // 'A', 'B', 'C', or 'D'
+  orderIndex: integer("order_index").notNull(), // Question order
+  createdAt: timestamp("created_at").defaultNow(),
+});
+
 export const examResults = pgTable("exam_results", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   examId: varchar("exam_id").references(() => exams.id),
@@ -206,7 +219,15 @@ export const examsRelations = relations(exams, ({ one, many }) => ({
     fields: [exams.courseId],
     references: [courses.id],
   }),
+  questions: many(examQuestions),
   results: many(examResults),
+}));
+
+export const examQuestionsRelations = relations(examQuestions, ({ one }) => ({
+  exam: one(exams, {
+    fields: [examQuestions.examId],
+    references: [exams.id],
+  }),
 }));
 
 export const examResultsRelations = relations(examResults, ({ one }) => ({
@@ -280,6 +301,11 @@ export const insertExamSchema = createInsertSchema(exams).omit({
   createdAt: true,
 });
 
+export const insertExamQuestionSchema = createInsertSchema(examQuestions).omit({
+  id: true,
+  createdAt: true,
+});
+
 export const insertExamResultSchema = createInsertSchema(examResults).omit({
   id: true,
   completedAt: true,
@@ -318,6 +344,8 @@ export type Enrollment = typeof enrollments.$inferSelect;
 export type InsertEnrollment = z.infer<typeof insertEnrollmentSchema>;
 export type Exam = typeof exams.$inferSelect;
 export type InsertExam = z.infer<typeof insertExamSchema>;
+export type ExamQuestion = typeof examQuestions.$inferSelect;
+export type InsertExamQuestion = z.infer<typeof insertExamQuestionSchema>;
 export type ExamResult = typeof examResults.$inferSelect;
 export type InsertExamResult = z.infer<typeof insertExamResultSchema>;
 export type Activity = typeof activities.$inferSelect;
