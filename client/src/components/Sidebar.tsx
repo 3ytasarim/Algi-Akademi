@@ -7,7 +7,7 @@ import {
   Gauge, MessageSquare, Settings, Book, Users, ClipboardList, BarChart3, 
   TrendingUp, PieChart, AreaChart, UserCog, Bus, Plug, Menu, Bell, 
   Search, ChevronLeft, ChevronRight, LogOut, BookOpen, Mail, CreditCard,
-  Moon, Sun
+  Moon, Sun, ClipboardCheck, FileText, List
 } from "lucide-react";
 import { useTheme } from "@/contexts/ThemeContext";
 import { useAuth } from "@/hooks/useAuth";
@@ -91,6 +91,16 @@ export default function Sidebar({
       submenuItems: [
         { icon: Mail, label: "E-posta Ayarları", href: "/integrations/email" },
         { icon: MessageSquare, label: "NetGSM SMS", href: "/integrations/sms" },
+      ]
+    },
+    {
+      id: "exams",
+      icon: ClipboardCheck,
+      label: "Sınavlar",
+      hasSubmenu: true,
+      submenuItems: [
+        { icon: FileText, label: "Sınav Ekle", href: "/exams/new" },
+        { icon: List, label: "Tüm Sınavlar", href: "/exams" },
       ]
     },
     {
