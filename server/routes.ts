@@ -998,7 +998,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("Student created successfully:", student.id);
       
       // Send welcome SMS if phone number is provided
-      if (req.body.telefon) {
+      if (req.body.telefon && student.firstName && student.tcKimlikNo) {
         try {
           console.log("🔄 Hoşgeldin SMS gönderiliyor...");
           const smsResult = await netGSMService.sendWelcomeSMS({
@@ -1582,7 +1582,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
           res.json({
             success: true,
             message: "Test SMS başarıyla gönderildi",
-            jobId: testResult.jobId || 'unknown'
+            jobId: 'test-connection-success'
           });
         } else {
           res.status(500).json({
