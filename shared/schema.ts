@@ -105,6 +105,7 @@ export const exams = pgTable("exams", {
   courseId: varchar("course_id").references(() => courses.id),
   title: varchar("title").notNull(),
   description: text("description"),
+  duration: integer("duration").default(60), // duration in minutes
   maxScore: integer("max_score").default(100),
   createdAt: timestamp("created_at").defaultNow(),
 });

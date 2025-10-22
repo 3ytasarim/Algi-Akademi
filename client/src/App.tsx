@@ -29,6 +29,7 @@ import CostReport from "@/pages/cost-report";
 import ExamsList from "@/pages/exams/index";
 import NewExam from "@/pages/exams/new";
 import EditExam from "@/pages/exams/edit";
+import StudentExam from "@/pages/student-exam";
 
 
 function Router() {
@@ -51,6 +52,7 @@ function Router() {
               <Route path="/student-dashboard" component={StudentDashboard} />
               <Route path="/student/profile" component={StudentProfile} />
               <Route path="/student/course/:courseTitle" component={StudentCourseDetails} />
+              <Route path="/student/exam/:examId" component={StudentExam} />
             </>
           ) : (
             <>
