@@ -171,11 +171,6 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
                         {!sidebarCollapsed && (
                           <span className="font-medium">{item.label}</span>
                         )}
-                        {!sidebarCollapsed && item.badge && (
-                          <Badge variant="secondary" className="ml-2 text-xs bg-yellow-600 text-white">
-                            {item.badge}
-                          </Badge>
-                        )}
                       </div>
                       {!sidebarCollapsed && (
                         expandedMenus.includes(item.id) ? <ChevronDown size={16} /> : <ChevronRight size={16} />
