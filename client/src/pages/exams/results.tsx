@@ -165,34 +165,21 @@ export default function ExamResults() {
                           </div>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                          <Badge variant="outline" className="bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 border-blue-200 dark:border-blue-700">
                             {result.totalQuestions} Soru
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
+                          <Badge variant="outline" className="bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-300 border-green-200 dark:border-green-700">
                             {result.correctAnswers} Doğru
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                          <Badge variant="outline" className="bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-300 border-red-200 dark:border-red-700">
                             {result.wrongAnswers} Yanlış
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
-                          <div className="font-bold text-lg">
-                            <span className={result.passed ? 'text-green-600' : 'text-red-600'}>
-                              {result.score}
-                            </span>
-                            <span className="text-slate-400 text-sm">
-                              /{result.examMaxScore || 100}
-                            </span>
-                          </div>
-                          {result.examPassingScore && (
-                            <div className="text-xs text-slate-500 mt-1">
-                              Geçme: {result.examPassingScore}
-                            </div>
-                          )}
                         </TableCell>
                         <TableCell className="text-center">
                           {result.passed ? (
