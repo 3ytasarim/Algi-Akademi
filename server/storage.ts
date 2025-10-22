@@ -80,6 +80,10 @@ export interface IStorage {
   createExamQuestion(question: InsertExamQuestion): Promise<ExamQuestion>;
   deleteExamQuestions(examId: string): Promise<void>;
   
+  // Exam Result operations
+  createExamResult(result: InsertExamResult): Promise<ExamResult>;
+  getExamResults(): Promise<any[]>;
+  
   // Dashboard and other operations
   getDashboardStats(): Promise<any>;
   getRecentActivities(limit?: number): Promise<Activity[]>;
@@ -350,6 +354,44 @@ export class DatabaseStorage implements IStorage {
 
   async deleteExamQuestions(examId: string): Promise<void> {
     await db.delete(examQuestions).where(eq(examQuestions.examId, examId));
+  }
+
+  // Exam Result operations
+  async createExamResult(resultData: InsertExamResult): Promise<ExamResult> {
+    const [result] = await db.insert(examResults).values(resultData).returning();
+    return result;
+  }
+
+  async getExamResults(): Promise<any[]> {
+    // Get all exam results with student, exam, and course details
+    const results = await db
+      .select({
+        id: examResults.id,
+        score: examResults.score,
+        correctAnswers: examResults.correctAnswers,
+        wrongAnswers: examResults.wrongAnswers,
+        totalQuestions: examResults.totalQuestions,
+        passed: examResults.passed,
+        completedAt: examResults.completedAt,
+        studentId: examResults.studentId,
+        studentFirstName: users.firstName,
+        studentLastName: users.lastName,
+        studentAdı: users.adı,
+        studentSoyadı: users.soyadı,
+        examId: examResults.examId,
+        examTitle: exams.title,
+        examMaxScore: exams.maxScore,
+        examPassingScore: exams.passingScore,
+        courseId: exams.courseId,
+        courseTitle: courses.title,
+      })
+      .from(examResults)
+      .leftJoin(users, eq(examResults.studentId, users.id))
+      .leftJoin(exams, eq(examResults.examId, exams.id))
+      .leftJoin(courses, eq(exams.courseId, courses.id))
+      .orderBy(desc(examResults.completedAt));
+
+    return results;
   }
 
   // Missing methods for routes compatibility

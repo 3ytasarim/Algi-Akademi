@@ -1912,6 +1912,134 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Submit exam answers and calculate score
+  app.post('/api/student/exam-submit', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { examId, answers } = req.body;
+      const userId = req.session.auth.user.id;
+
+      if (!examId || !answers) {
+        return res.status(400).json({ message: "Missing examId or answers" });
+      }
+
+      // Get student
+      const student = await storage.getStudent(userId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      // Get exam
+      const exam = await storage.getExam(examId);
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+
+      // Verify student is enrolled in the course
+      const studentCourseIds = student.selectedCourses || [];
+      if (!exam.courseId || !studentCourseIds.includes(exam.courseId)) {
+        return res.status(403).json({ message: "You are not enrolled in this exam's course" });
+      }
+
+      // Get exam questions
+      const questions = await storage.getExamQuestions(examId);
+      const totalQuestions = questions.length;
+
+      // Calculate score
+      let correctAnswers = 0;
+      let wrongAnswers = 0;
+
+      questions.forEach(question => {
+        const studentAnswer = answers[question.id];
+        if (studentAnswer === question.correctAnswer) {
+          correctAnswers++;
+        } else if (studentAnswer) {
+          wrongAnswers++;
+        }
+      });
+
+      const unanswered = totalQuestions - correctAnswers - wrongAnswers;
+      wrongAnswers += unanswered; // Count unanswered as wrong
+
+      // Calculate final score
+      const maxScore = exam.maxScore || 100;
+      const scorePerQuestion = maxScore / totalQuestions;
+      const finalScore = Math.round(correctAnswers * scorePerQuestion);
+
+      // Check if passed
+      const passingScore = exam.passingScore || 50;
+      const passed = finalScore >= passingScore;
+
+      // Save result
+      const result = await storage.createExamResult({
+        examId,
+        studentId: userId,
+        score: finalScore,
+        correctAnswers,
+        wrongAnswers,
+        totalQuestions,
+        passed,
+      });
+
+      // Create activity log
+      try {
+        const studentName = student.adı && student.soyadı 
+          ? `${student.adı} ${student.soyadı}`
+          : `${student.firstName || ''} ${student.lastName || ''}`.trim();
+
+        await storage.createActivity({
+          userId,
+          type: 'exam_completed',
+          description: `${studentName} "${exam.title}" sınavını tamamladı - Puan: ${finalScore}/${maxScore} - ${passed ? 'Başarılı ✓' : 'Başarısız ✗'}`,
+          entityId: examId,
+          entityType: 'exam',
+          metadata: {
+            examTitle: exam.title,
+            score: finalScore,
+            maxScore,
+            correctAnswers,
+            wrongAnswers,
+            totalQuestions,
+            passed,
+            studentName,
+          }
+        });
+      } catch (activityError) {
+        console.log("Activity creation failed, continuing without activity:", activityError);
+      }
+
+      res.json({
+        success: true,
+        result: {
+          ...result,
+          examTitle: exam.title,
+          passed,
+        }
+      });
+    } catch (error) {
+      console.error("Error submitting exam:", error);
+      res.status(500).json({ message: "Failed to submit exam" });
+    }
+  });
+
+  // Get all exam results (for admin)
+  app.get('/api/exam-results', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const results = await storage.getExamResults();
+      res.json(results);
+    } catch (error) {
+      console.error("Error fetching exam results:", error);
+      res.status(500).json({ message: "Failed to fetch exam results" });
+    }
+  });
+
   app.post('/api/sms-templates', async (req: any, res) => {
     try {
       const template = req.body;
