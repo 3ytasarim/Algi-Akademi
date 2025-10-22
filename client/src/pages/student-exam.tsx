@@ -37,7 +37,7 @@ export default function StudentExam() {
         setTimeRemaining(prev => {
           if (prev <= 1) {
             clearInterval(interval);
-            handleSubmit();
+            handleSubmit(true); // Auto-submit when timer expires
             return 0;
           }
           return prev - 1;
@@ -93,13 +93,14 @@ export default function StudentExam() {
     }
   });
 
-  const handleSubmit = () => {
+  const handleSubmit = (isAutoSubmit = false) => {
     if (!examId) return;
     
     const answeredCount = Object.keys(answers).length;
     const totalQuestions = exam?.questions.length || 0;
     
-    if (answeredCount < totalQuestions) {
+    // Only show confirmation dialog if manually submitting with unanswered questions
+    if (!isAutoSubmit && answeredCount < totalQuestions) {
       const confirmed = window.confirm(
         `${totalQuestions - answeredCount} soru cevaplanmadı. Yine de göndermek istiyor musunuz?`
       );
