@@ -191,6 +191,11 @@ export class DatabaseStorage implements IStorage {
     return await db.select().from(users).where(eq(users.role, 'student')).orderBy(desc(users.createdAt));
   }
 
+  async getStudent(id: string): Promise<User | undefined> {
+    const [student] = await db.select().from(users).where(eq(users.id, id));
+    return student;
+  }
+
   async createStudent(student: any): Promise<User> {
     const [newStudent] = await db.insert(users).values(student).returning();
     return newStudent;

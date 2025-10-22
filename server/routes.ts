@@ -1810,17 +1810,31 @@ export async function registerRoutes(app: Express): Promise<Server> {
       // Get student data
       const student = await storage.getStudent(userId);
       if (!student) {
+        console.log("❌ Student not found:", userId);
         return res.status(404).json({ message: "Student not found" });
       }
 
+      console.log("✅ Student found:", {
+        id: student.id,
+        name: `${student.adı} ${student.soyadı}`,
+        selectedCourses: student.selectedCourses
+      });
+
       // Get all exams
       const allExams = await storage.getExams();
+      console.log("📚 All exams:", allExams.length, "exams found");
       
       // Filter exams for courses the student is enrolled in
       const studentCourseIds = student.selectedCourses || [];
-      const studentExams = allExams.filter(exam => 
-        exam.courseId && studentCourseIds.includes(exam.courseId)
-      );
+      console.log("🎯 Student course IDs:", studentCourseIds);
+      
+      const studentExams = allExams.filter(exam => {
+        const matches = exam.courseId && studentCourseIds.includes(exam.courseId);
+        console.log(`Exam "${exam.title}" - courseId: ${exam.courseId}, matches: ${matches}`);
+        return matches;
+      });
+      
+      console.log("✅ Filtered exams for student:", studentExams.length);
 
       // Enrich with question counts and course names
       const examsWithDetails = await Promise.all(
@@ -1841,6 +1855,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
         })
       );
 
+      console.log("📤 Returning exams to student:", examsWithDetails);
       res.json(examsWithDetails);
     } catch (error) {
       console.error("Error fetching student exams:", error);
