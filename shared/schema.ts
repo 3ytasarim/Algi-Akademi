@@ -107,6 +107,7 @@ export const exams = pgTable("exams", {
   description: text("description"),
   duration: integer("duration").default(60), // duration in minutes
   maxScore: integer("max_score").default(100),
+  passingScore: integer("passing_score").default(50), // minimum score to pass
   createdAt: timestamp("created_at").defaultNow(),
 });
 
@@ -128,6 +129,10 @@ export const examResults = pgTable("exam_results", {
   examId: varchar("exam_id").references(() => exams.id),
   studentId: varchar("student_id").references(() => users.id),
   score: integer("score"),
+  correctAnswers: integer("correct_answers").default(0),
+  wrongAnswers: integer("wrong_answers").default(0),
+  totalQuestions: integer("total_questions").default(0),
+  passed: boolean("passed").default(false),
   completedAt: timestamp("completed_at").defaultNow(),
 });
 
