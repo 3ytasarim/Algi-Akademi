@@ -316,7 +316,7 @@ export default function StudentExam() {
                 </div>
               </div>
               <Button
-                onClick={handleSubmit}
+                onClick={() => handleSubmit(false)}
                 disabled={submitMutation.isPending}
                 size="lg"
                 className="bg-white text-green-700 hover:bg-gray-100"
