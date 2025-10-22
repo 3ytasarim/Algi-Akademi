@@ -427,14 +427,16 @@ export default function StudentDashboard() {
                                 </div>
                               </div>
                             </div>
-                            <Button 
-                              size="sm" 
-                              className="glass-effect bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20 hover:bg-green-500 hover:text-white"
-                              data-testid={`button-start-exam-${exam.id}`}
-                            >
-                              <Play className="mr-1" size={14} />
-                              Sınava Başla
-                            </Button>
+                            <Link href={`/student/exam/${exam.id}`}>
+                              <Button 
+                                size="sm" 
+                                className="glass-effect bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20 hover:bg-green-500 hover:text-white"
+                                data-testid={`button-start-exam-${exam.id}`}
+                              >
+                                <Play className="mr-1" size={14} />
+                                Sınava Başla
+                              </Button>
+                            </Link>
                           </div>
                         </div>
                       ))}

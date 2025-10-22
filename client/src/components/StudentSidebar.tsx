@@ -36,6 +36,12 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
     retry: false,
   });
 
+  // Fetch student exams from API
+  const { data: exams = [] } = useQuery({
+    queryKey: ["/api/student/exams"],
+    retry: false,
+  });
+
   const handleLogout = async () => {
     try {
       console.log('Logout started for user:', user);
@@ -98,8 +104,13 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
       id: "exams",
       icon: Award,
       label: "Sınavlarım",
-      href: "/student-dashboard",
-      active: false
+      hasSubmenu: true,
+      submenuItems: Array.isArray(exams) && exams.length > 0 ? 
+        exams.map((exam: any) => ({
+          icon: Award,
+          label: exam.title,
+          href: `/student/exam/${exam.id}`
+        })) : []
     },
     {
       id: "profile",
