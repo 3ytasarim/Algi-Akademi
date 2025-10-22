@@ -98,9 +98,8 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
       id: "exams",
       icon: Award,
       label: "Sınavlarım",
-      hasSubmenu: true,
-      submenuItems: [],
-      badge: "Yakında"
+      href: "/student-dashboard",
+      active: false
     },
     {
       id: "profile",
