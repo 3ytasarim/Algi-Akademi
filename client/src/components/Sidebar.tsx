@@ -59,7 +59,6 @@ export default function Sidebar({
       hasSubmenu: true,
       submenuItems: [
         { icon: Users, label: "Kursiyer Tanımlama", href: "/student-list" },
-        { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exam-results" },
         { icon: BarChart3, label: "Kursiyer İstatistik", href: "/student-statistics" },
       ]
     },
@@ -101,6 +100,7 @@ export default function Sidebar({
       submenuItems: [
         { icon: FileText, label: "Sınav Ekle", href: "/exams/new" },
         { icon: List, label: "Tüm Sınavlar", href: "/exams" },
+        { icon: ClipboardList, label: "Sınav Sonuçları", href: "/exams/results" },
       ]
     },
     {

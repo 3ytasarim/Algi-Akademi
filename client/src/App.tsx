@@ -16,7 +16,6 @@ import StudentCourseDetails from "@/pages/student-course-details";
 import Reports from "@/pages/reports";
 import AddStudent from "@/pages/add-student";
 import StudentList from "@/pages/student-list";
-import ExamResults from "@/pages/exam-results";
 import Consultants from "@/pages/consultants";
 import Integrations from "@/pages/integrations";
 import SmsIntegration from "@/pages/integrations/sms";
@@ -29,6 +28,7 @@ import CostReport from "@/pages/cost-report";
 import ExamsList from "@/pages/exams/index";
 import NewExam from "@/pages/exams/new";
 import EditExam from "@/pages/exams/edit";
+import ExamResults from "@/pages/exams/results";
 import StudentExam from "@/pages/student-exam";
 
 
@@ -76,6 +76,7 @@ function Router() {
               <Route path="/exams" component={ExamsList} />
               <Route path="/exams/new" component={NewExam} />
               <Route path="/exams/:id/edit" component={EditExam} />
+              <Route path="/exams/results" component={ExamResults} />
             </>
           )}
         </>
