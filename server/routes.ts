@@ -1863,6 +1863,55 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Get specific exam with questions for student
+  app.get('/api/student/exams/:examId', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const userId = req.session.auth.user.id;
+      const examId = req.params.examId;
+      
+      // Get student data
+      const student = await storage.getStudent(userId);
+      if (!student) {
+        return res.status(404).json({ message: "Student not found" });
+      }
+
+      // Get exam
+      const exam = await storage.getExam(examId);
+      if (!exam) {
+        return res.status(404).json({ message: "Exam not found" });
+      }
+
+      // Verify student is enrolled in the course
+      const studentCourseIds = student.selectedCourses || [];
+      if (!exam.courseId || !studentCourseIds.includes(exam.courseId)) {
+        return res.status(403).json({ message: "You are not enrolled in this exam's course" });
+      }
+
+      // Get exam questions
+      const questions = await storage.getExamQuestions(examId);
+      
+      // Get course name
+      let courseName = null;
+      if (exam.courseId) {
+        const course = await storage.getCourse(exam.courseId);
+        courseName = course?.title || null;
+      }
+
+      res.json({
+        ...exam,
+        questions,
+        courseName,
+      });
+    } catch (error) {
+      console.error("Error fetching exam details:", error);
+      res.status(500).json({ message: "Failed to fetch exam details" });
+    }
+  });
+
   app.post('/api/sms-templates', async (req: any, res) => {
     try {
       const template = req.body;
