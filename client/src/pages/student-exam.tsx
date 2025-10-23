@@ -255,13 +255,13 @@ export default function StudentExam() {
       {/* Questions */}
       <div className="max-w-4xl mx-auto p-6 space-y-6">
         {exam.questions.map((question, index) => (
-          <Card key={question.id} className="bg-white" data-testid={`card-question-${question.id}`}>
+          <Card key={question.id} className="bg-white dark:bg-gray-800" data-testid={`card-question-${question.id}`}>
             <CardHeader>
               <CardTitle className="text-lg flex items-start gap-3">
                 <span className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center flex-shrink-0">
                   {index + 1}
                 </span>
-                <span className="flex-1">{question.questionText}</span>
+                <span className="flex-1 text-gray-900 dark:text-white">{question.questionText}</span>
               </CardTitle>
             </CardHeader>
             <CardContent>
@@ -277,17 +277,17 @@ export default function StudentExam() {
                     return (
                       <div
                         key={option}
-                        className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:bg-blue-50 ${
+                        className={`flex items-center space-x-3 p-4 rounded-lg border-2 transition-all cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/30 ${
                           answers[question.id] === option
-                            ? 'border-blue-600 bg-blue-50'
-                            : 'border-gray-200'
+                            ? 'border-blue-600 bg-blue-50 dark:bg-blue-900/30'
+                            : 'border-gray-200 dark:border-gray-600'
                         }`}
                         onClick={() => handleAnswerChange(question.id, option)}
                       >
                         <RadioGroupItem value={option} id={`${question.id}-${option}`} />
                         <Label
                           htmlFor={`${question.id}-${option}`}
-                          className="flex-1 cursor-pointer"
+                          className="flex-1 cursor-pointer text-gray-900 dark:text-white"
                         >
                           <span className="font-semibold mr-2">{option})</span>
                           {optionText}
