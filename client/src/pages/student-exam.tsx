@@ -16,7 +16,7 @@ interface ExamWithQuestions extends Exam {
 }
 
 export default function StudentExam() {
-  const { examId } = useParams();
+  const { examSlug } = useParams();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const [started, setStarted] = useState(false);
@@ -26,8 +26,8 @@ export default function StudentExam() {
 
   // Fetch exam details
   const { data: exam, isLoading } = useQuery<ExamWithQuestions>({
-    queryKey: ['/api/student/exams', examId],
-    enabled: !!examId,
+    queryKey: [`/api/student/exams/${examSlug}`],
+    enabled: !!examSlug,
   });
 
   // Initialize timer when exam starts
@@ -94,7 +94,7 @@ export default function StudentExam() {
   });
 
   const handleSubmit = (isAutoSubmit = false) => {
-    if (!examId) return;
+    if (!exam?.id) return;
     
     const answeredCount = Object.keys(answers).length;
     const totalQuestions = exam?.questions.length || 0;
@@ -107,7 +107,7 @@ export default function StudentExam() {
       if (!confirmed) return;
     }
 
-    submitMutation.mutate({ examId, answers });
+    submitMutation.mutate({ examId: exam.id, answers });
   };
 
   if (isLoading) {
@@ -170,22 +170,22 @@ export default function StudentExam() {
               <p className="text-gray-700">{exam.description}</p>
             )}
             
-            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 rounded-lg">
+            <div className="grid grid-cols-2 gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
               <div>
-                <div className="text-sm text-gray-600">Soru Sayısı</div>
-                <div className="text-2xl font-bold">{exam.questions.length}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Soru Sayısı</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{exam.questions.length}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Süre</div>
-                <div className="text-2xl font-bold">{exam.duration} dakika</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Süre</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{exam.duration} dakika</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Maksimum Puan</div>
-                <div className="text-2xl font-bold">{exam.maxScore}</div>
+                <div className="text-sm text-gray-600 dark:text-gray-400">Maksimum Puan</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">{exam.maxScore}</div>
               </div>
               <div>
-                <div className="text-sm text-gray-600">Her Soru</div>
-                <div className="text-2xl font-bold">
+                <div className="text-sm text-gray-600 dark:text-gray-400">Her Soru</div>
+                <div className="text-2xl font-bold text-gray-900 dark:text-white">
                   {((exam.maxScore || 100) / exam.questions.length).toFixed(1)} puan
                 </div>
               </div>

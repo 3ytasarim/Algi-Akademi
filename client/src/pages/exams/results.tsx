@@ -180,6 +180,19 @@ export default function ExamResults() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-center">
+                          <div className="font-bold text-lg">
+                            <span className={result.passed ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'}>
+                              {result.score}
+                            </span>
+                            <span className="text-slate-600 dark:text-gray-400 text-sm">
+                              /{result.examMaxScore || 100}
+                            </span>
+                          </div>
+                          {result.examPassingScore && (
+                            <div className="text-xs text-slate-600 dark:text-gray-400 mt-1">
+                              Geçme: {result.examPassingScore}
+                            </div>
+                          )}
                         </TableCell>
                         <TableCell className="text-center">
                           {result.passed ? (

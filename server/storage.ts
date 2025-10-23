@@ -320,6 +320,11 @@ export class DatabaseStorage implements IStorage {
     return exam;
   }
 
+  async getExamBySlug(slug: string): Promise<Exam | undefined> {
+    const [exam] = await db.select().from(exams).where(eq(exams.slug, slug));
+    return exam;
+  }
+
   async createExam(examData: InsertExam): Promise<Exam> {
     const [newExam] = await db.insert(exams).values(examData).returning();
     return newExam;

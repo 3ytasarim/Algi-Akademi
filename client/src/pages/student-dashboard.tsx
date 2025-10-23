@@ -119,6 +119,7 @@ export default function StudentDashboard() {
   const typedExams = exams as Array<{
     id: string;
     title: string;
+    slug: string;
     description: string | null;
     courseId: string | null;
     maxScore: number | null;
@@ -427,7 +428,7 @@ export default function StudentDashboard() {
                                 </div>
                               </div>
                             </div>
-                            <Link href={`/student/exam/${exam.id}`}>
+                            <Link href={`/student/exam/${exam.slug || exam.id}`}>
                               <Button 
                                 size="sm" 
                                 className="glass-effect bg-green-500/10 text-green-700 dark:text-green-300 border-green-500/20 hover:bg-green-500 hover:text-white"

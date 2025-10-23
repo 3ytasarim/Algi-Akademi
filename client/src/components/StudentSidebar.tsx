@@ -109,7 +109,7 @@ export function StudentSidebar({ isOpen, onClose, sidebarCollapsed = false, togg
         exams.map((exam: any) => ({
           icon: Award,
           label: exam.title,
-          href: `/student/exam/${exam.id}`
+          href: `/student/exam/${exam.slug || exam.id}`
         })) : []
     },
     {

@@ -3,11 +3,27 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { Storage as CloudStorage } from "@google-cloud/storage";
 import { storage } from "./storage";
-import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, lessons } from "@shared/schema";
+import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, lessons, exams } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
 import { getNetGSMService, initializeNetGSM } from "./smsService";
+
+// Utility function to generate URL-friendly slug from title
+function generateSlug(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/ı/g, 'i')
+    .replace(/ğ/g, 'g')
+    .replace(/ü/g, 'u')
+    .replace(/ş/g, 's')
+    .replace(/ö/g, 'o')
+    .replace(/ç/g, 'c')
+    .replace(/[^a-z0-9\s-]/g, '') // Remove special characters
+    .trim()
+    .replace(/\s+/g, '-') // Replace spaces with hyphens
+    .replace(/-+/g, '-'); // Remove duplicate hyphens
+}
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Initialize NetGSM SMS Service
@@ -1633,10 +1649,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get single exam with questions
-  app.get('/api/exams/:id', async (req: any, res) => {
+  // Get single exam with questions (supports both ID and slug)
+  app.get('/api/exams/:idOrSlug', async (req: any, res) => {
     try {
-      const exam = await storage.getExam(req.params.id);
+      const { idOrSlug } = req.params;
+      
+      // Try to get exam by ID first, then by slug
+      let exam = await storage.getExam(idOrSlug);
+      if (!exam) {
+        exam = await storage.getExamBySlug(idOrSlug);
+      }
       
       if (!exam) {
         return res.status(404).json({ message: "Exam not found" });
@@ -1659,8 +1681,14 @@ export async function registerRoutes(app: Express): Promise<Server> {
     try {
       const { questions: questionsList, ...examData } = req.body;
       
+      // Generate slug from title
+      const slug = generateSlug(examData.title);
+      
       // Validate exam data
-      const validatedExamData = insertExamSchema.parse(examData);
+      const validatedExamData = insertExamSchema.parse({
+        ...examData,
+        slug
+      });
       
       // Create exam
       const exam = await storage.createExam(validatedExamData);
@@ -1711,6 +1739,11 @@ export async function registerRoutes(app: Express): Promise<Server> {
   app.put('/api/exams/:id', async (req: any, res) => {
     try {
       const { questions: questionsList, ...examData } = req.body;
+      
+      // Regenerate slug if title is being updated
+      if (examData.title) {
+        examData.slug = generateSlug(examData.title);
+      }
       
       // Update exam
       const exam = await storage.updateExam(req.params.id, examData);
@@ -1863,15 +1896,15 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
-  // Get specific exam with questions for student
-  app.get('/api/student/exams/:examId', async (req: any, res) => {
+  // Get specific exam with questions for student (supports both ID and slug)
+  app.get('/api/student/exams/:examIdOrSlug', async (req: any, res) => {
     try {
       if (!req.session.auth?.isAuthenticated) {
         return res.status(401).json({ message: "Unauthorized" });
       }
 
       const userId = req.session.auth.user.id;
-      const examId = req.params.examId;
+      const { examIdOrSlug } = req.params;
       
       // Get student data
       const student = await storage.getStudent(userId);
@@ -1879,8 +1912,12 @@ export async function registerRoutes(app: Express): Promise<Server> {
         return res.status(404).json({ message: "Student not found" });
       }
 
-      // Get exam
-      const exam = await storage.getExam(examId);
+      // Get exam by ID or slug
+      let exam = await storage.getExam(examIdOrSlug);
+      if (!exam) {
+        exam = await storage.getExamBySlug(examIdOrSlug);
+      }
+      
       if (!exam) {
         return res.status(404).json({ message: "Exam not found" });
       }
@@ -1892,7 +1929,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Get exam questions
-      const questions = await storage.getExamQuestions(examId);
+      const questions = await storage.getExamQuestions(exam.id);
       
       // Get course name
       let courseName = null;

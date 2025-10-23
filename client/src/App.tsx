@@ -52,7 +52,7 @@ function Router() {
               <Route path="/student-dashboard" component={StudentDashboard} />
               <Route path="/student/profile" component={StudentProfile} />
               <Route path="/student/course/:courseTitle" component={StudentCourseDetails} />
-              <Route path="/student/exam/:examId" component={StudentExam} />
+              <Route path="/student/exam/:examSlug" component={StudentExam} />
             </>
           ) : (
             <>
