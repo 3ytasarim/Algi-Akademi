@@ -104,7 +104,7 @@ export const exams = pgTable("exams", {
   id: varchar("id").primaryKey().default(sql`gen_random_uuid()`),
   courseId: varchar("course_id").references(() => courses.id),
   title: varchar("title").notNull(),
-  slug: varchar("slug").notNull().unique(), // URL-friendly slug generated from title
+  slug: varchar("slug").unique(), // URL-friendly slug generated from title (nullable for migration safety)
   description: text("description"),
   duration: integer("duration").default(60), // duration in minutes
   maxScore: integer("max_score").default(100),
