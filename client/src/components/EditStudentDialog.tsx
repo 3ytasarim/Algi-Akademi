@@ -115,14 +115,49 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
   });
 
   const calculateTotalPrice = () => {
-    const selectedCourseObjs = courses.filter(course => 
-      formData.selectedCourses.includes(course.id)
-    );
-    const total = selectedCourseObjs.reduce((sum, course) => sum + parseFloat(course.price || '0'), 0);
-    const discount = parseFloat(formData.discountAmount || '0');
-    const final = Math.max(0, total - discount);
+    // Get currently selected course IDs
+    const currentlySelected = formData.selectedCourses;
     
-    return { total, final };
+    // Get originally selected course IDs from the student data
+    const originallySelected = student?.selectedCourses || [];
+    
+    // Find newly added courses (courses that are selected now but weren't before)
+    const newlyAddedCourseIds = currentlySelected.filter(
+      courseId => !originallySelected.includes(courseId)
+    );
+    
+    // Find courses that were originally selected AND still selected (intersection)
+    const stillSelectedOriginalCourseIds = originallySelected.filter(
+      (courseId: string) => currentlySelected.includes(courseId)
+    );
+    
+    // Calculate price for originally selected courses that are STILL selected (no discount)
+    const originalCourses = courses.filter(course => 
+      stillSelectedOriginalCourseIds.includes(course.id)
+    );
+    const originalTotal = originalCourses.reduce((sum, course) => 
+      sum + parseFloat(course.price || '0'), 0
+    );
+    
+    // Calculate price for newly added courses (with discount)
+    const newCourses = courses.filter(course => 
+      newlyAddedCourseIds.includes(course.id)
+    );
+    const newCoursesTotal = newCourses.reduce((sum, course) => 
+      sum + parseFloat(course.price || '0'), 0
+    );
+    
+    // Apply discount only to newly added courses
+    const discount = parseFloat(formData.discountAmount || '0');
+    const newCoursesFinal = Math.max(0, newCoursesTotal - discount);
+    
+    // Total is all currently selected courses (before discount)
+    const total = originalTotal + newCoursesTotal;
+    
+    // Final price = original courses (no discount) + new courses (with discount)
+    const final = originalTotal + newCoursesFinal;
+    
+    return { total, final, originalTotal, newCoursesTotal, discount };
   };
 
   const handleInputChange = (field: string, value: any) => {
@@ -366,7 +401,7 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
 
         <div className="space-y-3">
           <div>
-            <Label htmlFor="discount">İndirim Tutarı (₺)</Label>
+            <Label htmlFor="discount">İndirim Tutarı (Yeni Kurslar İçin) (₺)</Label>
             <Input
               id="discount"
               type="number"
@@ -377,13 +412,29 @@ export default function EditStudentDialog({ isOpen, onClose, student }: EditStud
           </div>
 
           <div className="bg-gray-50 dark:bg-gray-700/50 p-4 rounded-lg border border-gray-200 dark:border-gray-600">
-            <div className="flex justify-between items-center mb-2">
+            {prices.originalTotal > 0 && (
+              <div className="flex justify-between items-center mb-2">
+                <span className="text-sm text-gray-600 dark:text-gray-300">Mevcut Kurslar:</span>
+                <span className="font-semibold text-gray-900 dark:text-white">₺{prices.originalTotal.toFixed(2)}</span>
+              </div>
+            )}
+            {prices.newCoursesTotal > 0 && (
+              <>
+                <div className="flex justify-between items-center mb-2">
+                  <span className="text-sm text-gray-600 dark:text-gray-300">Yeni Kurslar:</span>
+                  <span className="font-semibold text-gray-900 dark:text-white">₺{prices.newCoursesTotal.toFixed(2)}</span>
+                </div>
+                {prices.discount > 0 && (
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-sm text-gray-600 dark:text-gray-300">İndirim (Yeni Kurslar):</span>
+                    <span className="text-red-600 dark:text-red-400">-₺{prices.discount.toFixed(2)}</span>
+                  </div>
+                )}
+              </>
+            )}
+            <div className="flex justify-between items-center mb-2 border-t border-gray-200 dark:border-gray-600 pt-2">
               <span className="text-sm text-gray-600 dark:text-gray-300">Toplam Tutar:</span>
               <span className="font-semibold text-gray-900 dark:text-white">₺{prices.total.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between items-center mb-2">
-              <span className="text-sm text-gray-600 dark:text-gray-300">İndirim:</span>
-              <span className="text-red-600 dark:text-red-400">-₺{parseFloat(formData.discountAmount || '0').toFixed(2)}</span>
             </div>
             <div className="flex justify-between items-center border-t border-gray-200 dark:border-gray-600 pt-2">
               <span className="font-semibold text-gray-900 dark:text-white">Net Tutar:</span>
