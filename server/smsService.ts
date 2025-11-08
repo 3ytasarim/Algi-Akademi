@@ -59,9 +59,19 @@ export class NetGSMService {
           jobId: response.jobid
         };
       } else {
+        // Safely stringify response
+        let errorMessage = 'Bilinmeyen hata';
+        try {
+          if (response) {
+            errorMessage = JSON.stringify(response);
+          }
+        } catch (e) {
+          errorMessage = 'NetGSM yanıt formatı hatalı: ' + String(response);
+        }
+        
         return {
           success: false,
-          error: JSON.stringify(response) || 'Bilinmeyen hata'
+          error: errorMessage
         };
       }
 
