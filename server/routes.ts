@@ -2115,8 +2115,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Send SMS
   app.post('/api/sms/send', async (req: any, res) => {
     try {
+      console.log('SMS Send Request:', { 
+        hasAuth: !!req.session.auth?.isAuthenticated,
+        hasBody: !!req.body,
+        phoneNumber: req.body?.phoneNumber,
+        messageLength: req.body?.message?.length
+      });
+
       if (!req.session.auth?.isAuthenticated) {
-        return res.status(401).json({ message: "Unauthorized" });
+        return res.status(401).json({ 
+          success: false,
+          message: "Unauthorized" 
+        });
       }
 
       const { phoneNumber, message } = req.body;
@@ -2128,29 +2138,41 @@ export async function registerRoutes(app: Express): Promise<Server> {
         });
       }
 
+      // Check if NetGSM service is initialized
+      if (!netGSMService) {
+        console.error("NetGSM service is not initialized");
+        return res.status(500).json({ 
+          success: false, 
+          message: "SMS servisi başlatılamadı" 
+        });
+      }
+
       // Send SMS using NetGSM service
+      console.log('Sending SMS via NetGSM...');
       const result = await netGSMService.sendSMS({
         phone: phoneNumber,
         message: message
       });
       
+      console.log('NetGSM Result:', result);
+
       if (result.success) {
-        res.json({ 
+        return res.json({ 
           success: true, 
           message: "SMS başarıyla gönderildi",
           jobId: result.jobId 
         });
       } else {
-        res.status(500).json({ 
+        return res.status(500).json({ 
           success: false, 
           message: result.error || "SMS gönderilemedi" 
         });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("SMS send error:", error);
-      res.status(500).json({ 
+      return res.status(500).json({ 
         success: false, 
-        message: "SMS gönderilirken bir hata oluştu" 
+        message: error.message || "SMS gönderilirken bir hata oluştu" 
       });
     }
   });
