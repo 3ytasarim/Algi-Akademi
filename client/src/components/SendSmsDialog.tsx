@@ -36,8 +36,12 @@ export default function SendSmsDialog({ isOpen, onClose, student }: SendSmsDialo
       let content = selectedTemplate.content;
       
       // Auto-fill student variables
+      const firstName = student?.firstName || student?.adı || '';
+      const lastName = student?.lastName || student?.soyadı || '';
+      const fullName = `${firstName} ${lastName}`.trim();
+      
       const autoVars: Record<string, string> = {
-        isim: student?.firstName || student?.adı || '',
+        isim: fullName,
         tc: student?.tcKimlikNo || '',
         sifre: student?.password || '',
         link: 'https://algi-akademi.replit.app',
@@ -197,9 +201,9 @@ export default function SendSmsDialog({ isOpen, onClose, student }: SendSmsDialo
             <Label>Mesaj Önizleme</Label>
             <Textarea
               value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              readOnly
               rows={6}
-              className="font-mono text-sm"
+              className="font-mono text-sm bg-gray-50 dark:bg-gray-800 cursor-default"
               placeholder="Şablon seçin veya mesajınızı buraya yazın..."
             />
             <p className="text-xs text-gray-500">
