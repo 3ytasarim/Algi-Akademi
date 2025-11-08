@@ -2112,6 +2112,46 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
   });
 
+  // Send SMS
+  app.post('/api/sms/send', async (req: any, res) => {
+    try {
+      if (!req.session.auth?.isAuthenticated) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      const { phoneNumber, message } = req.body;
+
+      if (!phoneNumber || !message) {
+        return res.status(400).json({ 
+          success: false,
+          message: "Telefon numarası ve mesaj gereklidir" 
+        });
+      }
+
+      // Send SMS using NetGSM service
+      const result = await netGSMService.sendSms(phoneNumber, message);
+      
+      if (result.success) {
+        res.json({ 
+          success: true, 
+          message: "SMS başarıyla gönderildi",
+          data: result.data 
+        });
+      } else {
+        res.status(500).json({ 
+          success: false, 
+          message: result.error || "SMS gönderilemedi" 
+        });
+      }
+    } catch (error) {
+      console.error("SMS send error:", error);
+      res.status(500).json({ 
+        success: false, 
+        message: "SMS gönderilirken bir hata oluştu" 
+      });
+    }
+  });
+
   const httpServer = createServer(app);
   return httpServer;
 }

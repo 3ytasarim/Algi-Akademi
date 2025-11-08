@@ -3,6 +3,7 @@ import session from "express-session";
 import connectPg from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { setupVite, serveStatic, log } from "./vite";
+import { seedSmsTemplates } from "./seedTemplates";
 
 const app = express();
 
@@ -55,6 +56,9 @@ app.use((req, res, next) => {
 });
 
 (async () => {
+  // Seed SMS templates on startup
+  await seedSmsTemplates();
+  
   const server = await registerRoutes(app);
 
   app.use((err: any, _req: Request, res: Response, _next: NextFunction) => {

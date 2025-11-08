@@ -10,7 +10,8 @@ import LayoutWrapper from "@/components/LayoutWrapper";
 import MultiStepStudentForm from "@/components/MultiStepStudentForm";
 import EditStudentDialog from "@/components/EditStudentDialog";
 import ConfirmDialog from "@/components/ConfirmDialog";
-import { User, UserPlus, Search, Mail, Phone, Users } from "lucide-react";
+import SendSmsDialog from "@/components/SendSmsDialog";
+import { User, UserPlus, Search, Mail, Phone, Users, MessageSquare } from "lucide-react";
 import { format } from "date-fns";
 import { tr } from "date-fns/locale";
 
@@ -18,6 +19,10 @@ export default function StudentList() {
   const [searchTerm, setSearchTerm] = useState("");
   const [editingStudent, setEditingStudent] = useState<any>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [smsDialogState, setSmsDialogState] = useState<{
+    isOpen: boolean;
+    student: any | null;
+  }>({ isOpen: false, student: null });
   const [deleteConfirm, setDeleteConfirm] = useState<{
     isOpen: boolean;
     student: any | null;
@@ -242,8 +247,19 @@ export default function StudentList() {
                         <Button
                           variant="outline"
                           size="sm"
+                          className="h-8 w-8 p-0 rounded-lg border-green-200 hover:bg-green-50 hover:border-green-300 text-green-600 hover:text-green-700"
+                          onClick={() => setSmsDialogState({ isOpen: true, student })}
+                          title="SMS Gönder"
+                          data-testid={`button-send-sms-${student.id}`}
+                        >
+                          <MessageSquare size={14} />
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
                           className="h-8 w-8 p-0 rounded-lg border-blue-200 hover:bg-blue-50 hover:border-blue-300"
                           onClick={() => handleEditStudent(student)}
+                          data-testid={`button-edit-${student.id}`}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -255,6 +271,7 @@ export default function StudentList() {
                           size="sm"
                           className="h-8 w-8 p-0 rounded-lg border-red-200 hover:bg-red-50 hover:border-red-300 text-red-600 hover:text-red-700"
                           onClick={() => handleDeleteStudent(student)}
+                          data-testid={`button-delete-${student.id}`}
                         >
                           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <polyline points="3,6 5,6 21,6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
@@ -293,6 +310,13 @@ export default function StudentList() {
         confirmText="Sil"
         cancelText="İptal"
         destructive={true}
+      />
+
+      {/* Send SMS Dialog */}
+      <SendSmsDialog
+        isOpen={smsDialogState.isOpen}
+        onClose={() => setSmsDialogState({ isOpen: false, student: null })}
+        student={smsDialogState.student}
       />
     </LayoutWrapper>
   );
