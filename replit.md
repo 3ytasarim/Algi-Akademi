@@ -56,7 +56,12 @@ Preferred communication style: Simple, everyday language.
 - **PDF Management**: Integration with object storage for real PDF file uploads and serving.
 - **User Roles**: Admin, Student, Consultant roles with distinct access levels and functionalities.
 - **Reporting/Analytics**: Real-time activity notifications and performance tracking.
-- **SMS Integration**: Automatic welcome SMS sending when new students are created, with template-based message system and NetGSM integration placeholders.
+- **SMS Integration**: 
+  - Automatic welcome SMS sending when new students are created
+  - Database-backed SMS templates system with 4 professional templates (welcome, password reset, course start, payment reminder)
+  - Admin panel SMS sending: Select any student → Choose template → Auto-fill variables (isim, tc, sifre, link) → Send via NetGSM
+  - Template variables support for dynamic content
+  - Auto-seeding of templates on server startup for production database
 - **Exam Management System**: Complete exam system with multiple-choice questions (A/B/C/D options), course association, edit/delete functionality, and student-specific exam display based on enrolled courses.
 
 # External Dependencies

@@ -2129,13 +2129,16 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Send SMS using NetGSM service
-      const result = await netGSMService.sendSms(phoneNumber, message);
+      const result = await netGSMService.sendSMS({
+        phone: phoneNumber,
+        message: message
+      });
       
       if (result.success) {
         res.json({ 
           success: true, 
           message: "SMS başarıyla gönderildi",
-          data: result.data 
+          jobId: result.jobId 
         });
       } else {
         res.status(500).json({ 
