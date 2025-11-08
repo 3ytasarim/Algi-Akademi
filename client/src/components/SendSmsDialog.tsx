@@ -71,8 +71,15 @@ export default function SendSmsDialog({ isOpen, onClose, student }: SendSmsDialo
       });
       
       if (!response.ok) {
-        const error = await response.json();
-        throw new Error(error.message || 'SMS gönderilemedi');
+        let errorMessage = 'SMS gönderilemedi';
+        try {
+          const error = await response.json();
+          errorMessage = error.message || errorMessage;
+        } catch (e) {
+          // JSON parse error - use status text
+          errorMessage = response.statusText || errorMessage;
+        }
+        throw new Error(errorMessage);
       }
       
       return response.json();
