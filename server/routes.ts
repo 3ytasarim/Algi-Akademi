@@ -2148,13 +2148,18 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Send SMS using NetGSM service
-      console.log('Sending SMS via NetGSM...');
+      console.log('Sending SMS via NetGSM...', {
+        hasNetGSMService: !!netGSMService,
+        phoneNumber,
+        messageLength: message?.length
+      });
+      
       const result = await netGSMService.sendSMS({
         phone: phoneNumber,
         message: message
       });
       
-      console.log('NetGSM Result:', result);
+      console.log('NetGSM Result:', JSON.stringify(result));
 
       if (result.success) {
         return res.json({ 
