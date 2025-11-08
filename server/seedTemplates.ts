@@ -34,7 +34,7 @@ export async function seedSmsTemplates() {
       {
         name: 'Ödeme Hatırlatması',
         subject: 'Ödeme Hatırlatma',
-        content: 'Sayın {isim}, Algı Akademi eğitim ücretinizden {tutar}₺ tutarında ödenmemiş borcunuz bulunmaktadır. Ödeme yapmak için lütfen bizimle iletişime geçiniz. Bilgi: 0506 508 73 07',
+        content: 'Sayın {isim}, Algı Akademi eğitim ücretinizden {tutar} TL tutarında ödenmemiş borcunuz bulunmaktadır. Ödeme yapmak için lütfen bizimle iletişime geçiniz. Bilgi: 0506 508 73 07',
         variables: ['isim', 'tutar'],
         type: 'payment_reminder',
         isActive: true
@@ -52,7 +52,17 @@ export async function seedSmsTemplates() {
         await db.insert(smsTemplates).values(template);
         console.log(`✓ Seeded template: ${template.name}`);
       } else {
-        console.log(`- Template already exists: ${template.name}`);
+        // Update existing template to ensure it has latest content
+        await db.update(smsTemplates)
+          .set({
+            content: template.content,
+            variables: template.variables,
+            subject: template.subject,
+            type: template.type,
+            isActive: template.isActive
+          })
+          .where(eq(smsTemplates.name, template.name));
+        console.log(`✓ Updated template: ${template.name}`);
       }
     }
     
