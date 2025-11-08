@@ -3,7 +3,7 @@ import { createServer, type Server } from "http";
 import multer from "multer";
 import { Storage as CloudStorage } from "@google-cloud/storage";
 import { storage } from "./storage";
-import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, lessons, exams } from "@shared/schema";
+import { insertCourseSchema, insertLessonSchema, insertEnrollmentSchema, insertExamSchema, insertExamResultSchema, insertActivitySchema, lessons, exams, smsTemplates } from "@shared/schema";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { db } from "./db";
@@ -2100,18 +2100,8 @@ export async function registerRoutes(app: Express): Promise<Server> {
 
   app.get('/api/sms-templates', async (req: any, res) => {
     try {
-      // Return saved SMS templates (would come from database)
-      const templates = [
-        {
-          id: '1',
-          name: 'Kursiyer Hoşgeldin SMS',
-          subject: 'Algı Akademi Üyelik',
-          content: 'Merhaba {isim}, Algı Akademi\'ye hoş geldiniz! Giriş bilgileriniz - TC: {tc}, Şifre: {sifre} - Link: {link}',
-          variables: ['isim', 'tc', 'sifre', 'link'],
-          type: 'welcome'
-        }
-      ];
-      
+      // Fetch SMS templates from database
+      const templates = await db.select().from(smsTemplates).where(eq(smsTemplates.isActive, true));
       res.json(templates);
     } catch (error) {
       console.error("SMS templates fetch error:", error);
