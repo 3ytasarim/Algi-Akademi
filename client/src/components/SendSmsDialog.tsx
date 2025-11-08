@@ -48,7 +48,12 @@ export default function SendSmsDialog({ isOpen, onClose, student }: SendSmsDialo
       
       // Replace variables in content
       Object.entries(allVars).forEach(([key, value]) => {
-        content = content.replace(new RegExp(`\\{${key}\\}`, 'g'), value);
+        // Escape special regex characters in the key
+        const escapedKey = key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+        // Only replace if value is not empty
+        if (value) {
+          content = content.replace(new RegExp(`\\{${escapedKey}\\}`, 'g'), value);
+        }
       });
       
       setMessage(content);

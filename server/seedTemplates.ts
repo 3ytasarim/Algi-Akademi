@@ -34,7 +34,7 @@ export async function seedSmsTemplates() {
       {
         name: 'Ödeme Hatırlatması',
         subject: 'Ödeme Hatırlatma',
-        content: 'Sayın {isim}, Algı Akademi eğitim ücretinizden {tutar}₺ tutarında ödenmemiş borcunuz bulunmaktadır. Ödeme yapmak için lütfen bizimle iletişime geçiniz. Bilgi: 0XXX XXX XX XX',
+        content: 'Sayın {isim}, Algı Akademi eğitim ücretinizden {tutar}₺ tutarında ödenmemiş borcunuz bulunmaktadır. Ödeme yapmak için lütfen bizimle iletişime geçiniz. Bilgi: 0506 508 73 07',
         variables: ['isim', 'tutar'],
         type: 'payment_reminder',
         isActive: true
