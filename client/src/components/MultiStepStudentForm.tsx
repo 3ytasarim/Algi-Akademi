@@ -14,7 +14,7 @@ import { apiRequest } from "@/lib/queryClient";
 import { 
   User, UserPlus, Calendar, CreditCard, Mail, Camera, Upload, 
   ChevronRight, ChevronLeft, Briefcase, Shield, CheckCircle, XCircle, 
-  GraduationCap, TrendingUp, Clock, Phone
+  GraduationCap, TrendingUp, Clock, Phone, Search
 } from "lucide-react";
 
 interface MultiStepStudentFormProps {
@@ -25,6 +25,7 @@ interface MultiStepStudentFormProps {
 export default function MultiStepStudentForm({ children, onSuccess }: MultiStepStudentFormProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [courseSearch, setCourseSearch] = useState("");
   const [formData, setFormData] = useState({
     // Step 1 - Kişisel Bilgiler
     adı: "",
@@ -154,6 +155,7 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
     });
     setPreviewImage(null);
     setTcValidation({ isValid: null, message: "" });
+    setCourseSearch("");
   };
 
   const handleInputChange = (field: string, value: string | boolean | string[]) => {
@@ -650,9 +652,31 @@ export default function MultiStepStudentForm({ children, onSuccess }: MultiStepS
                   <GraduationCap size={20} />
                   Eğitim Seçimi
                 </h3>
+
+                {/* Kurs Arama */}
+                <div className="relative">
+                  <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
+                  <Input
+                    placeholder="Eğitim adı ile ara... (örn: Aşçı)"
+                    value={courseSearch}
+                    onChange={(e) => setCourseSearch(e.target.value)}
+                    className="pl-9 bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-600"
+                  />
+                </div>
                 
                 <div className="max-h-60 overflow-y-auto space-y-2 border border-gray-200 dark:border-gray-600 rounded-xl p-4 bg-white dark:bg-gray-800">
-                  {courses.map((course: any) => (
+                  {courseSearch.trim() !== "" && courses.filter((course: any) =>
+                    course.title?.toLowerCase().includes(courseSearch.toLowerCase()) ||
+                    course.description?.toLowerCase().includes(courseSearch.toLowerCase())
+                  ).length === 0 && (
+                    <p className="text-center text-sm text-gray-400 py-4">"{courseSearch}" ile eşleşen eğitim bulunamadı.</p>
+                  )}
+                  {courses
+                    .filter((course: any) =>
+                      course.title?.toLowerCase().includes(courseSearch.toLowerCase()) ||
+                      course.description?.toLowerCase().includes(courseSearch.toLowerCase())
+                    )
+                    .map((course: any) => (
                     <div key={course.id} className="flex items-center justify-between p-3 border border-gray-200 dark:border-gray-600 rounded-lg hover:bg-slate-50 dark:hover:bg-gray-700 bg-white dark:bg-gray-800">
                       <div className="flex items-center space-x-3">
                         <Checkbox 
